@@ -1,0 +1,341 @@
+/* ============================================================
+   layouts/responsive.css
+   RESPONSIVE FIX ALL PAGES
+   ============================================================ */
+
+/* Grid defaults */
+.grid {
+  display: grid;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* MOBILE - MAIN FIX */
+@media (max-width: 768px) {
+  
+  /* Container */
+  .container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  /* Hero section */
+  .hero-content {
+    grid-template-columns: 1fr !important;
+    gap: 30px !important;
+    padding: 40px 16px !important;
+  }
+  
+  .hero h1 {
+    font-size: 28px !important;
+  }
+  
+  .hero p {
+    font-size: 14px !important;
+  }
+  
+  .hero-stats {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px !important;
+  }
+  
+  .hero-stat-value {
+    font-size: 22px !important;
+  }
+  
+  .hero-visual {
+    display: block !important;
+    margin-top: 20px;
+  }
+  
+  .hero-card {
+    padding: 16px !important;
+  }
+  
+  /* Global grid override - FORCE 1 COLUMN */
+  .grid,
+  div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Khusus untuk grid-2, grid-3, grid-4 */
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  
+  /* Feature cards */
+  .feature-card {
+    padding: 20px !important;
+  }
+  
+  .feature-icon {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 20px !important;
+  }
+  
+  /* Product cards */
+  .product-card-name {
+    font-size: 14px !important;
+  }
+  
+  .product-card-price {
+    font-size: 16px !important;
+  }
+  
+  /* Buttons */
+  .btn {
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+  }
+  
+  .btn-lg {
+    padding: 10px 20px !important;
+    font-size: 14px !important;
+  }
+  
+  /* Section spacing */
+  .section {
+    padding: 40px 0 !important;
+  }
+  
+  .section-title {
+    font-size: 24px !important;
+  }
+  
+  .section-subtitle {
+    font-size: 14px !important;
+  }
+  
+  /* ========== PROFIL PAGE ========== */
+  /* About section grid (1fr 1fr jadi 1fr) */
+  .profil .grid,
+  section .grid[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 30px !important;
+  }
+  
+  /* Statistik di profil (2 kolom jadi 1) */
+  div[style*="display:grid"][style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  
+  /* Nilai perusahaan (grid-4) */
+  .grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  
+  /* ========== KONTAK PAGE ========== */
+  /* Kontak grid (1fr 1.4fr jadi 1fr) */
+  .kontak .grid,
+  section .grid[style*="grid-template-columns: 1fr 1.4fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 30px !important;
+  }
+  
+  /* ========== PRODUK PAGE ========== */
+  /* Produk grid (220px 1fr jadi 1fr) */
+  section .grid[style*="grid-template-columns: 220px 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  
+  /* Sidebar filter di produk */
+  .card[style*="position:sticky"] {
+    position: relative !important;
+    top: 0 !important;
+    margin-bottom: 20px;
+  }
+  
+  /* Search box */
+  form[style*="max-width:500px"] {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  
+  form[style*="max-width:500px"] button {
+    width: 100% !important;
+  }
+  
+  /* ========== PESAN PAGE ========== */
+  /* Form grid 2 kolom */
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  
+  /* Item pesanan */
+  #order-items > div {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  
+  #order-items > div > div {
+    width: 100% !important;
+  }
+  
+  /* ========== FOOTER ========== */
+  footer .grid,
+  .footer .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 30px !important;
+  }
+  
+  footer .footer-brand,
+  footer .footer-brand > div {
+    text-align: center !important;
+    justify-content: center !important;
+  }
+  
+  footer .footer-title {
+    text-align: center !important;
+  }
+  
+  footer .footer-links {
+    text-align: center !important;
+  }
+  
+  footer .footer-links li {
+    display: block !important;
+    margin-bottom: 8px !important;
+  }
+  
+  footer .footer-bottom {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 8px !important;
+  }
+  
+  /* ========== PAGINATION ========== */
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .page-btn {
+    min-width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+  
+  /* ========== ADMIN SIDEBAR ========== */
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .hamburger {
+    display: flex;
+  }
+  
+  /* Table responsive */
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .table th,
+  .table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
+/* Mobile kecil (480px ke bawah) */
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 24px !important;
+  }
+  
+  .hero-stat-value {
+    font-size: 18px !important;
+  }
+  
+  .section-title {
+    font-size: 20px !important;
+  }
+  
+  .stat-value {
+    font-size: 22px;
+  }
+  
+  .stat-card {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .modal {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-width: 100%;
+    margin-top: auto;
+  }
+  
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: var(--bg-overlay);
+}
+
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block;
+  }
+}
+/* Tabel responsive di HP - scroll horizontal */
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .table {
+    min-width: 650px;
+  }
+  
+  .table th, .table td {
+    white-space: nowrap;
+  }
+}

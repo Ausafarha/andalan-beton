@@ -1,0 +1,31 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Config database (password asli)
+config/database.php
+
+# Uploads folder
+uploads/
+
+# Logs
+*.log
+error_log
+
+# OS generated
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Database backup
+*.sql
+*.dump
+
+# Temp files
+*.tmp
+*.cache

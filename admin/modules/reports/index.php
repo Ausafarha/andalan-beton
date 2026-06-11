@@ -1,0 +1,341 @@
+<?php
+require_once __DIR__.'/../../../config/database.php';
+require_once __DIR__.'/../../../config/app.php';
+initSession(); requireLogin();
+$pageTitle='Laporan'; $pageSubtitle='Rekap data operasional';
+
+$type     = get('type','stock_in');
+$dateFrom = get('date_from', date('Y-m-01'));
+$dateTo   = get('date_to',   date('Y-m-d'));
+$matId    = getInt('material_id');
+
+$materials = Database::fetchAll("SELECT id,name FROM materials WHERE is_active=true ORDER BY name");
+
+// Build report data
+$reportData = [];
+$reportTitle= '';
+$totalRows  = 0;
+$summary = []; // Untuk ringkasan
+
+switch ($type) {
+    case 'stock_in':
+        $reportTitle = 'Rekap Barang Masuk';
+        $params = [$dateFrom, $dateTo];
+        $extraWhere = '';
+        if ($matId) { $extraWhere = ' AND si.material_id=?'; $params[] = $matId; }
+        $reportData = Database::fetchAll("
+            SELECT si.received_date AS tanggal, m.name AS material, m.unit, si.quantity AS jumlah,
+                   si.price_per_unit AS harga_satuan, si.supplier_name AS supplier,
+                   si.invoice_number AS invoice
+            FROM stock_in si JOIN materials m ON si.material_id=m.id
+            WHERE si.received_date BETWEEN ? AND ? $extraWhere
+            ORDER BY si.received_date DESC
+        ", $params);
+        break;
+
+    case 'stock_out':
+        $reportTitle = 'Rekap Barang Keluar';
+        $params = [$dateFrom, $dateTo];
+        $extraWhere = '';
+        if ($matId) { $extraWhere = ' AND so.material_id=?'; $params[] = $matId; }
+        $reportData = Database::fetchAll("
+            SELECT so.out_date AS tanggal, m.name AS material, m.unit, so.quantity AS jumlah,
+                   so.destination AS tujuan, so.driver_name AS driver,
+                   so.vehicle_number AS kendaraan
+            FROM stock_out so JOIN materials m ON so.material_id=m.id
+            WHERE so.out_date BETWEEN ? AND ? $extraWhere
+            ORDER BY so.out_date DESC
+        ", $params);
+        break;
+
+    case 'orders':
+        $reportTitle = 'Rekap Pesanan';
+        $reportData = Database::fetchAll("
+            SELECT order_number AS nomor, customer_name AS pelanggan, customer_phone AS hp,
+                   total_amount AS total, status, created_at AS tanggal
+            FROM orders
+            WHERE DATE(created_at) BETWEEN ? AND ?
+            ORDER BY created_at DESC
+        ", [$dateFrom, $dateTo]);
+        
+        // ── RINGKASAN PENDAPATAN ──────────────────────────
+        $summary['total_revenue'] = (float)Database::fetchColumn("
+            SELECT COALESCE(SUM(total_amount),0) FROM orders 
+            WHERE status = 'completed' AND DATE(created_at) BETWEEN ? AND ?", [$dateFrom, $dateTo]);
+        
+        $summary['total_orders'] = (int)Database::fetchColumn("
+            SELECT COUNT(*) FROM orders 
+            WHERE DATE(created_at) BETWEEN ? AND ?", [$dateFrom, $dateTo]);
+        
+        $summary['completed_orders'] = (int)Database::fetchColumn("
+            SELECT COUNT(*) FROM orders 
+            WHERE status = 'completed' AND DATE(created_at) BETWEEN ? AND ?", [$dateFrom, $dateTo]);
+        
+        $summary['pending_orders'] = (int)Database::fetchColumn("
+            SELECT COUNT(*) FROM orders 
+            WHERE status = 'pending' AND DATE(created_at) BETWEEN ? AND ?", [$dateFrom, $dateTo]);
+        
+        $summary['avg_order'] = $summary['completed_orders'] > 0 ? 
+            round($summary['total_revenue'] / $summary['completed_orders']) : 0;
+        break;
+
+    case 'product_sales':
+        $reportTitle = 'Laporan Penjualan per Produk';
+        $reportData = Database::fetchAll("
+            SELECT 
+                m.name AS produk,
+                mc.name AS kategori,
+                m.unit,
+                COALESCE(SUM(oi.quantity),0) AS qty_terjual,
+                COALESCE(SUM(oi.subtotal),0) AS total_pendapatan
+            FROM order_items oi
+            JOIN materials m ON oi.material_id = m.id
+            LEFT JOIN material_categories mc ON m.category_id = mc.id
+            JOIN orders o ON oi.order_id = o.id
+            WHERE o.status = 'completed' 
+                AND DATE(o.created_at) BETWEEN ? AND ?
+            GROUP BY m.id, m.name, m.unit, mc.name
+            ORDER BY total_pendapatan DESC
+        ", [$dateFrom, $dateTo]);
+        
+        // Ringkasan produk
+        $summary['total_revenue'] = array_sum(array_column($reportData, 'total_pendapatan'));
+        $summary['total_qty'] = array_sum(array_column($reportData, 'qty_terjual'));
+        $summary['total_products'] = count($reportData);
+        break;
+
+    case 'stock_summary':
+        $reportTitle = 'Ringkasan Stok Material';
+        $reportData = Database::fetchAll("
+            SELECT ms.code AS kode, ms.name AS material, ms.unit, ms.category_name AS kategori,
+                   ms.total_in AS total_masuk, ms.total_out AS total_keluar,
+                   ms.current_stock AS stok_sekarang, ms.min_stock AS stok_minimum,
+                   ms.stock_status AS status_stok, ms.price AS harga
+            FROM material_stock ms WHERE ms.is_active=true ORDER BY ms.name
+        ");
+        break;
+}
+
+// Export PDF
+if (isset($_GET['export']) && $_GET['export']==='pdf') {
+    header('Content-Type: text/html; charset=utf-8');
+    $cp = getCompanyProfile();
+    ?>
+    <!DOCTYPE html><html lang="id"><head><meta charset="UTF-8">
+    <title><?=$reportTitle?></title>
+    <style>
+    body{font-family:Arial,sans-serif;font-size:12px;color:#222;margin:20px;}
+    h2{font-size:18px;margin:0;}h3{font-size:14px;margin:0;color:#555;}
+    .header{border-bottom:2px solid #1d4ed8;padding-bottom:12px;margin-bottom:16px;}
+    .company{font-size:10px;color:#888;margin-top:4px;}
+    .summary-box{background:#f0fdf4;border:1px solid #bbf7d0;padding:12px;margin-bottom:16px;border-radius:8px;}
+    .summary-box p{margin:4px 0;font-size:12px;}
+    table{width:100%;border-collapse:collapse;margin-top:10px;}
+    th{background:#1d4ed8;color:white;padding:7px 10px;text-align:left;font-size:11px;}
+    td{padding:6px 10px;border-bottom:1px solid #eee;}
+    tr:nth-child(even){background:#f9fafb;}
+    .footer{margin-top:20px;font-size:10px;color:#888;border-top:1px solid #ddd;padding-top:8px;text-align:right;}
+    @media print{button{display:none;}}
+    </style>
+    </head><body>
+    <div class="header">
+      <h2><?=$reportTitle?></h2>
+      <h3><?=htmlspecialchars($cp['company_name']??APP_NAME)?></h3>
+      <div class="company">Periode: <?=formatDate($dateFrom)?> s/d <?=formatDate($dateTo)?> | Dicetak: <?=date('d M Y H:i')?></div>
+    </div>
+    <?php if (!empty($summary)): ?>
+    <div class="summary-box">
+        <?php if (isset($summary['total_revenue'])): ?>
+            <p><strong>Total Pendapatan:</strong> <?=formatRupiah($summary['total_revenue'])?></p>
+        <?php endif; ?>
+        <?php if (isset($summary['total_orders'])): ?>
+            <p><strong>Total Pesanan:</strong> <?=$summary['total_orders']?> (Selesai: <?=$summary['completed_orders']?>, Menunggu: <?=$summary['pending_orders']?>)</p>
+            <p><strong>Rata-rata per Pesanan:</strong> <?=formatRupiah($summary['avg_order'])?></p>
+        <?php endif; ?>
+        <?php if (isset($summary['total_qty'])): ?>
+            <p><strong>Total Qty Terjual:</strong> <?=formatNumber($summary['total_qty'])?> unit</p>
+            <p><strong>Jenis Produk Terjual:</strong> <?=$summary['total_products']?></p>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+    <table>
+    <thead>
+        <tr>
+        <?php if($reportData): foreach(array_keys($reportData[0]) as $col): ?>
+            <th><?=ucwords(str_replace('_',' ',$col))?></th>
+        <?php endforeach; endif; ?>
+        </tr></thead>
+    <tbody>
+    <?php foreach($reportData as $row): ?>
+        <tr>
+        <?php foreach($row as $k=>$v): ?>
+            <td><?php
+                if (in_array($k,['total','harga_satuan','harga','total_pendapatan'])) echo formatRupiah($v);
+                elseif ($k==='tanggal') echo formatDate($v);
+                elseif ($k==='status') echo ucfirst($v);
+                elseif ($k==='status_stok') echo ucfirst(str_replace('_',' ',$v));
+                else echo htmlspecialchars($v??'-');
+            ?></td>
+        <?php endforeach; ?>
+        </tr><?php endforeach; ?>
+    </tbody>
+    </table>
+    <div class="footer">Total <?=count($reportData)?> data | <?=htmlspecialchars($cp['company_name']??APP_NAME)?></div>
+    <script>window.onload=()=>window.print();</script>
+    </body></html>
+    <?php exit;
+}
+
+include __DIR__.'/../../partials/head.php';
+?>
+<div class="admin-wrapper">
+<?php include __DIR__.'/../../partials/sidebar.php'; ?>
+<div class="main-content">
+<?php include __DIR__.'/../../partials/topbar.php'; ?>
+<div class="page-body">
+
+<div class="section-header mb-20"><h2>Laporan Operasional</h2><p>Filter dan ekspor data laporan</p></div>
+
+<div class="card mb-20">
+  <div class="card-header"><div class="card-title">Filter Laporan</div></div>
+  <div class="card-body">
+    <form method="GET">
+      <div class="grid grid-2" style="gap:16px;margin-bottom:16px;">
+        <div class="form-group" style="margin:0;">
+          <label class="form-label">Jenis Laporan</label>
+          <select name="type" class="form-control" id="report-type">
+            <option value="stock_in"      <?=$type==='stock_in'     ?'selected':''?>>📥 Barang Masuk</option>
+            <option value="stock_out"     <?=$type==='stock_out'    ?'selected':''?>>📤 Barang Keluar</option>
+            <option value="orders"        <?=$type==='orders'       ?'selected':''?>>📋 Pesanan</option>
+            <option value="product_sales" <?=$type==='product_sales'?'selected':''?>>💰 Penjualan per Produk</option>
+            <option value="stock_summary" <?=$type==='stock_summary'?'selected':''?>>📊 Ringkasan Stok</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0;" id="material-filter">
+          <label class="form-label">Material (opsional)</label>
+          <select name="material_id" class="form-control">
+            <option value="">Semua Material</option>
+            <?php foreach($materials as $m):?><option value="<?=$m['id']?>" <?=$matId==$m['id']?'selected':''?>><?=htmlspecialchars($m['name'])?></option><?php endforeach;?>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-2" style="gap:16px;" id="date-range">
+        <div class="form-group" style="margin:0;"><label class="form-label">Dari Tanggal</label><input type="date" name="date_from" class="form-control" value="<?=$dateFrom?>"></div>
+        <div class="form-group" style="margin:0;"><label class="form-label">Sampai Tanggal</label><input type="date" name="date_to" class="form-control" value="<?=$dateTo?>"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Tampilkan</button>
+        <a href="?type=<?=urlencode($type)?>&date_from=<?=$dateFrom?>&date_to=<?=$dateTo?>&material_id=<?=$matId?>&export=pdf" target="_blank" class="btn btn-danger"><i class="fas fa-file-pdf"></i> Export PDF</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Ringkasan Card (untuk laporan pesanan & produk) -->
+<?php if (!empty($summary) && $type !== 'stock_summary'): ?>
+<div class="grid grid-4 mb-20" style="margin-top: -10px;">
+    <?php if (isset($summary['total_revenue'])): ?>
+    <div class="stat-card" style="--stat-color: #8b5cf6;">
+        <div class="stat-icon" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-label">Total Pendapatan</div>
+            <div class="stat-value" style="font-size:18px;"><?= formatRupiah($summary['total_revenue']) ?></div>
+        </div>
+    </div>
+    <?php endif; ?>
+    
+    <?php if (isset($summary['total_orders'])): ?>
+    <div class="stat-card" style="--stat-color: #3b82f6;">
+        <div class="stat-icon" style="background: rgba(59,130,246,0.1); color: #3b82f6;">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-label">Total Pesanan</div>
+            <div class="stat-value"><?= $summary['total_orders'] ?></div>
+            <div class="stat-change up">Selesai: <?= $summary['completed_orders'] ?> | Menunggu: <?= $summary['pending_orders'] ?></div>
+        </div>
+    </div>
+    <?php endif; ?>
+    
+    <?php if (isset($summary['avg_order'])): ?>
+    <div class="stat-card" style="--stat-color: #22c55e;">
+        <div class="stat-icon" style="background: rgba(34,197,94,0.1); color: #22c55e;">
+            <i class="fas fa-calculator"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-label">Rata-rata per Pesanan</div>
+            <div class="stat-value" style="font-size:16px;"><?= formatRupiah($summary['avg_order']) ?></div>
+        </div>
+    </div>
+    <?php endif; ?>
+    
+    <?php if (isset($summary['total_qty'])): ?>
+    <div class="stat-card" style="--stat-color: #f59e0b;">
+        <div class="stat-icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
+            <i class="fas fa-boxes"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-label">Total Qty Terjual</div>
+            <div class="stat-value"><?= formatNumber($summary['total_qty']) ?></div>
+            <div class="stat-change up"><?= $summary['total_products'] ?> produk terjual</div>
+        </div>
+    </div>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
+<!-- Report Results -->
+<div class="card">
+  <div class="card-header">
+    <div><div class="card-title"><?=$reportTitle?></div><div class="card-subtitle">Periode: <?=formatDate($dateFrom)?> s/d <?=formatDate($dateTo)?> — <?=count($reportData)?> data</div></div>
+  </div>
+  <div class="card-body" style="padding:0;">
+    <?php if(empty($reportData)):?>
+      <div class="empty-state"><div class="empty-state-icon"><i class="fas fa-file-alt"></i></div><div class="empty-state-title">Tidak ada data pada periode ini</div></div>
+    <?php else:?>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+            <?php foreach(array_keys($reportData[0]) as $col):?><th><?=ucwords(str_replace('_',' ',$col))?></th><?php endforeach;?>
+            </tr></thead>
+          <tbody>
+            <?php foreach($reportData as $row):?>
+            <tr>
+              <?php foreach($row as $k=>$v):?>
+                <td style="font-size:13px;"><?php
+                  if (in_array($k,['total','harga_satuan','harga','total_pendapatan'])) echo formatRupiah($v);
+                  elseif ($k==='qty_terjual' || $k==='jumlah') echo formatNumber($v);
+                  elseif ($k==='tanggal') echo formatDate($v);
+                  elseif ($k==='status') echo orderStatusLabel($v);
+                  elseif ($k==='status_stok') echo stockStatusLabel($v);
+                  else echo htmlspecialchars($v??'-');
+                ?></td>
+              <?php endforeach;?>
+            </tr><?php endforeach;?>
+          </tbody>
+        </table>
+      </div>
+    <?php endif;?>
+  </div>
+</div>
+</div>
+<?php include __DIR__.'/../../partials/footer.php'; ?>
+<script>
+document.getElementById('report-type').addEventListener('change', function() {
+  const df = document.getElementById('material-filter');
+  const dr = document.getElementById('date-range');
+  if (this.value === 'stock_summary') {
+    df.style.display = 'none'; dr.style.display = 'none';
+  } else if (this.value === 'product_sales') {
+    df.style.display = 'none'; dr.style.display = '';
+  } else if (this.value === 'orders') {
+    df.style.display = 'none'; dr.style.display = '';
+  } else {
+    df.style.display = ''; dr.style.display = '';
+  }
+});
+document.getElementById('report-type').dispatchEvent(new Event('change'));
+</script>

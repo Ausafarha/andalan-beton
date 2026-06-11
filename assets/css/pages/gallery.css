@@ -1,0 +1,17 @@
+/* ============================================================
+   pages/gallery.css
+   Gallery Styles
+   ============================================================ */
+
+.gallery-item {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.gallery-item:hover {
+  box-shadow: var(--shadow-md);
+}
