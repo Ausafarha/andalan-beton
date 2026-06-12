@@ -1,0 +1,14 @@
+# Docker ignore
+.env
+.git
+.gitignore
+.github/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+uploads/
+node_modules/
+vendor/
+composer.lock

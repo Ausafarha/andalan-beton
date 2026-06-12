@@ -38,14 +38,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($errors)) {
             // Handle image upload
-            if (!empty($_FILES['image']['name'])) {
-                $upload = uploadImage($_FILES['image'], 'products');
-                if ($upload['success']) {
-                    $data['image'] = $upload['filename'];
-                } else {
-                    $errors[] = $upload['message'];
-                }
-            }
+           // Handle image upload via Cloudinary
+if (!empty($_FILES['image']['name'])) {
+    require_once __DIR__ . '/../../../config/cloudinary.php';
+    $upload = uploadToCloudinary($_FILES['image'], 'products');
+    if ($upload['success']) {
+        $data['image'] = $upload['url'];
+    } else {
+        $errors[] = $upload['message'];
+    }
+}
 
             if (empty($errors)) {
                 Database::insert('materials', $data);

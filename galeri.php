@@ -56,20 +56,9 @@ include __DIR__ . '/includes/public_head.php';
         <?php foreach ($filtered as $img): ?>
         <div style="border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:all .18s;cursor:pointer;" class="gallery-item" data-animate
           onclick="openLightbox('<?= uploadUrl($img['image']) ?>','<?= htmlspecialchars(addslashes($img['title']??'')) ?>','<?= htmlspecialchars(addslashes($img['description']??'')) ?>')">
-          <?php
-          $imgPath = UPLOAD_PATH . $img['image'];
-          $imgExists = file_exists($imgPath);
-          ?>
-          <?php if ($imgExists): ?>
-            <img src="<?= uploadUrl($img['image']) ?>" alt="<?= htmlspecialchars($img['title']??'') ?>"
-              style="width:100%;aspect-ratio:4/3;object-fit:cover;transition:transform .3s;"
-              onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-          <?php else: ?>
-            <div style="width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,var(--bg-muted),var(--brand-50));display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-muted);">
-              <i class="fas fa-image" style="font-size:40px;margin-bottom:10px;"></i>
-              <span style="font-size:12px;"><?= htmlspecialchars($img['title']??'Foto') ?></span>
-            </div>
-          <?php endif; ?>
+          <img src="<?= uploadUrl($img['image']) ?>" alt="<?= htmlspecialchars($img['title']??'') ?>"
+  style="width:100%;aspect-ratio:4/3;object-fit:cover;transition:transform .3s;"
+  onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
           <div style="padding:14px 16px;background:var(--bg-surface);">
             <div style="font-weight:600;font-size:14px;margin-bottom:4px;"><?= htmlspecialchars($img['title'] ?? 'Foto') ?></div>
             <?php if ($img['description']): ?>

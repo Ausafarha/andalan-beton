@@ -27,7 +27,13 @@ if ($hasTransactions > 0) {
     setFlash('error', 'Material tidak dapat dihapus karena memiliki riwayat transaksi. Nonaktifkan material sebagai gantinya.');
     redirect(APP_URL . '/admin/modules/material/index.php');
 }
-
+// Hapus dari Cloudinary jika image adalah URL Cloudinary
+if ($mat['image'] && str_contains($mat['image'], 'cloudinary.com')) {
+    // Extract public_id dari URL
+    $parts = explode('/upload/', $mat['image']);
+    $publicId = 'andalan-beton/products/' . pathinfo($parts[1], PATHINFO_FILENAME);
+    deleteFromCloudinary($publicId);
+}
 // Delete image file
 if ($mat['image']) deleteFile($mat['image']);
 

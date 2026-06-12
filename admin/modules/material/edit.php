@@ -37,14 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($errors)) {
             if (!empty($_FILES['image']['name'])) {
-                $upload = uploadImage($_FILES['image'], 'products');
-                if ($upload['success']) {
-                    if ($mat['image']) deleteFile($mat['image']);
-                    $data['image'] = $upload['filename'];
-                } else {
-                    $errors[] = $upload['message'];
-                }
-            }
+    require_once __DIR__ . '/../../../config/cloudinary.php';
+    $upload = uploadToCloudinary($_FILES['image'], 'products');
+    if ($upload['success']) {
+        $data['image'] = $upload['url'];
+    } else {
+        $errors[] = $upload['message'];
+    }
+}
             if (empty($errors)) {
                 Database::update('materials', $data, 'id = ?', [$id]);
                 logActivity('update', 'materials', "Mengubah material: {$data['name']}");

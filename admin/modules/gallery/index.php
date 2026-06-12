@@ -15,59 +15,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if (!verifyCsrf()) {
         $errors[] = 'Token keamanan tidak valid.';
     } else {
-        if ($_POST['action'] === 'upload') {
-            if (empty($_FILES['image']['name'])) {
-                $errors[] = 'Pilih file gambar terlebih dahulu.';
-            } else {
-                $upload = uploadImage($_FILES['image'], 'gallery');
-                if ($upload['success']) {
-                    Database::insert('gallery', [
-                        'title'       => post('title'),
-                        'description' => post('description'),
-                        'category'    => post('category'),
-                        'image'       => $upload['filename'],
-                        'sort_order'  => postInt('sort_order', 0),
-                        'is_active'   => postInt('is_active', 1)
-                    ]);
-                    logActivity('create', 'gallery', 'Menambah foto galeri: ' . post('title'));
-                    setFlash('success', 'Foto berhasil ditambahkan.');
-                    redirect(APP_URL . '/admin/modules/gallery/index.php');
-                } else {
-                    $errors[] = $upload['message'];
-                }
-            }
-        }
-        
-        if ($_POST['action'] === 'edit') {
-            $id = postInt('id');
-            $data = [
+       if ($_POST['action'] === 'upload') {
+    if (empty($_FILES['image']['name'])) {
+        $errors[] = 'Pilih file gambar terlebih dahulu.';
+    } else {
+        require_once __DIR__ . '/../../../config/cloudinary.php';
+        $upload = uploadToCloudinary($_FILES['image'], 'gallery');
+        if ($upload['success']) {
+            Database::insert('gallery', [
                 'title'       => post('title'),
                 'description' => post('description'),
                 'category'    => post('category'),
+                'image'       => $upload['url'], // Simpan URL Cloudinary
                 'sort_order'  => postInt('sort_order', 0),
                 'is_active'   => postInt('is_active', 1)
-            ];
-            
-            // Handle upload foto baru
-            if (!empty($_FILES['image']['name'])) {
-                $upload = uploadImage($_FILES['image'], 'gallery');
-                if ($upload['success']) {
-                    // Hapus foto lama
-                    $old = Database::fetchOne("SELECT image FROM gallery WHERE id = ?", [$id]);
-                    if ($old) deleteFile($old['image']);
-                    $data['image'] = $upload['filename'];
-                } else {
-                    $errors[] = $upload['message'];
-                }
-            }
-            
-            if (empty($errors)) {
-                Database::update('gallery', $data, 'id = ?', [$id]);
-                logActivity('update', 'gallery', 'Mengedit foto galeri ID: ' . $id);
-                setFlash('success', 'Foto berhasil diupdate.');
-                redirect(APP_URL . '/admin/modules/gallery/index.php');
-            }
+            ]);
+            logActivity('create', 'gallery', 'Menambah foto galeri: ' . post('title'));
+            setFlash('success', 'Foto berhasil ditambahkan.');
+            redirect(APP_URL . '/admin/modules/gallery/index.php');
+        } else {
+            $errors[] = $upload['message'];
         }
+    }
+}
+        
+if ($_POST['action'] === 'edit') {
+    $id = postInt('id');
+    $data = [
+        'title'       => post('title'),
+        'description' => post('description'),
+        'category'    => post('category'),
+        'sort_order'  => postInt('sort_order', 0),
+        'is_active'   => postInt('is_active', 1)
+    ];
+    
+    // Handle upload foto baru ke Cloudinary
+    if (!empty($_FILES['image']['name'])) {
+        require_once __DIR__ . '/../../../config/cloudinary.php';
+        $upload = uploadToCloudinary($_FILES['image'], 'gallery');
+        if ($upload['success']) {
+            $data['image'] = $upload['url'];
+        } else {
+            $errors[] = $upload['message'];
+        }
+    }
+    
+    if (empty($errors)) {
+        Database::update('gallery', $data, 'id = ?', [$id]);
+        logActivity('update', 'gallery', 'Mengedit foto galeri ID: ' . $id);
+        setFlash('success', 'Foto berhasil diupdate.');
+        redirect(APP_URL . '/admin/modules/gallery/index.php');
+    }
+}
     }
 }
 
@@ -78,12 +77,11 @@ if (isset($_GET['delete']) && isset($_GET['token'])) {
     }
     $id = (int)$_GET['delete'];
     $gallery = Database::fetchOne("SELECT image FROM gallery WHERE id = ?", [$id]);
-    if ($gallery) {
-        deleteFile($gallery['image']);
-        Database::delete('gallery', 'id = ?', [$id]);
-        logActivity('delete', 'gallery', 'Menghapus foto galeri ID: ' . $id);
-        setFlash('success', 'Foto berhasil dihapus.');
-    }
+    if ($gallery && str_contains($gallery['image'], 'cloudinary.com')) {
+    $parts = explode('/upload/', $gallery['image']);
+    $publicId = 'andalan-beton/gallery/' . pathinfo($parts[1], PATHINFO_FILENAME);
+    deleteFromCloudinary($publicId);
+}
     redirect(APP_URL . '/admin/modules/gallery/index.php');
 }
 

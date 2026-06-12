@@ -231,6 +231,10 @@ function assetUrl(string $path): string {
 }
 
 function uploadUrl(string $path = ''): string {
+    // Kalau udah URL lengkap (Cloudinary), langsung return
+    if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+        return $path;
+    }
     return $path ? UPLOAD_URL . $path : UPLOAD_URL;
 }
 

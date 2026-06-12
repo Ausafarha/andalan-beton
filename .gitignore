@@ -29,3 +29,7 @@ desktop.ini
 # Temp files
 *.tmp
 *.cache
+
+# Composer
+vendor/
+composer.lock
