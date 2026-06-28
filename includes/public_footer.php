@@ -9,7 +9,7 @@ $cp = getCompanyProfile();
           <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--brand-500),var(--brand-700));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:14px;">AB</div>
           <div style="font-size:15px;font-weight:800;color:white;"><?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?></div>
         </div>
-       <p style="text-align:center; margin:0 auto; max-width:260px;"><?= htmlspecialchars($cp['description'] ? substr($cp['description'],0,120).'...' : 'Supplier material bangunan terpercaya.') ?></p>
+       <p style="text-align:center; margin:0 auto; max-width:260px;"><?= htmlspecialchars($cp['description'] ? substr($cp['description'],0,120).'...' : 'Industri Readymix dan Precast.') ?></p>
         <div style="display:flex;gap:10px;margin-top:16px;">
           <?php if(!empty($cp['social_facebook'])):?><a href="<?=$cp['social_facebook']?>" target="_blank" style="width:34px;height:34px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;"><i class="fab fa-facebook-f"></i></a><?php endif;?>
           <?php if(!empty($cp['social_instagram'])):?><a href="<?=$cp['social_instagram']?>" target="_blank" style="width:34px;height:34px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;"><i class="fab fa-instagram"></i></a><?php endif;?>
@@ -57,10 +57,24 @@ $cp = getCompanyProfile();
     </div>
     <div class="footer-bottom">
       <span>&copy; <?=date('Y')?> <?=htmlspecialchars($cp['company_name']??APP_NAME)?>. Hak cipta dilindungi.</span>
-      <a href="<?=APP_URL?>/admin/login.php" style="color:rgba(255,255,255,0.3);font-size:11px;"><i class="fas fa-lock"></i> Admin</a>
+      
     </div>
   </div>
 </footer>
+<!-- PWA Service Worker -->
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('<?= APP_URL ?>/service-worker.js')
+            .then(function(registration) {
+                console.log('Service Worker registered successfully');
+            })
+            .catch(function(err) {
+                console.log('Service Worker registration failed: ', err);
+            });
+    });
+}
+</script>
 <script src="<?=ASSETS_URL?>js/main.js"></script>
 </body>
 </html>

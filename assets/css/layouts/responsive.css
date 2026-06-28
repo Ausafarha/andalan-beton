@@ -67,14 +67,8 @@
     font-size: 22px !important;
   }
   
-  .hero-visual {
-    display: block !important;
-    margin-top: 20px;
-  }
   
-  .hero-card {
-    padding: 16px !important;
-  }
+
   
   /* Global grid override - FORCE 1 COLUMN */
   .grid,

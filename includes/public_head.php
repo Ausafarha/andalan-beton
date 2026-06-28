@@ -12,6 +12,12 @@ $currentSlug  = $currentSlug ?? '';
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="<?= $metaDesc ?>">
   <title><?= $pageTitle ?></title>
+  <!-- PWA Manifest -->
+<link rel="manifest" href="<?= APP_URL ?>/manifest.json">
+<meta name="theme-color" content="#1e3a8a">
+<link rel="apple-touch-icon" href="<?= APP_URL ?>/assets/img/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="icon" href="<?= ASSETS_URL ?>img/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/main.css">
@@ -30,7 +36,7 @@ $currentSlug  = $currentSlug ?? '';
   <?php endif; ?>
   <div>
     <div style="font-size:16px;font-weight:800;color:var(--text-primary);line-height:1.3;"><?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?></div>
-    <div style="font-size:11px;color:var(--text-muted);margin-top:2px;"><?= htmlspecialchars($cp['tagline'] ?? 'Supplier Material Bangunan Terpercaya') ?></div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:2px;"><?= htmlspecialchars($cp['tagline'] ?? 'Industri Readymix dan Precast') ?></div>
   </div>
 </a>
 

@@ -38,7 +38,7 @@ $featuredMats = Database::fetchAll("
 ");
 $categories   = Database::fetchAll("SELECT * FROM material_categories ORDER BY name");
 $totalMat     = Database::fetchColumn("SELECT COUNT(*) FROM materials WHERE is_active=true");
-$totalProyek  = 1250; // static showcase number
+$totalProyek  = 1250;
 $experience   = date('Y') - ($cp['established_year'] ?? 2010);
 
 include __DIR__ . '/includes/public_head.php';
@@ -50,15 +50,33 @@ include __DIR__ . '/includes/public_head.php';
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-content">
+  <div class="hero-content" style="grid-template-columns: 1fr !important; text-align:center; max-width:900px; margin:0 auto; padding:60px 20px;">
     <div data-animate>
       <div class="hero-badge">
         <i class="fas fa-award"></i>
         Terpercaya Sejak <?= $cp['established_year'] ?? 2010 ?>
       </div>
-      <h1>Supplier Material<br>Bangunan <span>Terbaik</span><br>di Indonesia</h1>
-      <p><?= htmlspecialchars($cp['tagline'] ?? 'Menyediakan material bangunan berkualitas tinggi dengan harga kompetitif dan pengiriman tepat waktu ke seluruh Indonesia.') ?></p>
-      <div class="hero-actions">
+
+      <!-- Logo -->
+      <img src="<?= ASSETS_URL ?>img/logo-hero.png" alt="<?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?>" 
+           style="max-width:100%;height:auto;max-height:200px;display:block;margin:0 auto 20px;">
+
+      <!-- Tagline -->
+      <p style="font-size:20px;font-weight:600;color:rgba(255,255,255,0.85);max-width:700px;margin:0 auto 16px;">
+        <?= htmlspecialchars($cp['tagline'] ?? 'Industri Readymix dan Precast') ?>
+      </p>
+
+      <!-- Deskripsi Panjang -->
+      <div style="max-width:750px;margin:0 auto 30px;padding:20px 28px;background:rgba(255,255,255,0.06);border-radius:12px;border-left:4px solid #22c55e;text-align:left;">
+    <p style="color:rgba(255,255,255,0.85);font-size:15px;line-height:1.9;margin:0;">
+        <strong style="color:#fff;">PT. Mitra Andalan Beton Pantura</strong> merupakan perusahaan yang bergerak di bidang konstruksi terutama supplier <strong style="color:#4ade80;">Beton Ready Mix</strong> dan <strong style="color:#4ade80;">Precast</strong> dengan brand produk kami yakni <strong style="color:#fff;">Andalan Beton</strong>.
+        <br><br>
+        PT. Mitra Andalan Beton berkomitmen memberikan pelayanan serta produk terbaik sesuai <strong style="color:#4ade80;">Standar Nasional Indonesia</strong>. Kami telah berkontribusi pada beberapa pekerjaan konstruksi baik kabupaten/kota, provinsi maupun Nasional.
+    </p>
+</div>
+
+      <!-- Tombol -->
+      <div class="hero-actions" style="justify-content:center;">
         <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-lg">
           <i class="fas fa-shopping-cart"></i> Pesan Sekarang
         </a>
@@ -66,7 +84,9 @@ include __DIR__ . '/includes/public_head.php';
           <i class="fas fa-boxes"></i> Lihat Produk
         </a>
       </div>
-      <div class="hero-stats">
+
+      <!-- Stats -->
+      <div class="hero-stats" style="justify-content:center;">
         <div>
           <div class="hero-stat-value" data-counter data-target="<?= $totalMat ?>"><?= $totalMat ?>+</div>
           <div class="hero-stat-label">Jenis Material</div>
@@ -79,54 +99,6 @@ include __DIR__ . '/includes/public_head.php';
           <div class="hero-stat-value" data-counter data-target="<?= $experience ?>"><?= $experience ?>+</div>
           <div class="hero-stat-label">Tahun Pengalaman</div>
         </div>
-      </div>
-    </div>
-    <div class="hero-visual" data-animate>
-      <div class="hero-card">
-        <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:14px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Stok Real-time</div>
-        <?php
-        $heroMats = Database::fetchAll("
-    SELECT 
-        m.name, 
-        m.unit, 
-        COALESCE(COALESCE(si.total_in, 0) - COALESCE(so.total_out, 0), 0) AS current_stock,
-        CASE
-            WHEN COALESCE(COALESCE(si.total_in, 0) - COALESCE(so.total_out, 0), 0) <= 0 THEN 'out_of_stock'
-            WHEN COALESCE(COALESCE(si.total_in, 0) - COALESCE(so.total_out, 0), 0) <= m.min_stock THEN 'low_stock'
-            ELSE 'available'
-        END AS stock_status
-    FROM materials m
-    LEFT JOIN (
-        SELECT material_id, SUM(quantity) AS total_in
-        FROM stock_in
-        GROUP BY material_id
-    ) si ON m.id = si.material_id
-    LEFT JOIN (
-        SELECT material_id, SUM(quantity) AS total_out
-        FROM stock_out
-        GROUP BY material_id
-    ) so ON m.id = so.material_id
-    WHERE m.is_active = true
-    ORDER BY current_stock DESC LIMIT 4
-");
-        $icons = ['🏗️','🪨','🧱','⚙️'];
-        foreach ($heroMats as $i => $hm):
-        ?>
-        <div class="hero-card-item">
-          <div class="hero-card-item-icon"><?= $icons[$i % 4] ?></div>
-          <div>
-            <div class="hero-card-item-label"><?= htmlspecialchars($hm['name']) ?></div>
-            <div class="hero-card-item-value"><?= number_format($hm['current_stock'],0,',','.') ?> <?= $hm['unit'] ?></div>
-          </div>
-          <div style="margin-left:auto;">
-            <?php if ($hm['stock_status']==='available'): ?>
-              <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:block;box-shadow:0 0 6px #22c55e;"></span>
-            <?php else: ?>
-              <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:block;"></span>
-            <?php endif; ?>
-          </div>
-        </div>
-        <?php endforeach; ?>
       </div>
     </div>
   </div>

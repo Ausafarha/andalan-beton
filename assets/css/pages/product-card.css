@@ -77,3 +77,39 @@
   font-weight: 400;
   color: var(--text-muted);
 }
+/* ============================================================
+   Product Card - Fix Tombol Sejajar
+   ============================================================ */
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 18px;
+}
+
+.product-card-desc {
+  flex: 1; /* Biar deskripsi ngisi ruang kosong */
+  margin-bottom: 8px;
+}
+
+.product-card .btn {
+  margin-top: auto; /* Dorong tombol ke bawah */
+  width: 100%;
+}
+
+/* Tambahan biar harga & tombol tetap di bawah */
+.product-card-price {
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.product-card .btn-primary {
+  margin-top: 14px !important;
+}

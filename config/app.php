@@ -69,9 +69,19 @@ function isLoggedIn(): bool {
 
 function requireLogin(): void {
     if (!isLoggedIn()) {
-        header('Location: ' . APP_URL . '/admin/login.php');
+        header('Location: ' . APP_URL . '/admin-ab/login.php');
         exit;
     }
+    
+    // Cek aktivitas terakhir (30 menit timeout)
+    $inactive = 1800;
+    if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $inactive)) {
+        session_unset();
+        session_destroy();
+        header('Location: ' . APP_URL . '/admin-ab/login.php?msg=session_expired');
+        exit;
+    }
+    $_SESSION['last_activity'] = time();
 }
 
 function currentUser(): array {
@@ -288,6 +298,10 @@ function generateOrderNumber(): string {
     return $prefix . str_pad($num, 4, '0', STR_PAD_LEFT);
 }
 
+
+function booleanPost(string $key): bool {
+    return isset($_POST[$key]) && $_POST[$key] == 1;
+}
 // ============================================================
 // Company Profile Helper
 // ============================================================

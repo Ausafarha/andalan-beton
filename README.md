@@ -48,7 +48,7 @@ php -S localhost:8000
 | URL | Keterangan |
 |-----|-----------|
 | http://localhost:8000 | Website Publik |
-| http://localhost:8000/admin/login.php | Login Admin |
+| http://localhost:8000/admin-ab/login.php | Login Admin |
 
 ---
 

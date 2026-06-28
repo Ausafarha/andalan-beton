@@ -28,7 +28,7 @@ include __DIR__ . '/includes/public_head.php';
     <div class="grid" style="grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
       <div data-animate>
         <div class="section-tag">Siapa Kami</div>
-        <h2 class="section-title">Supplier Material Bangunan Terpercaya</h2>
+          <h2 class="section-title">Industri Readymix dan Precast</h2>
         <p style="color:var(--text-secondary);font-size:15px;line-height:1.8;margin-top:16px;"><?= nl2br(htmlspecialchars($cp['description'] ?? '')) ?></p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px;">
           <?php foreach([
@@ -114,7 +114,51 @@ include __DIR__ . '/includes/public_head.php';
     </div>
   </div>
 </section>
+<!-- Social Media -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px;" data-animate>
+      <div class="section-tag">Ikuti Kami</div>
+      <h2 class="section-title">Media Sosial</h2>
+      <p class="section-subtitle" style="margin:14px auto 0;">Pantau aktivitas dan update terbaru dari PT Mitra Andalan Beton Pantura</p>
+    </div>
+    <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;" data-animate>
+      <?php if (!empty($cp['social_facebook'])): ?>
+      <a href="<?= $cp['social_facebook'] ?>" target="_blank" 
+         style="display:flex;align-items:center;gap:12px;padding:14px 28px;background:#1877f2;color:white;border-radius:12px;text-decoration:none;font-size:15px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(24,119,242,0.3);"
+         onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(24,119,242,0.5)'"
+         onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(24,119,242,0.3)'">
+        <i class="fab fa-facebook-f" style="font-size:22px;"></i> Facebook
+      </a>
+      <?php endif; ?>
 
+      <?php if (!empty($cp['social_instagram'])): ?>
+      <a href="<?= $cp['social_instagram'] ?>" target="_blank" 
+         style="display:flex;align-items:center;gap:12px;padding:14px 28px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border-radius:12px;text-decoration:none;font-size:15px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(225,48,108,0.3);"
+         onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(225,48,108,0.5)'"
+         onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(225,48,108,0.3)'">
+        <i class="fab fa-instagram" style="font-size:22px;"></i> Instagram
+      </a>
+      <?php endif; ?>
+
+      <?php if (!empty($cp['social_youtube'])): ?>
+      <a href="<?= $cp['social_youtube'] ?>" target="_blank" 
+         style="display:flex;align-items:center;gap:12px;padding:14px 28px;background:#ff0000;color:white;border-radius:12px;text-decoration:none;font-size:15px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(255,0,0,0.3);"
+         onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(255,0,0,0.5)'"
+         onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(255,0,0,0.3)'">
+        <i class="fab fa-youtube" style="font-size:22px;"></i> YouTube
+      </a>
+      <?php endif; ?>
+
+      <?php if (empty($cp['social_facebook']) && empty($cp['social_instagram']) && empty($cp['social_youtube'])): ?>
+      <div style="text-align:center;padding:40px;color:var(--text-muted);">
+        <i class="fas fa-share-alt" style="font-size:48px;opacity:0.3;display:block;margin-bottom:12px;"></i>
+        <p>Belum ada link media sosial yang dikonfigurasi.</p>
+      </div>
+      <?php endif; ?>
+    </div>
+  </div>
+</section>
 </div>
 
 <?php include __DIR__ . '/includes/public_footer.php'; ?>

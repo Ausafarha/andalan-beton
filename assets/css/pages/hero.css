@@ -7,7 +7,7 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #20bc95 50%, #0f172a 100%);
   position: relative;
   overflow: hidden;
   padding-top: 70px;
@@ -55,7 +55,7 @@
 }
 
 .hero h1 span {
-  color: var(--brand-400);
+  color: #4ade80;
 }
 
 .hero p {
@@ -88,18 +88,9 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-.hero-visual {
-  position: relative;
-}
 
-.hero-card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-xl);
-  padding: 24px;
-  backdrop-filter: blur(10px);
-  animation: float 6s ease-in-out infinite;
-}
+
+
 
 @keyframes float {
   0%, 100% {
@@ -110,32 +101,3 @@
   }
 }
 
-.hero-card-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-md);
-  margin-bottom: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.hero-card-item:last-child {
-  margin-bottom: 0;
-}
-
-.hero-card-item-icon {
-  font-size: 24px;
-}
-
-.hero-card-item-label {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.hero-card-item-value {
-  font-size: 16px;
-  font-weight: 700;
-  color: white;
-}
