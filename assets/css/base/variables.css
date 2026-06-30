@@ -17,7 +17,7 @@
   --brand-900: #064e3b;
 
   /* Background */
-  --bg-base: #f8fafc;
+  --bg-base: #70ff6b;
   --bg-surface: #ffffff;
   --bg-elevated: #ffffff;
   --bg-overlay: rgba(0,0,0,0.5);
@@ -32,7 +32,7 @@
   /* Text */
   --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-muted: #000000;
   --text-inverse: #ffffff;
   --text-brand: var(--brand-600);
 
@@ -90,20 +90,20 @@
   --brand-700: #059669;
 
   /* Background */
-    --bg-base: #142a0f;
+    --bg-base: #048608b9;
   --bg-surface: #1e293b;
   --bg-elevated: #20bc95;
   --bg-muted: #1e293b;
-  --bg-hover: #334155;
+  --bg-hover: #0fd149;
 
   /* Borders */
-  --border: #334155;
-  --border-strong: #475569;
+  --border: #000000;
+  --border-strong: #000000;
 
   /* Text - JAUH LEBIH TERANG */
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+  --text-muted: #ffffff;
   --text-inverse: #0f172a;
 
   /* Status */

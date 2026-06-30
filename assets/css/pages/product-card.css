@@ -1,6 +1,6 @@
 /* ============================================================
    pages/product-card.css
-   Product Card Styles
+   Product Card Styles - TOMBOL SEJAJAR PASTI
    ============================================================ */
 
 .product-card {
@@ -10,6 +10,9 @@
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: all var(--transition);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .product-card:hover {
@@ -37,7 +40,11 @@
 }
 
 .product-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   padding: 18px;
+  min-height: 200px; /* FORCE tinggi minimum biar area tombol sama */
 }
 
 .product-card-category {
@@ -60,9 +67,11 @@
   color: var(--text-secondary);
   line-height: 1.5;
   display: -webkit-box;
-  -webkitline-clamp: 2;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex: 1;
+  min-height: 38px;
 }
 
 .product-card-price {
@@ -70,6 +79,8 @@
   font-weight: 800;
   color: var(--brand-600);
   margin-top: 12px;
+  margin-bottom: 4px;
+  min-height: 28px; /* FORCE tinggi harga biar sama */
 }
 
 .product-card-unit {
@@ -77,37 +88,10 @@
   font-weight: 400;
   color: var(--text-muted);
 }
-/* ============================================================
-   Product Card - Fix Tombol Sejajar
-   ============================================================ */
-
-.product-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.product-card-body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  padding: 18px;
-}
-
-.product-card-desc {
-  flex: 1; /* Biar deskripsi ngisi ruang kosong */
-  margin-bottom: 8px;
-}
 
 .product-card .btn {
-  margin-top: auto; /* Dorong tombol ke bawah */
+  margin-top: auto;
   width: 100%;
-}
-
-/* Tambahan biar harga & tombol tetap di bawah */
-.product-card-price {
-  margin-top: 8px;
-  margin-bottom: 4px;
 }
 
 .product-card .btn-primary {
