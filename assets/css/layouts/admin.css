@@ -531,6 +531,185 @@
 .stat-change i {
   font-size: 10px;
 }
+/* ============================================
+   ADMIN DARK MODE - HIJAU KONSISTEN
+   ============================================ */
+
+[data-theme="dark"] .admin-wrapper,
+[data-theme="dark"] .main-content,
+[data-theme="dark"] .page-body {
+  background: #0f172a !important;
+}
+
+[data-theme="dark"] .stat-card {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+}
+
+[data-theme="dark"] .stat-card:hover {
+  box-shadow: 0 4px 12px rgba(52, 211, 153, 0.15) !important;
+  border-color: #34d399 !important;
+}
+
+[data-theme="dark"] .stat-icon {
+  background: rgba(52, 211, 153, 0.15) !important;
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .stat-value {
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .stat-label {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .stat-change.up {
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .stat-change.down {
+  color: #f87171 !important;
+}
+
+[data-theme="dark"] .card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .card-title {
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .card-subtitle {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .table th {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .table td {
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .table tbody tr:hover {
+  background: #0f172a !important;
+}
+
+[data-theme="dark"] .badge-success {
+  background: rgba(52, 211, 153, 0.2) !important;
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .badge-warning {
+  background: rgba(251, 191, 36, 0.2) !important;
+  color: #fbbf24 !important;
+}
+
+[data-theme="dark"] .badge-danger {
+  background: rgba(248, 113, 113, 0.2) !important;
+  color: #f87171 !important;
+}
+
+[data-theme="dark"] .badge-info {
+  background: rgba(96, 165, 250, 0.2) !important;
+  color: #60a5fa !important;
+}
+
+[data-theme="dark"] .badge-secondary {
+  background: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .btn-secondary {
+  background: #334155 !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background: #475569 !important;
+}
+
+[data-theme="dark"] .btn-primary {
+  background: #059669 !important;
+  border-color: #059669 !important;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  background: #047857 !important;
+  border-color: #047857 !important;
+}
+
+[data-theme="dark"] .btn-outline {
+  color: #34d399 !important;
+  border-color: #34d399 !important;
+}
+
+[data-theme="dark"] .btn-outline:hover {
+  background: rgba(52, 211, 153, 0.15) !important;
+}
+
+[data-theme="dark"] .sidebar {
+  background: #020617 !important;
+}
+
+[data-theme="dark"] .sidebar .nav-item.active {
+  background: rgba(52, 211, 153, 0.15) !important;
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .sidebar .nav-item.active::before {
+  background: #34d399 !important;
+}
+
+[data-theme="dark"] .sidebar .nav-item:hover {
+  background: rgba(52, 211, 153, 0.08) !important;
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .sidebar-logo-name {
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .topbar {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .topbar-title h1 {
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .topbar-title p {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .topbar-user {
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .topbar-user .user-name {
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .topbar-user .user-role {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .topbar-btn {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .topbar-btn:hover {
+  background: #334155 !important;
+  color: #f8fafc !important;
+}
 /* Di mobile, collapse tidak berlaku */
 @media (max-width: 768px) {
   .sidebar.collapsed {

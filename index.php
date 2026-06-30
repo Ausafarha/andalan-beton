@@ -52,32 +52,28 @@ include __DIR__ . '/includes/public_head.php';
 <section class="hero">
   <div class="hero-content" style="grid-template-columns: 1fr !important; text-align:center; max-width:900px; margin:0 auto; padding:60px 20px;">
     <div data-animate>
-      <div class="hero-badge">
+      <div class="hero-badge" style="background: rgba(34,197,94,0.15); border: 1px solid rgb(137, 255, 154); color: #09dc2d;">
         <i class="fas fa-award"></i>
         Terpercaya Sejak <?= $cp['established_year'] ?? 2010 ?>
       </div>
 
-      <!-- Logo -->
       <img src="<?= ASSETS_URL ?>img/logo-hero.png" alt="<?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?>" 
            style="max-width:100%;height:auto;max-height:200px;display:block;margin:0 auto 20px;">
 
-      <!-- Tagline -->
       <p style="font-size:20px;font-weight:600;color:rgba(255,255,255,0.85);max-width:700px;margin:0 auto 16px;">
         <?= htmlspecialchars($cp['tagline'] ?? 'Industri Readymix dan Precast') ?>
       </p>
 
-      <!-- Deskripsi Panjang -->
       <div style="max-width:750px;margin:0 auto 30px;padding:20px 28px;background:rgba(255,255,255,0.06);border-radius:12px;border-left:4px solid #22c55e;text-align:left;">
-    <p style="color:rgba(255,255,255,0.85);font-size:15px;line-height:1.9;margin:0;">
-        <strong style="color:#fff;">PT. Mitra Andalan Beton Pantura</strong> merupakan perusahaan yang bergerak di bidang konstruksi terutama supplier <strong style="color:#4ade80;">Beton Ready Mix</strong> dan <strong style="color:#4ade80;">Precast</strong> dengan brand produk kami yakni <strong style="color:#fff;">Andalan Beton</strong>.
-        <br><br>
-        PT. Mitra Andalan Beton berkomitmen memberikan pelayanan serta produk terbaik sesuai <strong style="color:#4ade80;">Standar Nasional Indonesia</strong>. Kami telah berkontribusi pada beberapa pekerjaan konstruksi baik kabupaten/kota, provinsi maupun Nasional.
-    </p>
-</div>
+        <p style="color:rgba(255,255,255,0.85);font-size:15px;line-height:1.9;margin:0;">
+          <strong style="color:#fff;">PT. Mitra Andalan Beton Pantura</strong> merupakan perusahaan yang bergerak di bidang konstruksi terutama supplier <strong style="color:#7cfc00;">Beton Ready Mix</strong> dan <strong style="color:#7cfc00;">Precast</strong> dengan brand produk kami yakni <strong style="color:#7cfc00">Andalan Beton</strong>.
+          <br><br>
+          PT. Mitra Andalan Beton berkomitmen memberikan pelayanan serta produk terbaik sesuai <strong style="color:#7cfc00;">Standar Nasional Indonesia</strong>. Kami telah berkontribusi pada beberapa pekerjaan konstruksi baik kabupaten/kota, provinsi maupun Nasional.
+        </p>
+      </div>
 
-      <!-- Tombol -->
       <div class="hero-actions" style="justify-content:center;">
-        <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-lg">
+        <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-lg" style="background:#16a34a;border-color:#16a34a;">
           <i class="fas fa-shopping-cart"></i> Pesan Sekarang
         </a>
         <a href="<?= APP_URL ?>/produk.php" class="btn btn-lg" style="background:rgba(255,255,255,0.1);color:white;border:1.5px solid rgba(255,255,255,0.3);">
@@ -85,32 +81,30 @@ include __DIR__ . '/includes/public_head.php';
         </a>
       </div>
 
-      <!-- Stats -->
       <div class="hero-stats" style="justify-content:center;">
         <div>
-          <div class="hero-stat-value" data-counter data-target="<?= $totalMat ?>"><?= $totalMat ?>+</div>
+          <div class="hero-stat-value" style="color:#4ade80;" data-counter data-target="<?= $totalMat ?>"><?= $totalMat ?>+</div>
           <div class="hero-stat-label">Jenis Material</div>
         </div>
         <div>
-          <div class="hero-stat-value" data-counter data-target="<?= $totalProyek ?>"><?= $totalProyek ?>+</div>
+          <div class="hero-stat-value" style="color:#4ade80;" data-counter data-target="<?= $totalProyek ?>"><?= $totalProyek ?>+</div>
           <div class="hero-stat-label">Proyek Selesai</div>
         </div>
         <div>
-          <div class="hero-stat-value" data-counter data-target="<?= $experience ?>"><?= $experience ?>+</div>
+          <div class="hero-stat-value" style="color:#4ade80;" data-counter data-target="<?= $experience ?>"><?= $experience ?>+</div>
           <div class="hero-stat-label">Tahun Pengalaman</div>
         </div>
       </div>
     </div>
   </div>
 </section>
-
 <!-- FEATURES -->
 <section class="section">
   <div class="container">
     <div style="text-align:center;margin-bottom:48px;" data-animate>
-      <div class="section-tag">Keunggulan Kami</div>
-      <h2 class="section-title">Mengapa Memilih <?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?>?</h2>
-      <p class="section-subtitle" style="margin:14px auto 0;">Kami berkomitmen memberikan layanan terbaik dengan kualitas material yang terstandarisasi SNI.</p>
+      <div class="section-tag" style="color: var(--brand-600);">Keunggulan Kami</div>
+      <h2 class="section-title" style="color: var(--text-primary);">MENGAPA MEMILIH <?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?>?</h2>
+      <p class="section-subtitle" style="margin:14px auto 0; color: var(--text-secondary);">Kami berkomitmen memberikan layanan terbaik dengan kualitas material yang terstandarisasi SNI.</p>
     </div>
     <div class="grid grid-3" style="gap:24px;">
       <?php foreach([
@@ -138,11 +132,11 @@ include __DIR__ . '/includes/public_head.php';
   <div class="container">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;flex-wrap:wrap;gap:16px;" data-animate>
       <div>
-        <div class="section-tag">Produk Unggulan</div>
-        <h2 class="section-title">Material Pilihan Terbaik</h2>
-        <p class="section-subtitle">Produk unggulan kami yang paling banyak diminati pelanggan.</p>
+        <div class="section-tag" style="color: var(--brand-600);">Produk Unggulan</div>
+<h2 class="section-title" style="color: var(--text-primary);">Material Pilihan Terbaik</h2>
+<p class="section-subtitle" style="color: var(--text-secondary);">Produk unggulan kami yang paling banyak diminati pelanggan.</p>
       </div>
-      <a href="<?= APP_URL ?>/produk.php" class="btn btn-outline">Lihat Semua Produk <i class="fas fa-arrow-right"></i></a>
+      <a href="<?= APP_URL ?>/produk.php" class="btn btn-outline" style="color: var(--brand-600); border-color: var(--brand-600);">Lihat Semua Produk <i class="fas fa-arrow-right"></i></a>
     </div>
     <?php if (empty($featuredMats)): ?>
       <div class="empty-state"><div class="empty-state-icon"><i class="fas fa-boxes"></i></div><div class="empty-state-title">Belum ada produk unggulan</div></div>
@@ -195,9 +189,9 @@ include __DIR__ . '/includes/public_head.php';
 <section class="section">
   <div class="container" style="text-align:center;">
     <div style="max-width:600px;margin:0 auto;" data-animate>
-      <div class="section-tag">Mulai Sekarang</div>
-      <h2 class="section-title">Siap Memulai Proyek Anda?</h2>
-      <p class="section-subtitle" style="margin:14px auto 32px;">Hubungi kami sekarang untuk konsultasi gratis dan penawaran terbaik. Tim kami siap membantu kebutuhan material proyek Anda.</p>
+      <div class="section-tag" style="color: var(--brand-600);">Mulai Sekarang</div>
+      <h2 class="section-title" style="color: var(--text-primary);">Siap Memulai Proyek Anda?</h2>
+      <p class="section-subtitle" style="margin:14px auto 32px; color: var(--text-secondary);">Hubungi kami sekarang untuk konsultasi gratis dan penawaran terbaik. Tim kami siap membantu kebutuhan material proyek Anda.</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
         <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Pesan Online</a>
         <?php if ($cp['whatsapp']): ?>

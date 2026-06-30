@@ -23,8 +23,8 @@ $data = [
     'unit'        => post('unit'),
     'price'       => sanitizeFloat($_POST['price'] ?? 0),
     'min_stock'   => postInt('min_stock', 10),
-    'is_active'   => isset($_POST['is_active']) && $_POST['is_active'] == 1,
-    'is_featured' => isset($_POST['is_featured']) && $_POST['is_featured'] == 1,
+    'is_active'   => (isset($_POST['is_active']) && $_POST['is_active'] == 1) ? 'true' : 'false',
+    'is_featured' => (isset($_POST['is_featured']) && $_POST['is_featured'] == 1) ? 'true' : 'false',
 ];
 
         if (empty($data['code']))  $errors[] = 'Kode material wajib diisi.';

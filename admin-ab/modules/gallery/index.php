@@ -78,10 +78,14 @@ if (isset($_GET['delete']) && isset($_GET['token'])) {
     $id = (int)$_GET['delete'];
     $gallery = Database::fetchOne("SELECT image FROM gallery WHERE id = ?", [$id]);
     if ($gallery && str_contains($gallery['image'], 'cloudinary.com')) {
-    $parts = explode('/upload/', $gallery['image']);
-    $publicId = 'andalan-beton/gallery/' . pathinfo($parts[1], PATHINFO_FILENAME);
-    deleteFromCloudinary($publicId);
-}
+        require_once __DIR__ . '/../../../config/cloudinary.php'; // TAMBAHKAN INI
+        $parts = explode('/upload/', $gallery['image']);
+        $publicId = 'andalan-beton/gallery/' . pathinfo($parts[1], PATHINFO_FILENAME);
+        deleteFromCloudinary($publicId);
+    }
+    // Hapus dari database
+    Database::delete('gallery', 'id = ?', [$id]);
+    setFlash('success', 'Foto berhasil dihapus.');
     redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
 }
 

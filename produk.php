@@ -53,7 +53,7 @@ include __DIR__ . '/includes/public_head.php';
 <div style="padding-top:70px;">
 
 <!-- Page Header -->
-<div style="background:linear-gradient(135deg,#0f172a,#1e3a8a);padding:60px 0;">
+<div style="background: linear-gradient(135deg, #0f172a 0%, #20bc95 50%, #0f172a 100%); padding:60px 0;">
   <div class="container" style="text-align:center;">
     <div class="section-tag" style="color:var(--brand-300);">Katalog Produk</div>
     <h1 style="font-size:clamp(28px,5vw,44px);font-weight:800;color:white;margin-top:10px;">Material Bangunan Berkualitas</h1>

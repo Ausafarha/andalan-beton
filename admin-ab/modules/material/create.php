@@ -6,48 +6,44 @@ requireLogin();
 
 $pageTitle = 'Tambah Material';
 $errors    = [];
-$data = ['category_id'=>'','code'=>'','name'=>'','description'=>'','unit'=>'','price'=>'','min_stock'=>10,'is_active'=>true,'is_featured'=>false];
-
+$data = ['category_id'=>'','code'=>'','name'=>'','description'=>'','unit'=>'','price'=>'','min_stock'=>10,'is_active'=>1,'is_featured'=>0];
 $categories = Database::fetchAll("SELECT * FROM material_categories ORDER BY name");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf()) { $errors[] = 'Token keamanan tidak valid.'; }
     else {
-$data = [
-    'category_id' => postInt('category_id') ?: null,
-    'code'        => post('code'),
-    'name'        => post('name'),
-    'description' => post('description'),
-    'unit'        => post('unit'),
-    'price'       => sanitizeFloat($_POST['price'] ?? 0),
-    'min_stock'   => postInt('min_stock', 10),
-    'is_active'   => isset($_POST['is_active']) && $_POST['is_active'] == 1,
-    'is_featured' => isset($_POST['is_featured']) && $_POST['is_featured'] == 1,
-];
+        $data = [
+            'category_id' => postInt('category_id') ?: null,
+            'code'        => post('code'),
+            'name'        => post('name'),
+            'description' => post('description'),
+            'unit'        => post('unit'),
+            'price'       => sanitizeFloat($_POST['price'] ?? 0),
+            'min_stock'   => postInt('min_stock', 10),
+            'is_active'   => (isset($_POST['is_active']) && $_POST['is_active'] == 1) ? 'true' : 'false',
+            'is_featured' => (isset($_POST['is_featured']) && $_POST['is_featured'] == 1) ? 'true' : 'false',
+        ];
 
         if (empty($data['code']))  $errors[] = 'Kode material wajib diisi.';
         if (empty($data['name']))  $errors[] = 'Nama material wajib diisi.';
         if (empty($data['unit']))  $errors[] = 'Satuan wajib diisi.';
         if ($data['price'] <= 0)   $errors[] = 'Harga harus lebih dari 0.';
 
-        // Check unique code
         if (!empty($data['code'])) {
             $exists = Database::fetchColumn("SELECT id FROM materials WHERE code = ?", [$data['code']]);
             if ($exists) $errors[] = 'Kode material sudah digunakan.';
         }
 
         if (empty($errors)) {
-            // Handle image upload
-           // Handle image upload via Cloudinary
-if (!empty($_FILES['image']['name'])) {
-    require_once __DIR__ . '/../../../config/cloudinary.php';
-    $upload = uploadToCloudinary($_FILES['image'], 'products');
-    if ($upload['success']) {
-        $data['image'] = $upload['url'];
-    } else {
-        $errors[] = $upload['message'];
-    }
-}
+            if (!empty($_FILES['image']['name'])) {
+                require_once __DIR__ . '/../../../config/cloudinary.php';
+                $upload = uploadToCloudinary($_FILES['image'], 'products');
+                if ($upload['success']) {
+                    $data['image'] = $upload['url'];
+                } else {
+                    $errors[] = $upload['message'];
+                }
+            }
 
             if (empty($errors)) {
                 Database::insert('materials', $data);
@@ -159,14 +155,14 @@ include __DIR__ . '/../../partials/head.php';
         <div class="card-header"><div class="card-title">Pengaturan</div></div>
         <div class="card-body">
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:16px;padding:12px;background:var(--bg-muted);border-radius:8px;">
-            <input type="checkbox" name="is_active" value="1" <?= $data['is_active']?'checked':'' ?> style="width:18px;height:18px;">
+            <input type="checkbox" name="is_active" value="1" <?= $data['is_active'] ? 'checked' : '' ?> style="width:18px;height:18px;">
             <div>
               <div style="font-size:13.5px;font-weight:600;">Material Aktif</div>
               <div style="font-size:12px;color:var(--text-muted);">Tampil di website publik</div>
             </div>
           </label>
           <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;background:var(--bg-muted);border-radius:8px;">
-            <input type="checkbox" name="is_featured" value="1" <?= $data['is_featured']?'checked':'' ?> style="width:18px;height:18px;">
+            <input type="checkbox" name="is_featured" value="1" <?= $data['is_featured'] ? 'checked' : '' ?> style="width:18px;height:18px;">
             <div>
               <div style="font-size:13.5px;font-weight:600;">Material Unggulan</div>
               <div style="font-size:12px;color:var(--text-muted);">Tampil di halaman utama</div>

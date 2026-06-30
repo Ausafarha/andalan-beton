@@ -193,7 +193,7 @@ include __DIR__ . '/partials/head.php';
   </div>
 
   <div class="stat-card" style="--stat-color: #8b5cf6; cursor: pointer;" onclick="window.location.href='<?= APP_URL ?>/admin-ab/modules/reports/index.php?type=orders'">
-    <div class="stat-icon" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">
+    <div class="stat-icon" style="background: rgba(241, 35, 35, 0.1); color: #8b5cf6;">
       <i class="fas fa-chart-line"></i>
     </div>
     <div class="stat-content">
@@ -462,35 +462,7 @@ include __DIR__ . '/partials/head.php';
 </div>
 
 <!-- ── Activity Log Row ───────────────────────────────────── -->
-<div class="grid" style="grid-template-columns: 1fr; gap: 20px;">
-  <div class="card">
-    <div class="card-header">
-      <div>
-        <div class="card-title">Aktivitas Terbaru</div>
-        <div class="card-subtitle">Log aktivitas sistem</div>
-      </div>
-    </div>
-    <div class="card-body" style="padding: 0 20px;">
-      <?php if (empty($recentActivities)): ?>
-        <div class="empty-state" style="padding:40px;"><div class="empty-state-title">Belum ada aktivitas</div></div>
-      <?php else: ?>
-        <?php foreach ($recentActivities as $act): ?>
-        <div style="display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--border);">
-          <div style="width:32px;height:32px;border-radius:50%;background:var(--bg-muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="fas fa-circle" style="font-size:10px; color:var(--text-muted);"></i>
-          </div>
-          <div style="flex:1; min-width:0;">
-            <div style="font-size:12.5px; font-weight:500; color:var(--text-primary);"><?= htmlspecialchars($act['description'] ?? $act['action']) ?></div>
-            <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
-              <?= htmlspecialchars($act['user_name'] ?? 'System') ?> · <?= timeAgo($act['created_at']) ?>
-            </div>
-          </div>
-        </div>
-        <?php endforeach; ?>
-      <?php endif; ?>
-    </div>
-  </div>
-</div>
+
 
 </div><!-- /.page-body -->
 </div><!-- /.main-content -->

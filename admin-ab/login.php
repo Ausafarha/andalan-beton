@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     .login-left {
-      background: linear-gradient(145deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);
+      background: linear-gradient(145deg, #0f172a 0%, #2c5cec 60%, #66ef8f 100%);
       padding: 48px 40px;
       display: flex; flex-direction: column; justify-content: space-between;
       position: relative; overflow: hidden;
@@ -169,8 +169,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="login-left">
     <div class="login-brand">
       <div class="login-brand-icon">AB</div>
-      <h2>PT Andalan Beton</h2>
-      <p>Sistem Monitoring Operasional</p>
+      <h2>PT MITRA ANDALAN BETON PANTURA</h2>
+      <p>Industry Readymix dan Precast</p>
     </div>
 
     <div class="login-features">

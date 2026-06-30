@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
                 'social_facebook' => post('social_facebook'),
                 'social_instagram'=> post('social_instagram'),
                 'social_youtube'  => post('social_youtube'),
+                'social_tiktok'   => post('social_tiktok'),
                 'maps_embed'      => post('maps_embed'),
                 'meta_title'      => post('meta_title'),
                 'meta_description'=> post('meta_description'),
@@ -137,7 +138,7 @@ include __DIR__.'/../../partials/head.php';
           <div class="form-group"><label class="form-label"><i class="fab fa-facebook" style="color:#1877f2;"></i> Facebook</label><input type="url" name="social_facebook" class="form-control" value="<?=htmlspecialchars($profile['social_facebook']??'')?>"></div>
           <div class="form-group"><label class="form-label"><i class="fab fa-instagram" style="color:#e1306c;"></i> Instagram</label><input type="url" name="social_instagram" class="form-control" value="<?=htmlspecialchars($profile['social_instagram']??'')?>"></div>
           <div class="form-group"><label class="form-label"><i class="fab fa-youtube" style="color:#ff0000;"></i> YouTube</label><input type="url" name="social_youtube" class="form-control" value="<?=htmlspecialchars($profile['social_youtube']??'')?>"></div>
-          <div class="form-group">
+         <div class="form-group">
     <label class="form-label"><i class="fab fa-tiktok" style="color:#000;"></i> TikTok</label>
     <input type="url" name="social_tiktok" class="form-control" 
            value="<?= htmlspecialchars($profile['social_tiktok'] ?? '') ?>" 

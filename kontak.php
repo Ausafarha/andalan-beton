@@ -12,7 +12,7 @@ include __DIR__ . '/includes/public_head.php';
 
 <div style="padding-top:70px;">
 
-<div style="background:linear-gradient(135deg,#0f172a,#1e3a8a);padding:60px 0;">
+<div style="background: linear-gradient(135deg, #0f172a 0%, #20bc95 50%, #0f172a 100%); padding:60px 0;">
   <div class="container" style="text-align:center;">
     <div class="section-tag" style="color:var(--brand-300);">Hubungi Kami</div>
     <h1 style="font-size:clamp(28px,5vw,44px);font-weight:800;color:white;margin-top:10px;">Kami Siap Membantu Anda</h1>
@@ -77,21 +77,30 @@ include __DIR__ . '/includes/public_head.php';
     <div style="padding:20px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);">
         <div style="font-size:14px;font-weight:700;margin-bottom:14px;">Ikuti Kami di Media Sosial</div>
         <div style="display:flex;gap:12px;">
-            <?php if($cp['social_facebook'] ?? false): ?>
-            <a href="<?=$cp['social_facebook']?>" target="_blank" style="flex:1;padding:12px;background:#1877f2;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
-                <i class="fab fa-facebook-f"></i> Facebook
-            </a>
-            <?php endif; ?>
-            <?php if($cp['social_instagram'] ?? false): ?>
-            <a href="<?=$cp['social_instagram']?>" target="_blank" style="flex:1;padding:12px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
-                <i class="fab fa-instagram"></i> Instagram
-            </a>
-            <?php endif; ?>
-            <?php if($cp['social_youtube'] ?? false): ?>
-            <a href="<?=$cp['social_youtube']?>" target="_blank" style="flex:1;padding:12px;background:#ff0000;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
-                <i class="fab fa-youtube"></i> YouTube
-            </a>
-            <?php endif; ?>
+           <?php if($cp['social_facebook'] ?? false): ?>
+<a href="<?=$cp['social_facebook']?>" target="_blank" style="flex:1;padding:12px;background:#1877f2;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
+    <i class="fab fa-facebook-f"></i> Facebook
+</a>
+<?php endif; ?>
+
+<?php if($cp['social_instagram'] ?? false): ?>
+<a href="<?=$cp['social_instagram']?>" target="_blank" style="flex:1;padding:12px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
+    <i class="fab fa-instagram"></i> Instagram
+</a>
+<?php endif; ?>
+
+<?php if($cp['social_youtube'] ?? false): ?>
+<a href="<?=$cp['social_youtube']?>" target="_blank" style="flex:1;padding:12px;background:#ff0000;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
+    <i class="fab fa-youtube"></i> YouTube
+</a>
+<?php endif; ?>
+
+<!-- TIKTOK - TAMBAHKAN INI -->
+<?php if($cp['social_tiktok'] ?? false): ?>
+<a href="<?=$cp['social_tiktok']?>" target="_blank" style="flex:1;padding:12px;background:#000000;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
+    <i class="fab fa-tiktok"></i> TikTok
+</a>
+<?php endif; ?>
         </div>
     </div>
 </div>

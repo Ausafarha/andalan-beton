@@ -14,9 +14,9 @@ include __DIR__ . '/includes/public_head.php';
 <div style="padding-top:70px;">
 
 <!-- Page Header -->
-<div style="background:linear-gradient(135deg,#0f172a,#1e3a8a);padding:60px 0;">
+<div style="background: linear-gradient(135deg, #0f172a 0%, #20bc95 50%, #0f172a 100%); padding:60px 0;">
   <div class="container" style="text-align:center;">
-    <div class="section-tag" style="color:var(--brand-300);">Tentang Kami</div>
+    <div class="section-tag"  style="color: #4ade80; >Tentang Kami</div>
     <h1 style="font-size:clamp(30px,5vw,48px);font-weight:800;color:white;margin-top:10px;"><?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?></h1>
     <p style="color:rgba(255,255,255,.6);font-size:16px;margin-top:12px;"><?= htmlspecialchars($cp['tagline'] ?? '') ?></p>
   </div>
@@ -115,6 +115,7 @@ include __DIR__ . '/includes/public_head.php';
   </div>
 </section>
 <!-- Social Media -->
+<!-- Social Media -->
 <section class="section">
   <div class="container">
     <div style="text-align:center;margin-bottom:48px;" data-animate>
@@ -122,40 +123,55 @@ include __DIR__ . '/includes/public_head.php';
       <h2 class="section-title">Media Sosial</h2>
       <p class="section-subtitle" style="margin:14px auto 0;">Pantau aktivitas dan update terbaru dari PT Mitra Andalan Beton Pantura</p>
     </div>
-    <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;" data-animate>
+    <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;" data-animate>
+      
+      <!-- Facebook -->
       <?php if (!empty($cp['social_facebook'])): ?>
       <a href="<?= $cp['social_facebook'] ?>" target="_blank" 
-         style="display:flex;align-items:center;gap:12px;padding:14px 28px;background:#1877f2;color:white;border-radius:12px;text-decoration:none;font-size:15px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(24,119,242,0.3);"
+         style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;min-width:140px;justify-content:center;background:#1877f2;color:white;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(24,119,242,0.3);"
          onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(24,119,242,0.5)'"
          onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(24,119,242,0.3)'">
-        <i class="fab fa-facebook-f" style="font-size:22px;"></i> Facebook
+        <i class="fab fa-facebook-f" style="font-size:18px;"></i> Facebook
       </a>
       <?php endif; ?>
 
+      <!-- Instagram -->
       <?php if (!empty($cp['social_instagram'])): ?>
       <a href="<?= $cp['social_instagram'] ?>" target="_blank" 
-         style="display:flex;align-items:center;gap:12px;padding:14px 28px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border-radius:12px;text-decoration:none;font-size:15px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(225,48,108,0.3);"
+         style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;min-width:140px;justify-content:center;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(225,48,108,0.3);"
          onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(225,48,108,0.5)'"
          onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(225,48,108,0.3)'">
-        <i class="fab fa-instagram" style="font-size:22px;"></i> Instagram
+        <i class="fab fa-instagram" style="font-size:18px;"></i> Instagram
       </a>
       <?php endif; ?>
 
+      <!-- YouTube -->
       <?php if (!empty($cp['social_youtube'])): ?>
       <a href="<?= $cp['social_youtube'] ?>" target="_blank" 
-         style="display:flex;align-items:center;gap:12px;padding:14px 28px;background:#ff0000;color:white;border-radius:12px;text-decoration:none;font-size:15px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(255,0,0,0.3);"
+         style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;min-width:140px;justify-content:center;background:#ff0000;color:white;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(255,0,0,0.3);"
          onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(255,0,0,0.5)'"
          onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(255,0,0,0.3)'">
-        <i class="fab fa-youtube" style="font-size:22px;"></i> YouTube
+        <i class="fab fa-youtube" style="font-size:18px;"></i> YouTube
       </a>
       <?php endif; ?>
 
-      <?php if (empty($cp['social_facebook']) && empty($cp['social_instagram']) && empty($cp['social_youtube'])): ?>
+      <!-- TikTok -->
+      <?php if (!empty($cp['social_tiktok'])): ?>
+      <a href="<?= $cp['social_tiktok'] ?>" target="_blank" 
+         style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;min-width:140px;justify-content:center;background:#000000;color:white;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(0,0,0,0.3);"
+         onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.5)'"
+         onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.3)'">
+        <i class="fab fa-tiktok" style="font-size:18px;"></i> TikTok
+      </a>
+      <?php endif; ?>
+
+      <?php if (empty($cp['social_facebook']) && empty($cp['social_instagram']) && empty($cp['social_youtube']) && empty($cp['social_tiktok'])): ?>
       <div style="text-align:center;padding:40px;color:var(--text-muted);">
         <i class="fas fa-share-alt" style="font-size:48px;opacity:0.3;display:block;margin-bottom:12px;"></i>
         <p>Belum ada link media sosial yang dikonfigurasi.</p>
       </div>
       <?php endif; ?>
+      
     </div>
   </div>
 </section>

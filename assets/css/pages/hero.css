@@ -55,7 +55,7 @@
 }
 
 .hero h1 span {
-  color: #4ade80;
+  color: #a34ade;
 }
 
 .hero p {
@@ -87,9 +87,6 @@
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
 }
-
-
-
 
 
 @keyframes float {
