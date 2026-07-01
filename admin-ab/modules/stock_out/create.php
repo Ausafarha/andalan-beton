@@ -4,7 +4,7 @@ require_once __DIR__.'/../../../config/app.php';
 initSession(); requireLogin();
 $pageTitle='Catat Barang Keluar'; $errors=[];
 $user=currentUser();
-$materials=Database::fetchAll("SELECT id,name,unit FROM materials WHERE is_active=true ORDER BY name");
+$materials = Database::fetchAll("SELECT id,name,unit FROM materials WHERE type = 'product' AND is_active=true ORDER BY name");
 $data=['material_id'=>'','quantity'=>'','destination'=>'','driver_name'=>'','vehicle_number'=>'','notes'=>'','out_date'=>date('Y-m-d')];
 if ($_SERVER['REQUEST_METHOD']==='POST') {
     if (!verifyCsrf()){$errors[]='Token tidak valid.';}

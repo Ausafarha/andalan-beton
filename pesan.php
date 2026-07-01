@@ -191,10 +191,10 @@ include __DIR__ . '/includes/public_head.php';
         </div>
       </div>
 
-      <div style="background:var(--info-bg);border:1px solid var(--brand-200);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:20px;font-size:13.5px;color:var(--brand-700);">
-        <i class="fas fa-info-circle"></i>
-        Pesanan Anda akan dikonfirmasi oleh tim kami melalui telepon atau WhatsApp dalam waktu 1x24 jam.
-      </div>
+      <div style="background:var(--info-bg);border:1px solid var(--brand-200);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:20px;font-size:13.5px;color:var(--text-primary);">
+    <i class="fas fa-info-circle"></i>
+    Pesanan Anda akan dikonfirmasi oleh tim kami melalui telepon atau WhatsApp dalam waktu 1x24 jam.
+</div>
 
       <button type="submit" class="btn btn-primary btn-lg w-100" style="justify-content:center;font-size:16px;padding:15px;">
         <i class="fas fa-paper-plane"></i> Kirim Pesanan Sekarang

@@ -10,11 +10,6 @@ $cp = getCompanyProfile();
           <div style="font-size:15px;font-weight:800;color:white;"><?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?></div>
         </div>
        <p style="text-align:center; margin:0 auto; max-width:260px;"><?= htmlspecialchars($cp['description'] ??'Industri Readymix dan Precast.') ?></p>
-        <div style="display:flex;gap:10px;margin-top:16px;">
-          <?php if(!empty($cp['social_facebook'])):?><a href="<?=$cp['social_facebook']?>" target="_blank" style="width:34px;height:34px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;"><i class="fab fa-facebook-f"></i></a><?php endif;?>
-          <?php if(!empty($cp['social_instagram'])):?><a href="<?=$cp['social_instagram']?>" target="_blank" style="width:34px;height:34px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;"><i class="fab fa-instagram"></i></a><?php endif;?>
-          <?php if(!empty($cp['whatsapp'])):?><a href="https://wa.me/<?=preg_replace('/[^0-9]/','',$cp['whatsapp'])?>" target="_blank" style="width:34px;height:34px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;"><i class="fab fa-whatsapp"></i></a><?php endif;?>
-        </div>
       </div>
       <div>
         <div class="footer-title">Menu</div>

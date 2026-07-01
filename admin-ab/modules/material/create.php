@@ -12,17 +12,18 @@ $categories = Database::fetchAll("SELECT * FROM material_categories ORDER BY nam
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf()) { $errors[] = 'Token keamanan tidak valid.'; }
     else {
-        $data = [
-            'category_id' => postInt('category_id') ?: null,
-            'code'        => post('code'),
-            'name'        => post('name'),
-            'description' => post('description'),
-            'unit'        => post('unit'),
-            'price'       => sanitizeFloat($_POST['price'] ?? 0),
-            'min_stock'   => postInt('min_stock', 10),
-            'is_active'   => (isset($_POST['is_active']) && $_POST['is_active'] == 1) ? 'true' : 'false',
-            'is_featured' => (isset($_POST['is_featured']) && $_POST['is_featured'] == 1) ? 'true' : 'false',
-        ];
+       $data = [
+                'category_id' => postInt('category_id') ?: null,
+                'code'        => post('code'),
+                'name'        => post('name'),
+                'description' => post('description'),
+                'unit'        => post('unit'),
+                'price'       => sanitizeFloat($_POST['price'] ?? 0),
+                'min_stock'   => postInt('min_stock', 10),
+                'is_active'   => (isset($_POST['is_active']) && $_POST['is_active'] == 1),
+                'is_featured' => (isset($_POST['is_featured']) && $_POST['is_featured'] == 1),
+                'type'        => post('type') === 'raw' ? 'raw' : 'product',
+            ];
 
         if (empty($data['code']))  $errors[] = 'Kode material wajib diisi.';
         if (empty($data['name']))  $errors[] = 'Nama material wajib diisi.';
@@ -101,6 +102,14 @@ include __DIR__ . '/../../partials/head.php';
               </select>
             </div>
           </div>
+          <div class="form-group">
+    <label class="form-label">Tipe Material</label>
+    <select name="type" class="form-control">
+        <option value="product" <?= ($data['type'] ?? 'product') === 'product' ? 'selected' : '' ?>>🏭 Produk Jadi (Hasil Produksi)</option>
+        <option value="raw" <?= ($data['type'] ?? 'product') === 'raw' ? 'selected' : '' ?>>📦 Bahan Baku (Dari Supplier)</option>
+    </select>
+    <div class="form-text">Produk Jadi = dijual ke pelanggan. Bahan Baku = dibeli dari supplier.</div>
+</div>
           <div class="form-group">
             <label class="form-label">Nama Material <span>*</span></label>
             <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($data['name']) ?>" placeholder="Nama lengkap material" required>

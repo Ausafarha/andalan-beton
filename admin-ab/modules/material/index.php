@@ -207,6 +207,7 @@ include __DIR__ . '/../../partials/head.php';
               <th>Stok</th>
               <th>Status</th>
               <th>Aksi</th>
+              <th>Tipe</th>
             </tr>
           </thead>
           <tbody>
@@ -220,6 +221,7 @@ include __DIR__ . '/../../partials/head.php';
                 <?php endif; ?>
                </td>
               <td><span class="text-mono" style="font-size:12px;background:var(--bg-muted);padding:3px 8px;border-radius:4px;"><?= htmlspecialchars($mat['code']) ?></span> </td>
+              <td><span class="badge badge-<?= $mat['type'] === 'raw' ? 'warning' : 'info' ?>"><?= $mat['type'] === 'raw' ? 'Bahan Baku' : 'Produk Jadi' ?></span></td>
               <td>
                 <div style="font-weight:600;font-size:13.5px;"><?= htmlspecialchars($mat['name']) ?></div>
                 <div style="font-size:12px;color:var(--text-muted);"><?= htmlspecialchars($mat['unit']) ?></div>

@@ -25,6 +25,7 @@ $data = [
     'min_stock'   => postInt('min_stock', 10),
     'is_active'   => (isset($_POST['is_active']) && $_POST['is_active'] == 1) ? 'true' : 'false',
     'is_featured' => (isset($_POST['is_featured']) && $_POST['is_featured'] == 1) ? 'true' : 'false',
+    'type'        => post('type') === 'raw' ? 'raw' : 'product', // TAMBAHKAN INI
 ];
 
         if (empty($data['code']))  $errors[] = 'Kode material wajib diisi.';
@@ -84,23 +85,34 @@ include __DIR__ . '/../../partials/head.php';
         <div class="card-header"><div class="card-title">Informasi Material</div></div>
         <div class="card-body">
           <div class="grid grid-2">
-            <div class="form-group">
-              <label class="form-label">Kode Material <span>*</span></label>
-              <input type="text" name="code" class="form-control" value="<?= htmlspecialchars($mat['code']) ?>" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Kategori</label>
-              <select name="category_id" class="form-control">
-                <option value="">-- Pilih Kategori --</option>
-                <?php foreach ($categories as $cat): ?>
-                  <option value="<?= $cat['id'] ?>" <?= $mat['category_id']==$cat['id']?'selected':'' ?>><?= htmlspecialchars($cat['name']) ?></option>
-                <?php endforeach; ?>
-              </select>
-            </div>
+              <div class="form-group">
+                  <label class="form-label">Kode Material <span>*</span></label>
+                  <input type="text" name="code" class="form-control" value="<?= htmlspecialchars($mat['code']) ?>" required>
+              </div>
+              <div class="form-group">
+                  <label class="form-label">Kategori</label>
+                  <select name="category_id" class="form-control">
+                      <option value="">-- Pilih Kategori --</option>
+                      <?php foreach ($categories as $cat): ?>
+                          <option value="<?= $cat['id'] ?>" <?= $mat['category_id']==$cat['id']?'selected':'' ?>><?= htmlspecialchars($cat['name']) ?></option>
+                      <?php endforeach; ?>
+                  </select>
+              </div>
           </div>
+
+          <!-- TAMBAHKAN FIELD TIPE DI SINI -->
           <div class="form-group">
-            <label class="form-label">Nama Material <span>*</span></label>
-            <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($mat['name']) ?>" required>
+              <label class="form-label">Tipe Material</label>
+              <select name="type" class="form-control">
+                  <option value="product" <?= ($mat['type'] ?? 'product') === 'product' ? 'selected' : '' ?>>🏭 Produk Jadi (Hasil Produksi)</option>
+                  <option value="raw" <?= ($mat['type'] ?? 'product') === 'raw' ? 'selected' : '' ?>>📦 Bahan Baku (Dari Supplier)</option>
+              </select>
+              <div class="form-text">Produk Jadi = dijual ke pelanggan. Bahan Baku = dibeli dari supplier.</div>
+          </div>
+
+          <div class="form-group">
+              <label class="form-label">Nama Material <span>*</span></label>
+              <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($mat['name']) ?>" required>
           </div>
           <div class="form-group">
             <label class="form-label">Deskripsi</label>

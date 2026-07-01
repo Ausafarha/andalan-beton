@@ -8,7 +8,6 @@ if (!$ord){setFlash('error','Pesanan tidak ditemukan.');redirect(APP_URL.'/admin
 $items = Database::fetchAll("SELECT oi.*, m.name AS material_name, m.unit FROM order_items oi JOIN materials m ON oi.material_id=m.id WHERE oi.order_id=?",[$id]);
 $pageTitle='Detail Pesanan #'.$ord['order_number'];
 
-// Handle status update
 if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['update_status'])) {
     if (!verifyCsrf()){setFlash('error','Token tidak valid.');}
     else {
@@ -17,9 +16,52 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['update_status'])) {
         $allowedStatuses = ['pending','processing','completed','rejected'];
         if (in_array($newStatus,$allowedStatuses)) {
             $user=currentUser();
-            Database::update('orders',['status'=>$newStatus,'admin_notes'=>$adminNotes?:null,'processed_by'=>$user['id'],'processed_at'=>$newStatus!=='pending'?date('Y-m-d H:i:s'):null],'id=?',[$id]);
+            
+            // 🔥 AUTO STOCK OUT: Jika status berubah ke 'processing' atau 'completed'
+            if (in_array($newStatus, ['processing', 'completed']) && $ord['status'] !== $newStatus) {
+                $items = Database::fetchAll("SELECT * FROM order_items WHERE order_id = ?", [$id]);
+                $hasError = false;
+                
+                foreach ($items as $item) {
+                    // Cek stok
+                    $stock = (int)Database::fetchColumn("SELECT current_stock FROM material_stock WHERE id = ?", [$item['material_id']]);
+                    if ($stock < $item['quantity']) {
+                        $matName = Database::fetchColumn("SELECT name FROM materials WHERE id = ?", [$item['material_id']]);
+                        setFlash('error', "Stok {$matName} tidak mencukupi! Tersedia: {$stock}, Dibutuhkan: {$item['quantity']}");
+                        $hasError = true;
+                        break;
+                    }
+                    
+                    // Catat barang keluar otomatis
+                    Database::insert('stock_out', [
+                        'material_id'   => $item['material_id'],
+                        'order_id'      => $id,
+                        'quantity'      => $item['quantity'],
+                        'destination'   => "Pengiriman pesanan " . $ord['order_number'],
+                        'driver_name'   => null,
+                        'vehicle_number'=> null,
+                        'notes'         => "Otomatis dari pesanan #{$ord['order_number']}",
+                        'processed_by'  => $user['id'],
+                        'out_date'      => date('Y-m-d')
+                    ]);
+                }
+                
+                if ($hasError) {
+                    redirect(APP_URL.'/admin-ab/modules/orders/view.php?id='.$id);
+                    exit;
+                }
+            }
+            
+            // Update status pesanan
+            Database::update('orders',[
+                'status'=>$newStatus,
+                'admin_notes'=>$adminNotes?:null,
+                'processed_by'=>$user['id'],
+                'processed_at'=>$newStatus!=='pending'?date('Y-m-d H:i:s'):null
+            ],'id=?',[$id]);
+            
             logActivity('update','orders',"Mengubah status pesanan {$ord['order_number']} menjadi {$newStatus}");
-            setFlash('success','Status pesanan berhasil diperbarui.');
+            setFlash('success','Status pesanan berhasil diperbarui. Barang keluar otomatis tercatat.');
             redirect(APP_URL.'/admin-ab/modules/orders/view.php?id='.$id);
         }
     }
