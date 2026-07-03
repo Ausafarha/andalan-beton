@@ -12,7 +12,17 @@ $success   = false;
 $materials = Database::fetchAll("SELECT id, name, unit, price FROM materials WHERE is_active=true ORDER BY name");
 
 // Pre-select material from URL
-$preMatId = getInt('material');
+// ── AUTO ADD FROM URL (ADD TO CART) ──────────────────────
+$autoMatId = getInt('material');
+$autoQty   = getInt('qty', 1);
+
+if ($autoMatId && $autoQty > 0) {
+    // Simpan ke session
+    if (!isset($_SESSION['cart_items'])) {
+        $_SESSION['cart_items'] = [];
+    }
+    $_SESSION['cart_items'][$autoMatId] = ($_SESSION['cart_items'][$autoMatId] ?? 0) + $autoQty;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf()) {
@@ -143,8 +153,9 @@ $adminLink = APP_URL . '/admin-ab/modules/orders/view.php?id=' . $orderId;
 
 $waMessage = "PESANAN BARU%0A";
 $waMessage .= "══════════════════%0A%0A";
-$waMessage .= "Nomor Pesanan: " . $successOrder . " %0A";
-$waMessage .= "Link: " . APP_URL . '/admin-ab/modules/orders/view.php?id=' . $orderId . "%0A%0A";
+$orderLink = APP_URL . '/admin-ab/modules/orders/view.php?id=' . $orderId;
+$waMessage .= "📋 *Nomor Pesanan:* " . $successOrder . " %0A";
+$waMessage .= "🔗 *Link:* " . $orderLink . "%0A%0A";
 $waMessage .= "Tanggal: " . date('d M Y H:i') . "%0A";
 $waMessage .= "━━━━━━━━━━━━━━━━%0A";
 $waMessage .= "PELANGGAN:%0A";
@@ -171,13 +182,19 @@ $waMessage .= "Silakan segera diproses. Terima kasih.";
 
     <?php else: ?>
 
-    <!-- Error Messages -->
-    <?php foreach ($errors as $e): ?>
-      <div class="alert alert-danger" data-auto-dismiss="6000"><i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($e) ?></div>
-    <?php endforeach; ?>
+<?php foreach ($errors as $e): ?>
+  <div class="alert alert-danger" data-auto-dismiss="6000"><i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($e) ?></div>
+<?php endforeach; ?>
 
-    <form method="POST" id="order-form">
-      <?= csrfField() ?>
+<!-- NOTIFIKASI ADD TO CART -->
+<?php if (getInt('added', 0) === 1): ?>
+    <div class="alert alert-success" data-auto-dismiss="3000">
+        <i class="fas fa-check-circle"></i> ✅ Produk berhasil ditambahkan ke keranjang!
+    </div>
+<?php endif; ?>
+
+<form method="POST" id="order-form">
+  <?= csrfField() ?>
 
       <!-- Customer Info -->
       <div class="card mb-20">
@@ -329,7 +346,17 @@ function updateGrandTotal() {
 }
 
 // Init: add one item, pre-select if from URL
-document.addEventListener('DOMContentLoaded', () => {
-  addItem(preMatId || '', 1);
+document.addEventListener('DOMContentLoaded', function() {
+    // Load dari URL parameter
+    addItem(preMatId || '', 1);
+    
+    <?php if (!empty($_SESSION['cart_items'])): ?>
+        <?php foreach ($_SESSION['cart_items'] as $id => $qty): ?>
+            <?php if ($id != $preMatId): // Hindari duplikat ?>
+                addItem(<?= $id ?>, <?= $qty ?>);
+            <?php endif; ?>
+        <?php endforeach; ?>
+        <?php unset($_SESSION['cart_items']); // Clear setelah di-load ?>
+    <?php endif; ?>
 });
 </script>

@@ -6,7 +6,7 @@
 date_default_timezone_set('Asia/Jakarta');
 
 define('APP_NAME', 'PT Andalan Beton');
-define('APP_VERSION', '1.0.0');
+define('APP_VERSION', date('YmdHis')); // Auto version based on timestamp
 define('APP_URL', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost:8000'));
 define('APP_ROOT', dirname(__DIR__));
 define('UPLOAD_PATH', APP_ROOT . '/uploads/');

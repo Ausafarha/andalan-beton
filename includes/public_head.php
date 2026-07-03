@@ -20,8 +20,16 @@ $currentSlug  = $currentSlug ?? '';
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="icon" href="<?= ASSETS_URL ?>img/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/main.css">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/main.css?v=<?= APP_VERSION ?>">
+<link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/public.css?v=<?= APP_VERSION ?>">
+<link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/footer.css?v=<?= APP_VERSION ?>">
+<link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/responsive.css?v=<?= APP_VERSION ?>">
+<link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/hero.css?v=<?= APP_VERSION ?>">
+<link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/product-card.css?v=<?= APP_VERSION ?>">
+<link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/feature.css?v=<?= APP_VERSION ?>">
+<link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/gallery.css?v=<?= APP_VERSION ?>">
   <script>(function(){const t=localStorage.getItem('andalan_theme')||'light';document.documentElement.setAttribute('data-theme',t);})();</script>
+  <script src="<?= ASSETS_URL ?>js/main.js?v=<?= APP_VERSION ?>"></script>
 </head>
 <body>
 <div class="toast-container"></div>

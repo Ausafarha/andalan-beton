@@ -285,9 +285,9 @@ include __DIR__ . '/includes/public_head.php';
                 <?php if ($mat['is_featured']): ?>
                 <span class="badge badge-info" style="margin-top:8px;"><i class="fas fa-star"></i> Unggulan</span>
                 <?php endif; ?>
-                <a href="<?= APP_URL ?>/pesan.php?material=<?= $mat['id'] ?>" class="btn btn-primary w-100" style="margin-top:14px;">
-                  <i class="fas fa-shopping-cart"></i> Pesan Sekarang
-                </a>
+        <a href="<?= APP_URL ?>/pesan.php?material=<?= $mat['id'] ?>&qty=1&added=1" class="btn btn-primary w-100" style="margin-top:14px;">
+    <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
+</a>
               </div>
             </div>
             <?php endforeach; ?>

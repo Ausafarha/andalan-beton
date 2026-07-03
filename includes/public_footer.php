@@ -71,6 +71,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 </script>
-<script src="<?=ASSETS_URL?>js/main.js"></script>
+
 </body>
 </html>

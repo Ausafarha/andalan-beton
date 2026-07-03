@@ -1,6 +1,6 @@
-const CACHE_NAME = 'andalan-beton-v1.0.0';
+const CACHE_NAME = 'andalan-beton-v1.0.1';
 
-// File yang di-cache (statis)
+// File yang di-cache (statis) - TAMBAHKAN ADMIN
 const urlsToCache = [
   '/',
   '/profil.php',
@@ -9,14 +9,29 @@ const urlsToCache = [
   '/kontak.php',
   '/pesan.php',
   '/assets/css/main.css',
-  '/assets/js/main.js'
+  '/assets/js/main.js',
+  // TAMBAHKAN INI BUAT ADMIN
+  '/admin-ab/dashboard.php',
+  '/admin-ab/login.php',
+  '/admin-ab/modules/material/index.php',
+  '/admin-ab/modules/stock_in/index.php',
+  '/admin-ab/modules/stock_out/index.php',
+  '/admin-ab/modules/orders/index.php',
+  '/admin-ab/modules/reports/index.php',
+  '/admin-ab/modules/gallery/index.php',
+  '/admin-ab/modules/settings/index.php',
+  '/assets/css/layouts/admin.css',
+  '/assets/css/layouts/admin-responsive.css'
 ];
 
 // Install Service Worker
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+      .then(cache => {
+        console.log('Caching assets...');
+        return cache.addAll(urlsToCache);
+      })
       .then(() => self.skipWaiting())
   );
 });
@@ -39,13 +54,10 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Kalo ada di cache, return dari cache
         if (response) {
           return response;
         }
-        // Kalo gak ada, fetch dari network
         return fetch(event.request).then(response => {
-          // Simpan ke cache buat next visit
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
