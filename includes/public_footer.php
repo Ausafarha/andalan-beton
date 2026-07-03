@@ -9,7 +9,8 @@ $cp = getCompanyProfile();
           <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--brand-500),var(--brand-700));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:14px;">AB</div>
           <div style="font-size:15px;font-weight:800;color:white;"><?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?></div>
         </div>
-       <p style="text-align:center; margin:0 auto; max-width:260px;"><?= htmlspecialchars($cp['description'] ??'Industri Readymix dan Precast.') ?></p>
+
+       <p style="text-align:center; margin:0 auto; max-width:300px; line-height:1.7;"><?= htmlspecialchars($cp['description'] ?? 'Industri Readymix dan Precast.') ?></p>
       </div>
       <div>
         <div class="footer-title">Menu</div>

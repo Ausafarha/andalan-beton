@@ -3,6 +3,7 @@
 // config/app.php
 // Konfigurasi Aplikasi Global
 // ============================================================
+date_default_timezone_set('Asia/Jakarta');
 
 define('APP_NAME', 'PT Andalan Beton');
 define('APP_VERSION', '1.0.0');

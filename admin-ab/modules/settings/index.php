@@ -70,6 +70,42 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
                 redirect(APP_URL.'/admin-ab/modules/settings/index.php?tab=password');
             }
         }
+        if ($tab === 'account') {
+    $newUsername = post('new_username');
+    $oldPass = $_POST['old_password'] ?? '';
+    $newPass = $_POST['new_password'] ?? '';
+    $conPass = $_POST['confirm_password'] ?? '';
+    $user = currentUser();
+    $dbUser = Database::fetchOne("SELECT * FROM users WHERE id=?",[$user['id']]);
+    
+    if (!password_verify($oldPass, $dbUser['password'])) {
+        $errors[] = 'Password lama tidak sesuai.';
+    }
+    
+    // Cek username unik
+    if (!empty($newUsername)) {
+        $exists = Database::fetchColumn("SELECT id FROM users WHERE username = ? AND id != ?", [$newUsername, $user['id']]);
+        if ($exists) $errors[] = 'Username sudah digunakan.';
+    }
+    
+    if (!empty($newPass) && $newPass !== $conPass) {
+        $errors[] = 'Konfirmasi password tidak cocok.';
+    }
+    if (!empty($newPass) && strlen($newPass) < 6) {
+        $errors[] = 'Password baru minimal 6 karakter.';
+    }
+    
+    if (empty($errors)) {
+        $updateData = ['username' => $newUsername];
+        if (!empty($newPass) && strlen($newPass) >= 6) {
+            $updateData['password'] = password_hash($newPass, PASSWORD_DEFAULT);
+        }
+        Database::update('users', $updateData, 'id=?', [$user['id']]);
+        logActivity('update', 'settings', 'Mengubah username/password');
+        setFlash('success', 'Akun berhasil diperbarui.');
+        redirect(APP_URL.'/admin-ab/modules/settings/index.php?tab=account');
+    }
+}
     }
 }
 
@@ -88,8 +124,13 @@ include __DIR__.'/../../partials/head.php';
 <?php foreach($errors as $e):?><div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <?=htmlspecialchars($e)?></div><?php endforeach;?>
 
 <!-- Tabs -->
+<!-- Tabs -->
 <div style="display:flex;gap:6px;margin-bottom:20px;border-bottom:1.5px solid var(--border);padding-bottom:0;">
-  <?php foreach(['company'=>'🏢 Profil Perusahaan','password'=>'🔒 Ganti Password'] as $tab=>$lbl):?>
+  <?php foreach([
+    'company'=>'🏢 Profil Perusahaan',
+    'account'=>'👤 Akun & Keamanan',
+    
+  ] as $tab=>$lbl):?>
   <a href="?tab=<?=$tab?>" style="padding:10px 18px;border-radius:var(--radius-md) var(--radius-md) 0 0;font-size:13.5px;font-weight:600;text-decoration:none;border:1.5px solid <?=$activeTab===$tab?'var(--border) var(--border) var(--bg-surface)':'transparent'?>;background:<?=$activeTab===$tab?'var(--bg-surface)':'transparent'?>;color:<?=$activeTab===$tab?'var(--brand-600)':'var(--text-secondary)'?>;margin-bottom:-1.5px;"><?=$lbl?></a>
   <?php endforeach;?>
 </div>
@@ -176,17 +217,34 @@ include __DIR__.'/../../partials/head.php';
 </form>
 <?php endif;?>
 
-<?php if($activeTab==='password'):?>
+<?php if($activeTab==='account'):?>
 <div class="card" style="max-width:480px;">
-  <div class="card-header"><div class="card-title">Ganti Password</div></div>
-  <div class="card-body">
-    <form method="POST"><?=csrfField()?><input type="hidden" name="tab" value="password">
-      <div class="form-group"><label class="form-label">Password Lama <span>*</span></label><input type="password" name="old_password" class="form-control" required></div>
-      <div class="form-group"><label class="form-label">Password Baru <span>*</span></label><input type="password" name="new_password" class="form-control" required minlength="6"></div>
-      <div class="form-group"><label class="form-label">Konfirmasi Password <span>*</span></label><input type="password" name="confirm_password" class="form-control" required></div>
-      <button type="submit" class="btn btn-primary"><i class="fas fa-key"></i> Ganti Password</button>
-    </form>
-  </div>
+    <div class="card-header"><div class="card-title">Ganti Username & Password</div></div>
+    <div class="card-body">
+        <form method="POST">
+            <?=csrfField()?>
+            <input type="hidden" name="tab" value="account">
+            <div class="form-group">
+                <label class="form-label">Username Baru <span>*</span></label>
+                <input type="text" name="new_username" class="form-control" value="<?=htmlspecialchars($user['username'] ?? '')?>" required>
+                <div class="form-text">Username yang akan digunakan untuk login.</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password Lama <span>*</span></label>
+                <input type="password" name="old_password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password Baru (opsional)</label>
+                <input type="password" name="new_password" class="form-control" minlength="6">
+                <div class="form-text">Kosongkan jika tidak ingin mengganti password.</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Konfirmasi Password Baru</label>
+                <input type="password" name="confirm_password" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Perubahan</button>
+        </form>
+    </div>
 </div>
 <?php endif;?>
 

@@ -30,8 +30,8 @@
   --border-strong: #cbd5e1;
 
   /* Text */
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
+  --text-primary: #000000;
+  --text-secondary: #000000;
   --text-muted: #000000;
   --text-inverse: #ffffff;
   --text-brand: var(--brand-600);

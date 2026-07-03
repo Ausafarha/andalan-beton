@@ -38,16 +38,6 @@ $lastMonthRevenue = (float)Database::fetchColumn(
 );
 $revenueGrowth = $lastMonthRevenue > 0 ? round((($thisMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100, 1) : 0;
 
-$chartRevenue = [];
-for ($i = 6; $i >= 0; $i--) {
-    $date = date('Y-m', strtotime("-{$i} months"));
-    $revenue = (float)Database::fetchColumn(
-        "SELECT COALESCE(SUM(total_amount),0) FROM orders 
-         WHERE status = 'completed' AND TO_CHAR(created_at,'YYYY-MM') = ?", 
-        [$date]
-    );
-    $chartRevenue[] = round($revenue / 1000000, 1);
-}
 
 $topRevenueMaterials = Database::fetchAll("
     SELECT m.name, m.unit, COALESCE(SUM(oi.quantity * oi.price_per_unit),0) as total_revenue
@@ -66,9 +56,14 @@ $chartIn     = [];
 $chartOut    = [];
 $chartOrders = [];
 
-for ($i = 6; $i >= 0; $i--) {
+// ── Monthly chart data ────────────────────────────────────
+$chartIn     = [];
+$chartOut    = [];
+$chartOrders = [];
+
+// Ambil data stock_in, stock_out, orders untuk 12 bulan
+for ($i = 11; $i >= 0; $i--) {
     $date    = date('Y-m', strtotime("-{$i} months"));
-    $label   = date('M Y', strtotime("-{$i} months"));
     $monthIn = (int)Database::fetchColumn(
         "SELECT COALESCE(SUM(quantity),0) FROM stock_in WHERE TO_CHAR(received_date,'YYYY-MM')=?", [$date]
     );
@@ -78,10 +73,24 @@ for ($i = 6; $i >= 0; $i--) {
     $monthOrd = (int)Database::fetchColumn(
         "SELECT COUNT(*) FROM orders WHERE TO_CHAR(created_at,'YYYY-MM')=?", [$date]
     );
-    $chartMonths[] = $label;
-    $chartIn[]     = $monthIn;
-    $chartOut[]    = $monthOut;
+    $chartIn[]  = $monthIn;
+    $chartOut[] = $monthOut;
     $chartOrders[] = $monthOrd;
+}
+
+// ── Revenue chart data (last 12 months) ───────────────────
+$chartMonths = [];
+$chartRevenue = [];
+for ($i = 11; $i >= 0; $i--) {
+    $date = date('Y-m', strtotime("-{$i} months"));
+    $label = date('M Y', strtotime("-{$i} months"));
+    $chartMonths[] = $label;
+    $revenue = (float)Database::fetchColumn(
+        "SELECT COALESCE(SUM(total_amount),0) FROM orders 
+         WHERE status = 'completed' AND TO_CHAR(created_at,'YYYY-MM') = ?", 
+        [$date]
+    );
+    $chartRevenue[] = round($revenue / 1000000, 1);
 }
 
 // ── Weekly chart (last 7 days) ─────────────────────────────
@@ -496,7 +505,6 @@ function getChartColors() {
 }
 
 let mainChart;
-
 function buildMainChart(type = 'monthly') {
   const ctx = document.getElementById('mainChart').getContext('2d');
   const data = type === 'monthly' ? monthlyData : weeklyData;
@@ -516,6 +524,7 @@ function buildMainChart(type = 'monthly') {
           borderColor: '#3b82f6',
           borderWidth: 0,
           borderRadius: 5,
+          yAxisID: 'y',
         },
         {
           label: 'Barang Keluar',
@@ -524,17 +533,20 @@ function buildMainChart(type = 'monthly') {
           borderColor: '#f97316',
           borderWidth: 0,
           borderRadius: 5,
+          yAxisID: 'y',
         },
         {
           label: 'Pendapatan (Juta Rp)',
           data: data.revenue,
-          backgroundColor: 'rgba(139,92,246,0.7)',
-          borderColor: '#8b5cf6',
-          borderWidth: 0,
-          borderRadius: 5,
           type: 'line',
+          borderColor: '#8b5cf6',
+          backgroundColor: '#8b5cf6',
+          borderWidth: 3,          // <-- WAJIB > 0 supaya garis muncul
+          pointRadius: 4,
+          pointBackgroundColor: '#8b5cf6',
           tension: 0.3,
           fill: false,
+          yAxisID: 'y1',           // <-- sumbu terpisah
         }
       ],
     },
@@ -546,8 +558,27 @@ function buildMainChart(type = 'monthly') {
         tooltip: { mode: 'index', intersect: false },
       },
       scales: {
-        x: { ticks: { color: cc.text }, grid: { color: cc.grid } },
-        y: { ticks: { color: cc.text }, grid: { color: cc.grid }, beginAtZero: true },
+        x: {
+          ticks: { color: cc.text },
+          grid: { color: cc.grid }
+        },
+        y: {
+          type: 'linear',
+          position: 'left',
+          ticks: { color: cc.text },
+          grid: { color: cc.grid },
+          beginAtZero: true,
+          title: { display: true, text: 'Jumlah Barang', color: cc.text }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          ticks: { color: cc.text },
+          grid: { drawOnChartArea: false }, // biar grid tidak dobel
+          beginAtZero: true,
+          suggestedMax: Math.max(...data.revenue) * 1.5 + 1 || 10,
+          title: { display: true, text: 'Pendapatan (Juta Rp)', color: cc.text }
+        }
       },
     },
   });

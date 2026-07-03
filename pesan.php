@@ -116,15 +116,25 @@ include __DIR__ . '/includes/public_head.php';
         <div style="font-size:13px;color:var(--text-muted);">Nomor Pesanan</div>
         <div style="font-size:22px;font-weight:800;color:var(--brand-600);font-family:var(--font-mono);"><?= htmlspecialchars($successOrder ?? '') ?></div>
       </div>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-lg"><i class="fas fa-plus"></i> Buat Pesanan Baru</a>
-        <?php if($cp['whatsapp']):?>
-        <a href="https://wa.me/<?=preg_replace('/[^0-9]/','',$cp['whatsapp'])?>" target="_blank" class="btn btn-lg" style="background:#25d366;color:white;border-color:#25d366;">
-          <i class="fab fa-whatsapp"></i> Konfirmasi via WA
-        </a>
-        <?php endif;?>
-        <a href="<?= APP_URL ?>/" class="btn btn-secondary btn-lg"><i class="fas fa-home"></i> Beranda</a>
-      </div>
+<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-lg"><i class="fas fa-plus"></i> Buat Pesanan Baru</a>
+    <?php if($cp['whatsapp']):?>
+    <?php
+    // Build WA message template
+    $waMessage = "Halo Admin PT MITRA ANDALAN BETON PANTURA%0A%0A";
+    $waMessage .= "Saya ingin konfirmasi pesanan saya:%0A%0A";
+    $waMessage .= "📋 *Nomor Pesanan:* " . $successOrder . "%0A";
+    $waMessage .= "👤 *Nama:* " . ($_POST['customer_name'] ?? $customerName ?? '') . "%0A";
+    $waMessage .= "📱 *HP:* " . ($_POST['customer_phone'] ?? $customerPhone ?? '') . "%0A";
+    $waMessage .= "📍 *Alamat:* " . ($_POST['delivery_address'] ?? $deliveryAddress ?? '') . "%0A%0A";
+    $waMessage .= "Terima kasih.";
+    ?>
+    <a href="https://wa.me/<?=preg_replace('/[^0-9]/','',$cp['whatsapp'])?>?text=<?= $waMessage ?>" target="_blank" class="btn btn-lg" style="background:#25d366;color:white;border-color:#25d366;">
+        <i class="fab fa-whatsapp"></i> Konfirmasi via WA
+    </a>
+    <?php endif;?>
+    <a href="<?= APP_URL ?>/" class="btn btn-secondary btn-lg"><i class="fas fa-home"></i> Beranda</a>
+</div>
     </div>
 
     <?php else: ?>

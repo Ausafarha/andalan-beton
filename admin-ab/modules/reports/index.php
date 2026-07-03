@@ -8,6 +8,7 @@ $type     = get('type','stock_in');
 $dateFrom = get('date_from', date('Y-m-01'));
 $dateTo   = get('date_to',   date('Y-m-d'));
 $matId    = getInt('material_id');
+$matType  = get('material_type'); // TAMBAHKAN INI
 
 $materials = Database::fetchAll("SELECT id,name FROM materials WHERE is_active=true ORDER BY name");
 
@@ -23,30 +24,34 @@ switch ($type) {
         $params = [$dateFrom, $dateTo];
         $extraWhere = '';
         if ($matId) { $extraWhere = ' AND si.material_id=?'; $params[] = $matId; }
+        if ($matType) { $extraWhere .= ' AND m.type=?'; $params[] = $matType; }
         $reportData = Database::fetchAll("
             SELECT si.received_date AS tanggal, m.name AS material, m.unit, si.quantity AS jumlah,
-                   si.price_per_unit AS harga_satuan, si.supplier_name AS supplier,
-                   si.invoice_number AS invoice
+                  si.price_per_unit AS harga_satuan, si.supplier_name AS supplier,
+                  si.invoice_number AS invoice,
+                  CASE WHEN m.type = 'raw' THEN '📦 Bahan Baku' ELSE '🏭 Produk Jadi' END AS tipe
             FROM stock_in si JOIN materials m ON si.material_id=m.id
             WHERE si.received_date BETWEEN ? AND ? $extraWhere
             ORDER BY si.received_date DESC
         ", $params);
         break;
 
-    case 'stock_out':
-        $reportTitle = 'Rekap Barang Keluar';
-        $params = [$dateFrom, $dateTo];
-        $extraWhere = '';
-        if ($matId) { $extraWhere = ' AND so.material_id=?'; $params[] = $matId; }
-        $reportData = Database::fetchAll("
-            SELECT so.out_date AS tanggal, m.name AS material, m.unit, so.quantity AS jumlah,
-                   so.destination AS tujuan, so.driver_name AS driver,
-                   so.vehicle_number AS kendaraan
-            FROM stock_out so JOIN materials m ON so.material_id=m.id
-            WHERE so.out_date BETWEEN ? AND ? $extraWhere
-            ORDER BY so.out_date DESC
-        ", $params);
-        break;
+      case 'stock_out':
+          $reportTitle = 'Rekap Barang Keluar';
+          $params = [$dateFrom, $dateTo];
+          $extraWhere = '';
+          if ($matId) { $extraWhere = ' AND so.material_id=?'; $params[] = $matId; }
+          if ($matType) { $extraWhere .= ' AND m.type=?'; $params[] = $matType; }
+          $reportData = Database::fetchAll("
+              SELECT so.out_date AS tanggal, m.name AS material, m.unit, so.quantity AS jumlah,
+                    so.destination AS tujuan, so.driver_name AS driver,
+                    so.vehicle_number AS kendaraan,
+                    CASE WHEN m.type = 'raw' THEN '📦 Bahan Baku' ELSE '🏭 Produk Jadi' END AS tipe
+              FROM stock_out so JOIN materials m ON so.material_id=m.id
+              WHERE so.out_date BETWEEN ? AND ? $extraWhere
+              ORDER BY so.out_date DESC
+          ", $params);
+          break;
 
     case 'orders':
         $reportTitle = 'Rekap Pesanan';
@@ -104,16 +109,23 @@ switch ($type) {
         $summary['total_products'] = count($reportData);
         break;
 
-    case 'stock_summary':
-        $reportTitle = 'Ringkasan Stok Material';
-        $reportData = Database::fetchAll("
-            SELECT ms.code AS kode, ms.name AS material, ms.unit, ms.category_name AS kategori,
-                   ms.total_in AS total_masuk, ms.total_out AS total_keluar,
-                   ms.current_stock AS stok_sekarang, ms.min_stock AS stok_minimum,
-                   ms.stock_status AS status_stok, ms.price AS harga
-            FROM material_stock ms WHERE ms.is_active=true ORDER BY ms.name
-        ");
-        break;
+      case 'stock_summary':
+          $reportTitle = 'Ringkasan Stok Material';
+          $extraWhere = '';
+          $params = [];
+          if ($matType) { $extraWhere = ' AND m.type = ?'; $params[] = $matType; }
+          $reportData = Database::fetchAll("
+              SELECT ms.code AS kode, ms.name AS material, ms.unit, ms.category_name AS kategori,
+                    ms.total_in AS total_masuk, ms.total_out AS total_keluar,
+                    ms.current_stock AS stok_sekarang, ms.min_stock AS stok_minimum,
+                    ms.stock_status AS status_stok, ms.price AS harga,
+                    CASE WHEN m.type = 'raw' THEN '📦 Bahan Baku' ELSE '🏭 Produk Jadi' END AS tipe
+              FROM material_stock ms
+              JOIN materials m ON ms.id = m.id
+              WHERE ms.is_active=true $extraWhere
+              ORDER BY ms.name
+          ", $params);
+          break;
 }
 
 // Export PDF
@@ -200,32 +212,45 @@ include __DIR__.'/../../partials/head.php';
   <div class="card-header"><div class="card-title">Filter Laporan</div></div>
   <div class="card-body">
     <form method="GET">
-      <div class="grid grid-2" style="gap:16px;margin-bottom:16px;">
-        <div class="form-group" style="margin:0;">
-          <label class="form-label">Jenis Laporan</label>
-          <select name="type" class="form-control" id="report-type">
-            <option value="stock_in"      <?=$type==='stock_in'     ?'selected':''?>>📥 Barang Masuk</option>
-            <option value="stock_out"     <?=$type==='stock_out'    ?'selected':''?>>📤 Barang Keluar</option>
-            <option value="orders"        <?=$type==='orders'       ?'selected':''?>>📋 Pesanan</option>
-            <option value="product_sales" <?=$type==='product_sales'?'selected':''?>>💰 Penjualan per Produk</option>
-            <option value="stock_summary" <?=$type==='stock_summary'?'selected':''?>>📊 Ringkasan Stok</option>
-          </select>
+        <div class="grid grid-2" style="gap:16px;margin-bottom:16px;">
+            <div class="form-group" style="margin:0;">
+                <label class="form-label">Jenis Laporan</label>
+                <select name="type" class="form-control" id="report-type">
+                    <option value="stock_in"      <?=$type==='stock_in'     ?'selected':''?>>📥 Barang Masuk</option>
+                    <option value="stock_out"     <?=$type==='stock_out'    ?'selected':''?>>📤 Barang Keluar</option>
+                    <option value="orders"        <?=$type==='orders'       ?'selected':''?>>📋 Pesanan</option>
+                    <option value="product_sales" <?=$type==='product_sales'?'selected':''?>>💰 Penjualan per Produk</option>
+                    <option value="stock_summary" <?=$type==='stock_summary'?'selected':''?>>📊 Ringkasan Stok</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin:0;" id="material-filter">
+                <label class="form-label">Material (opsional)</label>
+                <select name="material_id" class="form-control">
+                    <option value="">Semua Material</option>
+                    <?php foreach($materials as $m):?>
+                    <option value="<?=$m['id']?>" <?=$matId==$m['id']?'selected':''?>><?=htmlspecialchars($m['name'])?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
         </div>
-        <div class="form-group" style="margin:0;" id="material-filter">
-          <label class="form-label">Material (opsional)</label>
-          <select name="material_id" class="form-control">
-            <option value="">Semua Material</option>
-            <?php foreach($materials as $m):?><option value="<?=$m['id']?>" <?=$matId==$m['id']?'selected':''?>><?=htmlspecialchars($m['name'])?></option><?php endforeach;?>
-          </select>
-        </div>
-      </div>
+        <!-- TAMBAHKAN FILTER TIPE DI SINI -->
+        <div class="grid grid-2" style="gap:16px;margin-bottom:16px;">
+            <div class="form-group" style="margin:0;">
+                <label class="form-label">Tipe Material</label>
+                <select name="material_type" class="form-control" id="material-type">
+                    <option value="">Semua Tipe</option>
+                    <option value="product" <?= (get('material_type') === 'product') ? 'selected' : '' ?>>🏭 Produk Jadi</option>
+                    <option value="raw" <?= (get('material_type') === 'raw') ? 'selected' : '' ?>>📦 Bahan Baku</option>
+                </select>
+            </div>
+        </div>  
       <div class="grid grid-2" style="gap:16px;" id="date-range">
         <div class="form-group" style="margin:0;"><label class="form-label">Dari Tanggal</label><input type="date" name="date_from" class="form-control" value="<?=$dateFrom?>"></div>
         <div class="form-group" style="margin:0;"><label class="form-label">Sampai Tanggal</label><input type="date" name="date_to" class="form-control" value="<?=$dateTo?>"></div>
       </div>
       <div style="display:flex;gap:10px;margin-top:16px;">
         <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Tampilkan</button>
-        <a href="?type=<?=urlencode($type)?>&date_from=<?=$dateFrom?>&date_to=<?=$dateTo?>&material_id=<?=$matId?>&export=pdf" target="_blank" class="btn btn-danger"><i class="fas fa-file-pdf"></i> Export PDF</a>
+        <a href="?type=<?=urlencode($type)?>&date_from=<?=$dateFrom?>&date_to=<?=$dateTo?>&material_id=<?=$matId?>&material_type=<?=urlencode($matType)?>&export=pdf" target="_blank" class="btn btn-danger"><i class="fas fa-file-pdf"></i> Export PDF</a>
       </div>
     </form>
   </div>
@@ -327,14 +352,19 @@ include __DIR__.'/../../partials/head.php';
 document.getElementById('report-type').addEventListener('change', function() {
   const df = document.getElementById('material-filter');
   const dr = document.getElementById('date-range');
+  const tf = document.getElementById('material-type')?.closest('.grid') || document.querySelector('select[name="material_type"]')?.parentElement?.parentElement;
   if (this.value === 'stock_summary') {
     df.style.display = 'none'; dr.style.display = 'none';
+    if (tf) tf.style.display = 'none';
   } else if (this.value === 'product_sales') {
     df.style.display = 'none'; dr.style.display = '';
+    if (tf) tf.style.display = 'none';
   } else if (this.value === 'orders') {
     df.style.display = 'none'; dr.style.display = '';
+    if (tf) tf.style.display = 'none';
   } else {
     df.style.display = ''; dr.style.display = '';
+    if (tf) tf.style.display = '';
   }
 });
 document.getElementById('report-type').dispatchEvent(new Event('change'));
