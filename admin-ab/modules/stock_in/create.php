@@ -92,7 +92,13 @@ include __DIR__ . '/../../partials/head.php';
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Harga per Unit</label>
+    <label class="form-label">Harga/Unit (Opsional)</label>
+    <div class="input-group">
+        <span class="input-group-icon" style="font-size:12px;font-weight:600;">Rp</span>
+        <input type="number" name="price_per_unit" class="form-control" value="<?= $data['price_per_unit'] ?>" min="0" step="1000">
+    </div>
+    <div class="form-text">Kosongkan jika tidak diperlukan.</div>
+</div>
           <div class="input-group">
             <span class="input-group-icon" style="font-size:12px;font-weight:600;">Rp</span>
             <input type="number" name="price_per_unit" class="form-control" value="<?= $data['price_per_unit'] ?>" min="0" step="1000" placeholder="0">

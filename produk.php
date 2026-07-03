@@ -50,6 +50,147 @@ $materials = Database::fetchAll("
 include __DIR__ . '/includes/public_head.php';
 ?>
 
+<style>
+/* Fix gambar product card - FULL & RAPI */
+.product-card-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: contain;
+    background: #ffffff;
+    padding: 12px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+.product-card-img:hover {
+    transform: scale(1.03);
+}
+
+/* Modal Popup */
+.product-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+}
+.product-modal-overlay.show {
+    display: flex;
+}
+.product-modal-content {
+    background: var(--bg-surface);
+    border-radius: var(--radius-xl);
+    max-width: 750px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+    animation: modalFade 0.3s ease;
+}
+@keyframes modalFade {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.product-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: rgba(0,0,0,0.05);
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    z-index: 10;
+    color: var(--text-primary);
+}
+.product-modal-close:hover {
+    background: rgba(0,0,0,0.1);
+}
+.product-modal-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 24px;
+}
+.product-modal-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-muted);
+    border-radius: var(--radius-lg);
+    min-height: 300px;
+    padding: 16px;
+}
+.product-modal-image img {
+    max-width: 100%;
+    max-height: 350px;
+    object-fit: contain;
+}
+.product-modal-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.product-modal-info h2 {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-primary);
+}
+.product-modal-info .category {
+    display: inline-block;
+    background: var(--brand-50);
+    color: var(--brand-600);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    width: fit-content;
+}
+.product-modal-info .price {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--brand-600);
+    margin: 4px 0;
+}
+.product-modal-info .unit {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+.product-modal-info .desc {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-size: 14px;
+    margin: 4px 0;
+}
+.product-modal-info .btn {
+    margin-top: 8px;
+}
+@media (max-width: 640px) {
+    .product-modal-body {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+    .product-modal-image {
+        min-height: 200px;
+    }
+    .product-modal-info h2 {
+        font-size: 18px;
+    }
+}
+</style>
+
 <div style="padding-top:70px;">
 
 <!-- Page Header -->
@@ -124,9 +265,12 @@ include __DIR__ . '/includes/public_head.php';
             <?php foreach ($materials as $mat): ?>
             <div class="product-card" data-animate>
               <?php if ($mat['image']): ?>
-                <img src="<?= uploadUrl($mat['image']) ?>" alt="<?= htmlspecialchars($mat['name']) ?>" class="product-card-img">
+                <img src="<?= uploadUrl($mat['image']) ?>" 
+                     alt="<?= htmlspecialchars($mat['name']) ?>" 
+                     class="product-card-img"
+                     onclick="openProductModal(<?= htmlspecialchars(json_encode($mat)) ?>)">
               <?php else: ?>
-                <div class="product-card-img-placeholder">🧱</div>
+                <div class="product-card-img-placeholder" onclick="openProductModal(<?= htmlspecialchars(json_encode($mat)) ?>)">🧱</div>
               <?php endif; ?>
               <div class="product-card-body">
                 <div class="product-card-category"><?= htmlspecialchars($mat['category_name'] ?? 'Material') ?></div>
@@ -173,4 +317,58 @@ include __DIR__ . '/includes/public_head.php';
 
 </div>
 
+<!-- PRODUCT POPUP MODAL -->
+<div id="productModal" class="product-modal-overlay" onclick="closeProductModal()">
+    <div class="product-modal-content" onclick="event.stopPropagation()">
+        <button class="product-modal-close" onclick="closeProductModal()"><i class="fas fa-times"></i></button>
+        <div class="product-modal-body">
+            <div class="product-modal-image">
+                <img id="modalImage" src="" alt="Product Image">
+            </div>
+            <div class="product-modal-info">
+                <span class="category" id="modalCategory">Material</span>
+                <h2 id="modalName">Nama Produk</h2>
+                <div class="price" id="modalPrice">Rp 0</div>
+                <div class="unit" id="modalUnit">/ unit</div>
+                <p class="desc" id="modalDesc">Deskripsi produk</p>
+                <a href="#" id="modalOrderBtn" class="btn btn-primary w-100">
+                    <i class="fas fa-shopping-cart"></i> Pesan Sekarang
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php include __DIR__ . '/includes/public_footer.php'; ?>
+
+<script>
+function openProductModal(product) {
+    // Cek apakah gambar pake Cloudinary atau lokal
+    let imageUrl = '';
+    if (product.image) {
+        if (product.image.startsWith('http://') || product.image.startsWith('https://')) {
+            imageUrl = product.image; // Udah URL lengkap (Cloudinary)
+        } else {
+            imageUrl = '<?= uploadUrl('') ?>' + product.image; // Path lokal
+        }
+    }
+    document.getElementById('modalImage').src = imageUrl;
+    document.getElementById('modalName').textContent = product.name || 'Produk';
+    document.getElementById('modalCategory').textContent = product.category_name || 'Material';
+    document.getElementById('modalPrice').textContent = 'Rp ' + Number(product.price || 0).toLocaleString('id-ID');
+    document.getElementById('modalUnit').textContent = '/ ' + (product.unit || 'unit');
+    document.getElementById('modalDesc').textContent = product.description || 'Deskripsi produk tidak tersedia.';
+    document.getElementById('modalOrderBtn').href = '<?= APP_URL ?>/pesan.php?material=' + product.id;
+    document.getElementById('productModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeProductModal() {
+    document.getElementById('productModal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeProductModal();
+});
+</script>

@@ -55,9 +55,19 @@ include __DIR__.'/../../partials/head.php';
         </select>
       </div>
       <div class="grid grid-2">
-        <div class="form-group"><label class="form-label">Jumlah <span>*</span></label><input type="number" name="quantity" class="form-control" value="<?= $row['quantity'] ?>" min="1" required></div>
-        <div class="form-group"><label class="form-label">Harga/Unit</label><div class="input-group"><span class="input-group-icon" style="font-size:12px;font-weight:600;">Rp</span><input type="number" name="price_per_unit" class="form-control" value="<?= $row['price_per_unit'] ?>" min="0" step="1000"></div></div>
-      </div>
+    <div class="form-group">
+        <label class="form-label">Jumlah <span>*</span></label>
+        <input type="number" name="quantity" class="form-control" value="<?= $row['quantity'] ?>" min="1" required>
+    </div>
+    <div class="form-group">
+        <label class="form-label">Harga/Unit (Opsional)</label>
+        <div class="input-group">
+            <span class="input-group-icon" style="font-size:12px;font-weight:600;">Rp</span>
+            <input type="number" name="price_per_unit" class="form-control" value="<?= $row['price_per_unit'] ?>" min="0" step="1000">
+        </div>
+        <div class="form-text">Kosongkan jika tidak diperlukan.</div>
+    </div>
+</div>
       <div class="grid grid-2">
         <div class="form-group"><label class="form-label">Supplier</label><input type="text" name="supplier_name" class="form-control" value="<?= htmlspecialchars($row['supplier_name']??'') ?>"></div>
         <div class="form-group"><label class="form-label">No. Invoice</label><input type="text" name="invoice_number" class="form-control" value="<?= htmlspecialchars($row['invoice_number']??'') ?>"></div>

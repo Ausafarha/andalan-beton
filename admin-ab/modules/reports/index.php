@@ -182,11 +182,17 @@ if (isset($_GET['export']) && $_GET['export']==='pdf') {
         <tr>
         <?php foreach($row as $k=>$v): ?>
             <td><?php
-                if (in_array($k,['total','harga_satuan','harga','total_pendapatan'])) echo formatRupiah($v);
-                elseif ($k==='tanggal') echo formatDate($v);
-                elseif ($k==='status') echo ucfirst($v);
-                elseif ($k==='status_stok') echo ucfirst(str_replace('_',' ',$v));
-                else echo htmlspecialchars($v??'-');
+                    if (in_array($k,['total','harga_satuan','harga','total_pendapatan'])) {
+                        echo $v ? formatRupiah($v) : '-';
+                    } elseif ($k==='tanggal') {
+                        echo formatDate($v);
+                    } elseif ($k==='status') {
+                        echo ucfirst($v);
+                    } elseif ($k==='status_stok') {
+                        echo ucfirst(str_replace('_',' ',$v));
+                    } else {
+                        echo htmlspecialchars($v??'-');
+                    }
             ?></td>
         <?php endforeach; ?>
         </tr><?php endforeach; ?>
@@ -259,17 +265,17 @@ include __DIR__.'/../../partials/head.php';
 <!-- Ringkasan Card (untuk laporan pesanan & produk) -->
 <?php if (!empty($summary) && $type !== 'stock_summary'): ?>
 <div class="grid grid-4 mb-20" style="margin-top: -10px;">
-    <?php if (isset($summary['total_revenue'])): ?>
-    <div class="stat-card" style="--stat-color: #8b5cf6;">
-        <div class="stat-icon" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">
-            <i class="fas fa-chart-line"></i>
-        </div>
-        <div class="stat-content">
-            <div class="stat-label">Total Pendapatan</div>
-            <div class="stat-value" style="font-size:18px;"><?= formatRupiah($summary['total_revenue']) ?></div>
-        </div>
+<?php if (isset($summary['total_revenue'])): ?>
+<div class="stat-card" style="--stat-color: #8b5cf6;">
+    <div class="stat-icon" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">
+        <i class="fas fa-chart-line"></i>
     </div>
-    <?php endif; ?>
+    <div class="stat-content">
+        <div class="stat-label">Total Pendapatan</div>
+        <div class="stat-value" style="font-size:18px;"><?= $summary['total_revenue'] ? formatRupiah($summary['total_revenue']) : '-' ?></div>
+    </div>
+</div>
+<?php endif; ?>
     
     <?php if (isset($summary['total_orders'])): ?>
     <div class="stat-card" style="--stat-color: #3b82f6;">
@@ -284,17 +290,17 @@ include __DIR__.'/../../partials/head.php';
     </div>
     <?php endif; ?>
     
-    <?php if (isset($summary['avg_order'])): ?>
-    <div class="stat-card" style="--stat-color: #22c55e;">
-        <div class="stat-icon" style="background: rgba(34,197,94,0.1); color: #22c55e;">
-            <i class="fas fa-calculator"></i>
-        </div>
-        <div class="stat-content">
-            <div class="stat-label">Rata-rata per Pesanan</div>
-            <div class="stat-value" style="font-size:16px;"><?= formatRupiah($summary['avg_order']) ?></div>
-        </div>
+<?php if (isset($summary['avg_order'])): ?>
+<div class="stat-card" style="--stat-color: #22c55e;">
+    <div class="stat-icon" style="background: rgba(34,197,94,0.1); color: #22c55e;">
+        <i class="fas fa-calculator"></i>
     </div>
-    <?php endif; ?>
+    <div class="stat-content">
+        <div class="stat-label">Rata-rata per Pesanan</div>
+        <div class="stat-value" style="font-size:16px;"><?= $summary['avg_order'] ? formatRupiah($summary['avg_order']) : '-' ?></div>
+    </div>
+</div>
+<?php endif; ?>
     
     <?php if (isset($summary['total_qty'])): ?>
     <div class="stat-card" style="--stat-color: #f59e0b;">
@@ -331,12 +337,19 @@ include __DIR__.'/../../partials/head.php';
             <tr>
               <?php foreach($row as $k=>$v):?>
                 <td style="font-size:13px;"><?php
-                  if (in_array($k,['total','harga_satuan','harga','total_pendapatan'])) echo formatRupiah($v);
-                  elseif ($k==='qty_terjual' || $k==='jumlah') echo formatNumber($v);
-                  elseif ($k==='tanggal') echo formatDate($v);
-                  elseif ($k==='status') echo orderStatusLabel($v);
-                  elseif ($k==='status_stok') echo stockStatusLabel($v);
-                  else echo htmlspecialchars($v??'-');
+                    if (in_array($k,['total','harga_satuan','harga','total_pendapatan'])) {
+                        echo $v ? formatRupiah($v) : '-';
+                    } elseif ($k==='qty_terjual' || $k==='jumlah') {
+                        echo $v ? formatNumber($v) : '0';
+                    } elseif ($k==='tanggal') {
+                        echo formatDate($v);
+                    } elseif ($k==='status') {
+                        echo orderStatusLabel($v);
+                    } elseif ($k==='status_stok') {
+                        echo stockStatusLabel($v);
+                    } else {
+                        echo htmlspecialchars($v??'-');
+                    }
                 ?></td>
               <?php endforeach;?>
             </tr><?php endforeach;?>

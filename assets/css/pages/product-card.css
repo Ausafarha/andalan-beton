@@ -24,8 +24,23 @@
 .product-card-img {
   width: 100%;
   aspect-ratio: 4/3;
-  object-fit: cover;
+  object-fit: contain; /* Ganti dari cover ke contain */
   background: var(--bg-muted);
+  padding: 8px; /* Kasih jarak biar gak nempel */
+}
+
+/* Atau kalo mau background putih biar netral */
+.product-card-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 12px;
+  transition: transform 0.3s ease;
+}
+
+.product-card-img:hover {
+  transform: scale(1.02);
 }
 
 .product-card-img-placeholder {

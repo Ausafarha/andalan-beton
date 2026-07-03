@@ -157,7 +157,8 @@ function getFlash(): array|null {
 // ============================================================
 // Format Helpers
 // ============================================================
-function formatRupiah(float|int $amount): string {
+function formatRupiah(float|int|null $amount): string {
+    if ($amount === null || $amount === 0) return '-';
     return 'Rp ' . number_format($amount, 0, ',', '.');
 }
 

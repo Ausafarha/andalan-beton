@@ -118,21 +118,53 @@ include __DIR__ . '/includes/public_head.php';
       </div>
 <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
     <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-lg"><i class="fas fa-plus"></i> Buat Pesanan Baru</a>
-    <?php if($cp['whatsapp']):?>
-    <?php
-    // Build WA message template
-    $waMessage = "Halo Admin PT MITRA ANDALAN BETON PANTURA%0A%0A";
-    $waMessage .= "Saya ingin konfirmasi pesanan saya:%0A%0A";
-    $waMessage .= "📋 *Nomor Pesanan:* " . $successOrder . "%0A";
-    $waMessage .= "👤 *Nama:* " . ($_POST['customer_name'] ?? $customerName ?? '') . "%0A";
-    $waMessage .= "📱 *HP:* " . ($_POST['customer_phone'] ?? $customerPhone ?? '') . "%0A";
-    $waMessage .= "📍 *Alamat:* " . ($_POST['delivery_address'] ?? $deliveryAddress ?? '') . "%0A%0A";
-    $waMessage .= "Terima kasih.";
-    ?>
-    <a href="https://wa.me/<?=preg_replace('/[^0-9]/','',$cp['whatsapp'])?>?text=<?= $waMessage ?>" target="_blank" class="btn btn-lg" style="background:#25d366;color:white;border-color:#25d366;">
-        <i class="fab fa-whatsapp"></i> Konfirmasi via WA
-    </a>
-    <?php endif;?>
+   <?php if($cp['whatsapp']):?>
+<?php
+// Build WA message template
+$customerName = $_POST['customer_name'] ?? $customerName ?? '';
+$customerPhone = $_POST['customer_phone'] ?? $customerPhone ?? '';
+$customerEmail = $_POST['customer_email'] ?? '';
+$deliveryAddress = $_POST['delivery_address'] ?? $deliveryAddress ?? '';
+$orderNotes = $_POST['notes'] ?? '';
+$totalAmount = $totalAmount ?? 0;
+
+// Hitung total item
+$totalItems = count($items ?? []);
+$itemDetails = '';
+foreach ($items ?? [] as $idx => $item) {
+    $mat = Database::fetchOne("SELECT name, unit FROM materials WHERE id = ?", [$item['material_id']]);
+    $matName = $mat['name'] ?? 'Material';
+    $matUnit = $mat['unit'] ?? 'unit';
+    $itemDetails .= ($idx + 1) . ". " . $matName . " x " . $item['quantity'] . " " . $matUnit . " = Rp " . number_format($item['subtotal'], 0, ',', '.') . "%0A";
+}
+
+// Link langsung ke detail pesanan
+$adminLink = APP_URL . '/admin-ab/modules/orders/view.php?id=' . $orderId;
+
+$waMessage = "PESANAN BARU%0A";
+$waMessage .= "══════════════════%0A%0A";
+$waMessage .= "Nomor Pesanan: " . $successOrder . " %0A";
+$waMessage .= "Link: " . APP_URL . '/admin-ab/modules/orders/view.php?id=' . $orderId . "%0A%0A";
+$waMessage .= "Tanggal: " . date('d M Y H:i') . "%0A";
+$waMessage .= "━━━━━━━━━━━━━━━━%0A";
+$waMessage .= "PELANGGAN:%0A";
+$waMessage .= "   Nama: " . $customerName . "%0A";
+$waMessage .= "   HP: " . $customerPhone . "%0A";
+if ($customerEmail) $waMessage .= "   Email: " . $customerEmail . "%0A";
+$waMessage .= "   Alamat: " . $deliveryAddress . "%0A";
+if ($orderNotes) $waMessage .= "   Catatan: " . $orderNotes . "%0A";
+$waMessage .= "━━━━━━━━━━━━━━━━%0A";
+$waMessage .= "ITEM PESANAN:%0A";
+$waMessage .= $itemDetails ?: "   (Tidak ada item)%0A";
+$waMessage .= "━━━━━━━━━━━━━━━━%0A";
+$waMessage .= "Total: Rp " . number_format($totalAmount, 0, ',', '.') . "%0A";
+$waMessage .= "══════════════════%0A%0A";
+$waMessage .= "Silakan segera diproses. Terima kasih.";
+?>
+<a href="https://wa.me/<?=preg_replace('/[^0-9]/','',$cp['whatsapp'])?>?text=<?= $waMessage ?>" target="_blank" class="btn btn-lg" style="background:#25d366;color:white;border-color:#25d366; padding:14px 24px; font-size:15px;">
+    <i class="fab fa-whatsapp"></i> Konfirmasi via WA
+</a>
+<?php endif;?>
     <a href="<?= APP_URL ?>/" class="btn btn-secondary btn-lg"><i class="fas fa-home"></i> Beranda</a>
 </div>
     </div>
