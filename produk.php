@@ -285,9 +285,14 @@ include __DIR__ . '/includes/public_head.php';
                 <?php if ($mat['is_featured']): ?>
                 <span class="badge badge-info" style="margin-top:8px;"><i class="fas fa-star"></i> Unggulan</span>
                 <?php endif; ?>
-        <a href="<?= APP_URL ?>/pesan.php?material=<?= $mat['id'] ?>&qty=1&added=1" class="btn btn-primary w-100" style="margin-top:14px;">
-    <i class="fas fa-cart-plus"></i> Tambah ke Keranjang
-</a>
+                <div style="display:flex;gap:8px;margin-top:14px;">
+                    <a href="<?= APP_URL ?>/pesan.php?material=<?= $mat['id'] ?>" class="btn btn-primary" style="flex:1;justify-content:center;padding:8px 4px;font-size:13px;">
+                        <i class="fas fa-shopping-cart"></i> Pesan
+                    </a>
+                    <a href="<?= APP_URL ?>/pesan.php?material=<?= $mat['id'] ?>&qty=1&added=1" class="btn btn-secondary" style="flex:1;justify-content:center;padding:8px 4px;font-size:13px;border-style:dashed;">
+                        <i class="fas fa-cart-plus"></i> Keranjang
+                    </a>
+                </div>
               </div>
             </div>
             <?php endforeach; ?>
@@ -331,9 +336,14 @@ include __DIR__ . '/includes/public_head.php';
                 <div class="price" id="modalPrice">Rp 0</div>
                 <div class="unit" id="modalUnit">/ unit</div>
                 <p class="desc" id="modalDesc">Deskripsi produk</p>
-                <a href="#" id="modalOrderBtn" class="btn btn-primary w-100">
-                    <i class="fas fa-shopping-cart"></i> Pesan Sekarang
-                </a>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <a href="#" id="modalOrderBtn" class="btn btn-primary" style="flex:1;justify-content:center;">
+                        <i class="fas fa-shopping-cart"></i> Pesan
+                    </a>
+                    <a href="#" id="modalCartBtn" class="btn btn-secondary" style="flex:1;justify-content:center;border-style:dashed;">
+                        <i class="fas fa-cart-plus"></i> Keranjang
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -343,13 +353,12 @@ include __DIR__ . '/includes/public_head.php';
 
 <script>
 function openProductModal(product) {
-    // Cek apakah gambar pake Cloudinary atau lokal
     let imageUrl = '';
     if (product.image) {
         if (product.image.startsWith('http://') || product.image.startsWith('https://')) {
-            imageUrl = product.image; // Udah URL lengkap (Cloudinary)
+            imageUrl = product.image;
         } else {
-            imageUrl = '<?= uploadUrl('') ?>' + product.image; // Path lokal
+            imageUrl = '<?= uploadUrl('') ?>' + product.image;
         }
     }
     document.getElementById('modalImage').src = imageUrl;
@@ -359,6 +368,7 @@ function openProductModal(product) {
     document.getElementById('modalUnit').textContent = '/ ' + (product.unit || 'unit');
     document.getElementById('modalDesc').textContent = product.description || 'Deskripsi produk tidak tersedia.';
     document.getElementById('modalOrderBtn').href = '<?= APP_URL ?>/pesan.php?material=' + product.id;
+    document.getElementById('modalCartBtn').href = '<?= APP_URL ?>/pesan.php?material=' + product.id + '&qty=1&added=1';
     document.getElementById('productModal').classList.add('show');
     document.body.style.overflow = 'hidden';
 }

@@ -12,17 +12,7 @@ $success   = false;
 $materials = Database::fetchAll("SELECT id, name, unit, price FROM materials WHERE is_active=true ORDER BY name");
 
 // Pre-select material from URL
-// ── AUTO ADD FROM URL (ADD TO CART) ──────────────────────
-$autoMatId = getInt('material');
-$autoQty   = getInt('qty', 1);
-
-if ($autoMatId && $autoQty > 0) {
-    // Simpan ke session
-    if (!isset($_SESSION['cart_items'])) {
-        $_SESSION['cart_items'] = [];
-    }
-    $_SESSION['cart_items'][$autoMatId] = ($_SESSION['cart_items'][$autoMatId] ?? 0) + $autoQty;
-}
+$preMatId = getInt('material');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf()) {
@@ -34,12 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $deliveryAddress = post('delivery_address');
         $notes           = post('notes');
 
-        // Validate
         if (empty($customerName))    $errors[] = 'Nama pemesan wajib diisi.';
         if (empty($customerPhone))   $errors[] = 'Nomor HP wajib diisi.';
         if (empty($deliveryAddress)) $errors[] = 'Alamat pengiriman wajib diisi.';
 
-        // Collect items
         $items    = [];
         $matIds   = $_POST['material_id']  ?? [];
         $qtys     = $_POST['quantity']     ?? [];
@@ -126,75 +114,63 @@ include __DIR__ . '/includes/public_head.php';
         <div style="font-size:13px;color:var(--text-muted);">Nomor Pesanan</div>
         <div style="font-size:22px;font-weight:800;color:var(--brand-600);font-family:var(--font-mono);"><?= htmlspecialchars($successOrder ?? '') ?></div>
       </div>
-<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-    <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-lg"><i class="fas fa-plus"></i> Buat Pesanan Baru</a>
-   <?php if($cp['whatsapp']):?>
-<?php
-// Build WA message template
-$customerName = $_POST['customer_name'] ?? $customerName ?? '';
-$customerPhone = $_POST['customer_phone'] ?? $customerPhone ?? '';
-$customerEmail = $_POST['customer_email'] ?? '';
-$deliveryAddress = $_POST['delivery_address'] ?? $deliveryAddress ?? '';
-$orderNotes = $_POST['notes'] ?? '';
-$totalAmount = $totalAmount ?? 0;
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-lg"><i class="fas fa-plus"></i> Buat Pesanan Baru</a>
+        <?php if($cp['whatsapp']):?>
+        <?php
+        $customerName = $_POST['customer_name'] ?? $customerName ?? '';
+        $customerPhone = $_POST['customer_phone'] ?? $customerPhone ?? '';
+        $customerEmail = $_POST['customer_email'] ?? '';
+        $deliveryAddress = $_POST['delivery_address'] ?? $deliveryAddress ?? '';
+        $orderNotes = $_POST['notes'] ?? '';
+        $totalAmount = $totalAmount ?? 0;
 
-// Hitung total item
-$totalItems = count($items ?? []);
-$itemDetails = '';
-foreach ($items ?? [] as $idx => $item) {
-    $mat = Database::fetchOne("SELECT name, unit FROM materials WHERE id = ?", [$item['material_id']]);
-    $matName = $mat['name'] ?? 'Material';
-    $matUnit = $mat['unit'] ?? 'unit';
-    $itemDetails .= ($idx + 1) . ". " . $matName . " x " . $item['quantity'] . " " . $matUnit . " = Rp " . number_format($item['subtotal'], 0, ',', '.') . "%0A";
-}
+        $itemDetails = '';
+        foreach ($items ?? [] as $idx => $item) {
+            $mat = Database::fetchOne("SELECT name, unit FROM materials WHERE id = ?", [$item['material_id']]);
+            $matName = $mat['name'] ?? 'Material';
+            $matUnit = $mat['unit'] ?? 'unit';
+            $itemDetails .= ($idx + 1) . ". " . $matName . " x " . $item['quantity'] . " " . $matUnit . " = Rp " . number_format($item['subtotal'], 0, ',', '.') . "%0A";
+        }
 
-// Link langsung ke detail pesanan
-$adminLink = APP_URL . '/admin-ab/modules/orders/view.php?id=' . $orderId;
+        $orderLink = APP_URL . '/admin-ab/modules/orders/view.php?id=' . $orderId;
 
-$waMessage = "PESANAN BARU%0A";
-$waMessage .= "══════════════════%0A%0A";
-$orderLink = APP_URL . '/admin-ab/modules/orders/view.php?id=' . $orderId;
-$waMessage .= "📋 *Nomor Pesanan:* " . $successOrder . " %0A";
-$waMessage .= "🔗 *Link:* " . $orderLink . "%0A%0A";
-$waMessage .= "Tanggal: " . date('d M Y H:i') . "%0A";
-$waMessage .= "━━━━━━━━━━━━━━━━%0A";
-$waMessage .= "PELANGGAN:%0A";
-$waMessage .= "   Nama: " . $customerName . "%0A";
-$waMessage .= "   HP: " . $customerPhone . "%0A";
-if ($customerEmail) $waMessage .= "   Email: " . $customerEmail . "%0A";
-$waMessage .= "   Alamat: " . $deliveryAddress . "%0A";
-if ($orderNotes) $waMessage .= "   Catatan: " . $orderNotes . "%0A";
-$waMessage .= "━━━━━━━━━━━━━━━━%0A";
-$waMessage .= "ITEM PESANAN:%0A";
-$waMessage .= $itemDetails ?: "   (Tidak ada item)%0A";
-$waMessage .= "━━━━━━━━━━━━━━━━%0A";
-$waMessage .= "Total: Rp " . number_format($totalAmount, 0, ',', '.') . "%0A";
-$waMessage .= "══════════════════%0A%0A";
-$waMessage .= "Silakan segera diproses. Terima kasih.";
-?>
-<a href="https://wa.me/<?=preg_replace('/[^0-9]/','',$cp['whatsapp'])?>?text=<?= $waMessage ?>" target="_blank" class="btn btn-lg" style="background:#25d366;color:white;border-color:#25d366; padding:14px 24px; font-size:15px;">
-    <i class="fab fa-whatsapp"></i> Konfirmasi via WA
-</a>
-<?php endif;?>
-    <a href="<?= APP_URL ?>/" class="btn btn-secondary btn-lg"><i class="fas fa-home"></i> Beranda</a>
-</div>
+        $waMessage = "PESANAN BARU%0A";
+        $waMessage .= "══════════════════%0A%0A";
+        $waMessage .= "Nomor Pesanan: " . $successOrder . " %0A";
+        $waMessage .= "Link: " . $orderLink . "%0A%0A";
+        $waMessage .= "Tanggal: " . date('d M Y H:i') . "%0A";
+        $waMessage .= "━━━━━━━━━━━━━━━━%0A";
+        $waMessage .= "PELANGGAN:%0A";
+        $waMessage .= "   Nama: " . $customerName . "%0A";
+        $waMessage .= "   HP: " . $customerPhone . "%0A";
+        if ($customerEmail) $waMessage .= "   Email: " . $customerEmail . "%0A";
+        $waMessage .= "   Alamat: " . $deliveryAddress . "%0A";
+        if ($orderNotes) $waMessage .= "   Catatan: " . $orderNotes . "%0A";
+        $waMessage .= "━━━━━━━━━━━━━━━━%0A";
+        $waMessage .= "ITEM PESANAN:%0A";
+        $waMessage .= $itemDetails ?: "   (Tidak ada item)%0A";
+        $waMessage .= "━━━━━━━━━━━━━━━━%0A";
+        $waMessage .= "Total: Rp " . number_format($totalAmount, 0, ',', '.') . "%0A";
+        $waMessage .= "══════════════════%0A%0A";
+        $waMessage .= "Silakan segera diproses. Terima kasih.";
+        ?>
+        <a href="https://wa.me/<?=preg_replace('/[^0-9]/','',$cp['whatsapp'])?>?text=<?= $waMessage ?>" target="_blank" class="btn btn-lg" style="background:#25d366;color:white;border-color:#25d366; padding:14px 24px; font-size:15px;">
+            <i class="fab fa-whatsapp"></i> Konfirmasi via WA
+        </a>
+        <?php endif;?>
+        <a href="<?= APP_URL ?>/" class="btn btn-secondary btn-lg"><i class="fas fa-home"></i> Beranda</a>
+      </div>
     </div>
 
     <?php else: ?>
 
-<?php foreach ($errors as $e): ?>
-  <div class="alert alert-danger" data-auto-dismiss="6000"><i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($e) ?></div>
-<?php endforeach; ?>
+    <?php foreach ($errors as $e): ?>
+      <div class="alert alert-danger" data-auto-dismiss="6000"><i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($e) ?></div>
+    <?php endforeach; ?>
 
-<!-- NOTIFIKASI ADD TO CART -->
-<?php if (getInt('added', 0) === 1): ?>
-    <div class="alert alert-success" data-auto-dismiss="3000">
-        <i class="fas fa-check-circle"></i> ✅ Produk berhasil ditambahkan ke keranjang!
-    </div>
-<?php endif; ?>
-
-<form method="POST" id="order-form">
-  <?= csrfField() ?>
+    <form method="POST" id="order-form">
+      <?= csrfField() ?>
 
       <!-- Customer Info -->
       <div class="card mb-20">
@@ -223,24 +199,26 @@ $waMessage .= "Silakan segera diproses. Terima kasih.";
         </div>
       </div>
 
-      <!-- Order Items -->
-      <div class="card mb-20">
-        <div class="card-header">
-          <div class="card-title"><i class="fas fa-boxes" style="margin-right:8px;color:var(--brand-600);"></i>Detail Pesanan</div>
-          <button type="button" onclick="addItem()" class="btn btn-sm btn-outline">
-            <i class="fas fa-plus"></i> Tambah Material
-          </button>
+      <!-- ── KERANJANG PESANAN ─────────────────────────────── -->
+      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <span style="font-size:14px;font-weight:700;color:var(--text-primary);">
+            🛒 Keranjang Pesanan
+          </span>
+          <span id="item-count" style="font-size:12px;background:var(--brand-50);color:var(--brand-600);padding:2px 12px;border-radius:20px;font-weight:600;">0 item</span>
         </div>
-        <div class="card-body">
-          <div id="order-items">
-            <!-- Item rows will be added here -->
-          </div>
-          <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:14px;color:var(--text-muted);">Estimasi Total</span>
-            <span style="font-size:22px;font-weight:800;color:var(--brand-600);" id="grand-total">Rp 0</span>
-          </div>
+        <div id="order-items" style="display:flex;flex-direction:column;gap:12px;">
+          <!-- Item rows will be added here -->
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;color:var(--text-muted);">Estimasi Total</span>
+          <span style="font-size:20px;font-weight:800;color:var(--brand-600);" id="grand-total">Rp 0</span>
         </div>
       </div>
+
+      <button type="button" onclick="addItem()" class="btn btn-outline w-100" style="margin-top:8px;border-style:dashed;padding:12px;margin-bottom:20px;">
+        <i class="fas fa-plus"></i> Tambah Material Lain
+      </button>
 
       <!-- Notes -->
       <div class="card mb-20">
@@ -251,9 +229,9 @@ $waMessage .= "Silakan segera diproses. Terima kasih.";
       </div>
 
       <div style="background:var(--info-bg);border:1px solid var(--brand-200);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:20px;font-size:13.5px;color:var(--text-primary);">
-    <i class="fas fa-info-circle"></i>
-    Pesanan Anda akan dikonfirmasi oleh tim kami melalui telepon atau WhatsApp dalam waktu 1x24 jam.
-</div>
+        <i class="fas fa-info-circle"></i>
+        Pesanan Anda akan dikonfirmasi oleh tim kami melalui telepon atau WhatsApp dalam waktu 1x24 jam.
+      </div>
 
       <button type="submit" class="btn btn-primary btn-lg w-100" style="justify-content:center;font-size:16px;padding:15px;">
         <i class="fas fa-paper-plane"></i> Kirim Pesanan Sekarang
@@ -269,7 +247,6 @@ $waMessage .= "Silakan segera diproses. Terima kasih.";
 <?php include __DIR__ . '/includes/public_footer.php'; ?>
 
 <script>
-// Materials data from server
 const materialsData = <?= json_encode(array_column($materials, null, 'id')) ?>;
 const preMatId = <?= $preMatId ?: 0 ?>;
 let itemCount = 0;
@@ -278,7 +255,17 @@ function addItem(matId = '', qty = 1) {
   const i = itemCount++;
   const div = document.createElement('div');
   div.id = `item-${i}`;
-  div.style.cssText = 'display:grid;grid-template-columns:1fr 160px 140px 36px;gap:10px;align-items:end;margin-bottom:12px;padding:16px;background:var(--bg-muted);border-radius:var(--radius-md);border:1px solid var(--border);';
+  div.style.cssText = `
+    display: grid;
+    grid-template-columns: 1fr 80px 100px 36px;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg-muted);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+  `;
 
   let opts = '<option value="">-- Pilih Material --</option>';
   Object.values(materialsData).forEach(m => {
@@ -287,24 +274,17 @@ function addItem(matId = '', qty = 1) {
 
   div.innerHTML = `
     <div>
-      <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:5px;">Material</label>
-      <select name="material_id[]" class="form-control mat-select" onchange="updateSubtotal(${i})" required>
+      <select name="material_id[]" class="form-control mat-select" onchange="updateSubtotal(${i})" required style="font-size:13px;padding:6px 8px;height:38px;">
         ${opts}
       </select>
     </div>
-    <div>
-      <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:5px;">Jumlah</label>
-      <div style="display:flex;align-items:center;gap:4px;">
-        <input type="number" name="quantity[]" class="form-control qty-input" value="${qty}" min="1" onchange="updateSubtotal(${i})" style="text-align:center;" required>
-        <span class="unit-label" style="font-size:12px;color:var(--text-muted);white-space:nowrap;">unit</span>
-      </div>
+    <div style="display:flex;align-items:center;gap:4px;">
+      <input type="number" name="quantity[]" class="form-control qty-input" value="${qty}" min="1" onchange="updateSubtotal(${i})" style="text-align:center;width:55px;padding:6px 4px;height:38px;">
+      <span class="unit-label" style="font-size:11px;color:var(--text-muted);white-space:nowrap;">unit</span>
     </div>
+    <div class="subtotal" style="font-size:13px;font-weight:700;color:var(--brand-600);text-align:right;">Rp 0</div>
     <div>
-      <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:5px;">Subtotal</label>
-      <div class="subtotal" style="font-size:14px;font-weight:700;color:var(--brand-600);padding:10px 0;">Rp 0</div>
-    </div>
-    <div style="padding-bottom:2px;">
-      <button type="button" onclick="removeItem(${i})" class="btn btn-sm btn-danger btn-icon" style="margin-top:22px;">
+      <button type="button" onclick="removeItem(${i})" class="btn btn-sm btn-danger btn-icon" style="padding:4px 6px;height:32px;width:32px;">
         <i class="fas fa-times"></i>
       </button>
     </div>
@@ -312,6 +292,7 @@ function addItem(matId = '', qty = 1) {
 
   document.getElementById('order-items').appendChild(div);
   if (matId) updateSubtotal(i);
+  updateGrandTotal();
 }
 
 function removeItem(i) {
@@ -320,7 +301,7 @@ function removeItem(i) {
 }
 
 function updateSubtotal(i) {
-  const el  = document.getElementById(`item-${i}`);
+  const el = document.getElementById(`item-${i}`);
   if (!el) return;
   const sel = el.querySelector('.mat-select');
   const qty = parseFloat(el.querySelector('.qty-input').value) || 0;
@@ -335,28 +316,20 @@ function updateSubtotal(i) {
 
 function updateGrandTotal() {
   let total = 0;
-  document.querySelectorAll('#order-items .mat-select').forEach((sel, idx) => {
+  let count = 0;
+  document.querySelectorAll('#order-items .mat-select').forEach((sel) => {
     const row = sel.closest('[id^="item-"]');
     if (!row) return;
-    const qty   = parseFloat(row.querySelector('.qty-input').value) || 0;
+    const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
     const price = parseFloat(sel.options[sel.selectedIndex]?.dataset?.price || 0);
     total += price * qty;
+    count++;
   });
   document.getElementById('grand-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+  document.getElementById('item-count').textContent = count + ' item';
 }
 
-// Init: add one item, pre-select if from URL
-document.addEventListener('DOMContentLoaded', function() {
-    // Load dari URL parameter
-    addItem(preMatId || '', 1);
-    
-    <?php if (!empty($_SESSION['cart_items'])): ?>
-        <?php foreach ($_SESSION['cart_items'] as $id => $qty): ?>
-            <?php if ($id != $preMatId): // Hindari duplikat ?>
-                addItem(<?= $id ?>, <?= $qty ?>);
-            <?php endif; ?>
-        <?php endforeach; ?>
-        <?php unset($_SESSION['cart_items']); // Clear setelah di-load ?>
-    <?php endif; ?>
+document.addEventListener('DOMContentLoaded', () => {
+  addItem(preMatId || '', 1);
 });
 </script>

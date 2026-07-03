@@ -1,6 +1,6 @@
-const CACHE_NAME = 'andalan-beton-v1.0.1';
+const CACHE_NAME = 'andalan-beton-v1.0.3';
 
-// File yang di-cache (statis) - TAMBAHKAN ADMIN
+// File yang di-cache (statis) - TAMBAHKAN ICON
 const urlsToCache = [
   '/',
   '/profil.php',
@@ -10,7 +10,7 @@ const urlsToCache = [
   '/pesan.php',
   '/assets/css/main.css',
   '/assets/js/main.js',
-  // TAMBAHKAN INI BUAT ADMIN
+  // ADMIN
   '/admin-ab/dashboard.php',
   '/admin-ab/login.php',
   '/admin-ab/modules/material/index.php',
@@ -21,7 +21,10 @@ const urlsToCache = [
   '/admin-ab/modules/gallery/index.php',
   '/admin-ab/modules/settings/index.php',
   '/assets/css/layouts/admin.css',
-  '/assets/css/layouts/admin-responsive.css'
+  '/assets/css/layouts/admin-responsive.css',
+  // ICON PWA (TAMBAHKAN INI)
+  '/assets/img/icon-192.png',
+  '/assets/img/icon-512.png'
 ];
 
 // Install Service Worker
@@ -49,8 +52,22 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch - ambil dari cache dulu, baru network
+// ── FETCH + REDIRECT PWA ADMIN ──────────────────────────────
 self.addEventListener('fetch', event => {
+  const url = event.request.url;
+  
+  // Redirect root ke admin login (kalo dari PWA)
+  if (url.includes('/?pwa=true') || 
+      url === 'https://andalanbeton.com/' || 
+      url === 'https://andalanbeton.com/?pwa=true' ||
+      url === 'http://localhost:8000/' || 
+      url === 'http://localhost:8000/?pwa=true') {
+    event.respondWith(
+      fetch('/admin-ab/login.php')
+    );
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then(response => {
