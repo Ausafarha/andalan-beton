@@ -205,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="login-hint">
       <i class="fas fa-info-circle"></i>
-      <strong>Demo:</strong> username <code>admin</code> / password <code>password</code>
+      <strong>Demo:</strong> username <code>admin-andalanbeton</code> / password <code>andalanbeton123</code>
     </div>
 
     <?php if ($error): ?>

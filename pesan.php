@@ -3,6 +3,57 @@ require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/config/app.php';
 initSession();
 
+// ===== HANDLER AJAX ADD CART =====
+if (isset($_GET['action']) && $_GET['action'] === 'add_cart' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
+    $materialId = (int) ($_POST['material'] ?? 0);
+    $qty        = (int) ($_POST['qty'] ?? 1);
+    if ($materialId <= 0 || $qty <= 0) {
+        echo json_encode(['success' => false, 'message' => 'Data tidak valid']);
+        exit;
+    }
+    $material = Database::fetchOne("SELECT id FROM materials WHERE id = ? AND is_active = true", [$materialId]);
+    if (!$material) {
+        echo json_encode(['success' => false, 'message' => 'Material tidak ditemukan']);
+        exit;
+    }
+    if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+    // Format baru: key = material_id, value = quantity
+    if (isset($_SESSION['cart'][$materialId])) {
+        $_SESSION['cart'][$materialId] += $qty;
+    } else {
+        $_SESSION['cart'][$materialId] = $qty;
+    }
+    $totalItems = array_sum($_SESSION['cart']);
+    echo json_encode(['success' => true, 'cart_count' => $totalItems, 'message' => 'Berhasil ditambahkan ke keranjang']);
+    exit;
+}
+
+// ===== HANDLER AJAX REMOVE CART =====
+if (isset($_GET['action']) && $_GET['action'] === 'remove' && isset($_GET['id'])) {
+    header('Content-Type: application/json');
+    $removeId = (int) $_GET['id'];
+    if ($removeId <= 0) {
+        echo json_encode(['success' => false, 'message' => 'ID tidak valid']);
+        exit;
+    }
+    if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
+        echo json_encode(['success' => false, 'message' => 'Keranjang kosong']);
+        exit;
+    }
+    if (isset($_SESSION['cart'][$removeId])) {
+        unset($_SESSION['cart'][$removeId]);
+        $totalItems = array_sum($_SESSION['cart']);
+        echo json_encode(['success' => true, 'cart_count' => $totalItems, 'message' => 'Item dihapus']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Item tidak ditemukan']);
+    }
+    exit;
+}
+
+// ===== HALAMAN UTAMA =====
 $currentSlug = 'pesan';
 $pageTitle   = 'Pemesanan Online';
 $cp          = getCompanyProfile();
@@ -11,10 +62,45 @@ $errors    = [];
 $success   = false;
 $materials = Database::fetchAll("SELECT id, name, unit, price FROM materials WHERE is_active=true ORDER BY name");
 
-// Pre-select material from URL
 $preMatId = getInt('material');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// ── SESSION CART (format baru) ──
+if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+}
+
+// Tambah item dari URL (tombol "Pesan" langsung)
+if (getInt('material') && getInt('qty', 0) > 0) {
+    $matId = getInt('material');
+    $qty   = getInt('qty', 1);
+    if (isset($_SESSION['cart'][$matId])) {
+        $_SESSION['cart'][$matId] += $qty;
+    } else {
+        $_SESSION['cart'][$matId] = $qty;
+    }
+    header('Location: ' . APP_URL . '/pesan.php');
+    exit;
+}
+
+// Hapus item via GET (fallback)
+if (getInt('remove') > 0) {
+    $removeId = getInt('remove');
+    if (isset($_SESSION['cart'][$removeId])) {
+        unset($_SESSION['cart'][$removeId]);
+    }
+    header('Location: ' . APP_URL . '/pesan.php');
+    exit;
+}
+
+// Kosongkan keranjang
+if (get('clear_cart')) {
+    $_SESSION['cart'] = [];
+    header('Location: ' . APP_URL . '/pesan.php');
+    exit;
+}
+
+// ── PROSES FORM PESANAN ──────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
     if (!verifyCsrf()) {
         $errors[] = 'Token keamanan tidak valid. Silakan muat ulang halaman.';
     } else {
@@ -74,6 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Database::commit();
                 $success     = true;
                 $successOrder= $orderNumber;
+                $_SESSION['cart'] = [];
             } catch (Exception $e) {
                 Database::rollback();
                 $errors[] = 'Terjadi kesalahan sistem. Silakan coba lagi.';
@@ -100,7 +187,7 @@ include __DIR__ . '/includes/public_head.php';
   <div class="container" style="max-width:860px;">
 
     <?php if ($success): ?>
-    <!-- Success State -->
+    <!-- Success State (sama) -->
     <div style="text-align:center;padding:60px 40px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);">
       <div style="width:80px;height:80px;border-radius:50%;background:var(--success-bg);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;">
         <i class="fas fa-check-circle"></i>
@@ -208,17 +295,24 @@ include __DIR__ . '/includes/public_head.php';
           <span id="item-count" style="font-size:12px;background:var(--brand-50);color:var(--brand-600);padding:2px 12px;border-radius:20px;font-weight:600;">0 item</span>
         </div>
         <div id="order-items" style="display:flex;flex-direction:column;gap:12px;">
-          <!-- Item rows will be added here -->
+          <!-- Item rows akan diisi JS -->
         </div>
+        <button type="button" onclick="addItem()" class="btn btn-outline w-100" style="margin-top:8px;border-style:dashed;padding:12px;margin-bottom:20px;">
+          <i class="fas fa-plus"></i> Tambah Material Lain
+        </button>
         <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;">
           <span style="font-size:13px;color:var(--text-muted);">Estimasi Total</span>
           <span style="font-size:20px;font-weight:800;color:var(--brand-600);" id="grand-total">Rp 0</span>
         </div>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:12px;">
+          <button type="button" onclick="clearCart()" class="btn btn-sm btn-danger" style="font-size:12px;">
+            <i class="fas fa-trash"></i> Kosongkan Keranjang
+          </button>
+          <span style="font-size:12px;color:var(--text-muted);align-self:center;">
+            Total item: <strong id="item-count-label">0</strong>
+          </span>
+        </div>
       </div>
-
-      <button type="button" onclick="addItem()" class="btn btn-outline w-100" style="margin-top:8px;border-style:dashed;padding:12px;margin-bottom:20px;">
-        <i class="fas fa-plus"></i> Tambah Material Lain
-      </button>
 
       <!-- Notes -->
       <div class="card mb-20">
@@ -255,6 +349,7 @@ function addItem(matId = '', qty = 1) {
   const i = itemCount++;
   const div = document.createElement('div');
   div.id = `item-${i}`;
+  div.dataset.materialId = matId;
   div.style.cssText = `
     display: grid;
     grid-template-columns: 1fr 80px 100px 36px;
@@ -269,7 +364,8 @@ function addItem(matId = '', qty = 1) {
 
   let opts = '<option value="">-- Pilih Material --</option>';
   Object.values(materialsData).forEach(m => {
-    opts += `<option value="${m.id}" ${m.id == matId ? 'selected' : ''} data-price="${m.price}" data-unit="${m.unit}">${m.name}</option>`;
+    const selected = (m.id == matId) ? 'selected' : '';
+    opts += `<option value="${m.id}" ${selected} data-price="${m.price}" data-unit="${m.unit}">${m.name}</option>`;
   });
 
   div.innerHTML = `
@@ -296,8 +392,33 @@ function addItem(matId = '', qty = 1) {
 }
 
 function removeItem(i) {
-  document.getElementById(`item-${i}`)?.remove();
-  updateGrandTotal();
+  const el = document.getElementById(`item-${i}`);
+  if (!el) return;
+  const matId = el.dataset.materialId;
+  if (!matId) {
+    el.remove();
+    updateGrandTotal();
+    return;
+  }
+  fetch('<?= APP_URL ?>/pesan.php?action=remove&id=' + matId, {
+    method: 'GET',
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      el.remove();
+      updateGrandTotal();
+      if (typeof updateCartBadge === 'function') {
+        updateCartBadge(data.cart_count);
+      }
+    } else {
+      alert('Gagal menghapus: ' + data.message);
+    }
+  })
+  .catch(err => {
+    alert('Terjadi kesalahan, coba lagi.');
+  });
 }
 
 function updateSubtotal(i) {
@@ -327,9 +448,31 @@ function updateGrandTotal() {
   });
   document.getElementById('grand-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
   document.getElementById('item-count').textContent = count + ' item';
+  document.getElementById('item-count-label').textContent = count;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  addItem(preMatId || '', 1);
+function clearCart() {
+    if (confirm('Yakin ingin mengosongkan keranjang?')) {
+        window.location.href = '<?= APP_URL ?>/pesan.php?clear_cart=1';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    <?php 
+    // Session cart sekarang dalam format [material_id => quantity]
+    if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])): 
+        foreach ($_SESSION['cart'] as $id => $qty): 
+    ?>
+            addItem(<?= $id ?>, <?= $qty ?>);
+    <?php 
+        endforeach; 
+    else: 
+        if ($preMatId > 0): 
+    ?>
+            addItem(<?= $preMatId ?>, 1);
+    <?php 
+        endif; 
+    endif; 
+    ?>
 });
 </script>
