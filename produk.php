@@ -10,7 +10,7 @@ $search   = get('search');
 $catSlug  = get('kategori');
 $page     = max(1, getInt('page', 1));
 
-$categories = Database::fetchAll("SELECT * FROM material_categories ORDER BY name");
+$categories = Database::fetchAll("SELECT * FROM material_categories WHERE slug IN ('beton', 'precast') ORDER BY name");
 
 $params = [];
 $where  = ["m.is_active = true"];

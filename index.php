@@ -38,7 +38,7 @@ $featuredMats = Database::fetchAll("
 ");
 $categories   = Database::fetchAll("SELECT * FROM material_categories ORDER BY name");
 $totalMat     = Database::fetchColumn("SELECT COUNT(*) FROM materials WHERE is_active=true");
-$totalProyek  = 1250;
+$totalProyek  = 50;
 $experience   = date('Y') - ($cp['established_year'] ?? 2010);
 
 include __DIR__ . '/includes/public_head.php';
@@ -111,9 +111,9 @@ include __DIR__ . '/includes/public_head.php';
         ['fas fa-certificate','#3b82f6','rgba(59,130,246,.12)','Kualitas Terjamin','Semua material memenuhi standar SNI dan telah teruji kualitasnya melalui laboratorium pengujian internal kami.'],
         ['fas fa-truck-fast','#22c55e','rgba(34,197,94,.12)','Pengiriman Cepat','Armada kendaraan lengkap memastikan material sampai ke lokasi proyek tepat waktu dan dalam kondisi sempurna.'],
         ['fas fa-tags','#f59e0b','rgba(245,158,11,.12)','Harga Kompetitif','Harga terbaik di kelasnya dengan fleksibilitas pembayaran dan diskon menarik untuk pembelian partai besar.'],
-        ['fas fa-headset','#8b5cf6','rgba(139,92,246,.12)','Layanan 24/7','Tim customer service kami siap membantu menjawab pertanyaan dan menerima pesanan kapan pun Anda butuhkan.'],
+        
         ['fas fa-boxes','#ef4444','rgba(239,68,68,.12)','Stok Lengkap','Gudang berkapasitas besar dengan beragam jenis material bangunan memastikan kebutuhan proyek Anda selalu terpenuhi.'],
-        ['fas fa-shield-alt','#06b6d4','rgba(6,182,212,.12)','Bergaransi','Setiap produk yang kami jual dilengkapi garansi kualitas. Kepuasan pelanggan adalah prioritas utama kami.'],
+        
       ] as [$icon,$color,$bg,$title,$desc]): ?>
       <div class="feature-card" data-animate>
         <div class="feature-icon" style="background:<?=$bg?>;color:<?=$color?>;">

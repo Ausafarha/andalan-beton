@@ -9,8 +9,7 @@ $cp = getCompanyProfile();
           <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--brand-500),var(--brand-700));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:14px;">AB</div>
           <div style="font-size:15px;font-weight:800;color:white;"><?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?></div>
         </div>
-
-       <p style="text-align:center; margin:0 auto; max-width:300px; line-height:1.7;"><?= htmlspecialchars($cp['description'] ?? 'Industri Readymix dan Precast.') ?></p>
+        <p style="text-align:center; margin:0 auto; max-width:300px; line-height:1.7;"><?= htmlspecialchars($cp['description'] ?? 'Industri Readymix dan Precast.') ?></p>
       </div>
       <div>
         <div class="footer-title">Menu</div>
@@ -27,10 +26,13 @@ $cp = getCompanyProfile();
         <div class="footer-title">Produk</div>
         <ul class="footer-links">
           <?php
-          $cats = Database::fetchAll("SELECT name FROM material_categories LIMIT 5");
+          // Hanya tampilkan kategori Beton dan Precast
+          $cats = Database::fetchAll("SELECT name, slug FROM material_categories WHERE slug IN ('beton', 'precast') ORDER BY name");
           foreach($cats as $c): ?>
-          <li><a href="<?=APP_URL?>/produk.php"><?=htmlspecialchars($c['name'])?></a></li>
+          <li><a href="<?=APP_URL?>/produk.php?kategori=<?=$c['slug']?>"><?=htmlspecialchars($c['name'])?></a></li>
           <?php endforeach; ?>
+          <!-- Opsional tambahkan link "Semua Produk" -->
+          <li><a href="<?=APP_URL?>/produk.php">Semua Produk</a></li>
         </ul>
       </div>
       <div>
@@ -53,7 +55,6 @@ $cp = getCompanyProfile();
     </div>
     <div class="footer-bottom">
       <span>&copy; <?=date('Y')?> <?=htmlspecialchars($cp['company_name']??APP_NAME)?>. Hak cipta dilindungi.</span>
-      
     </div>
   </div>
 </footer>
@@ -71,6 +72,5 @@ if ('serviceWorker' in navigator) {
     });
 }
 </script>
-
 </body>
 </html>

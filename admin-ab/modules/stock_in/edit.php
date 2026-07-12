@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         $data = [
             'material_id'=>postInt('material_id'),
             'quantity'=>postInt('quantity'),
-            'price_per_unit'=>sanitizeFloat($_POST['price_per_unit']??0)?:null,
+            
             'supplier_name'=>post('supplier_name')?:null,
             'invoice_number'=>post('invoice_number')?:null,
             'notes'=>post('notes')?:null,
@@ -59,15 +59,7 @@ include __DIR__.'/../../partials/head.php';
         <label class="form-label">Jumlah <span>*</span></label>
         <input type="number" name="quantity" class="form-control" value="<?= $row['quantity'] ?>" min="1" required>
     </div>
-    <div class="form-group">
-        <label class="form-label">Harga/Unit (Opsional)</label>
-        <div class="input-group">
-            <span class="input-group-icon" style="font-size:12px;font-weight:600;">Rp</span>
-            <input type="number" name="price_per_unit" class="form-control" value="<?= $row['price_per_unit'] ?>" min="0" step="1000">
-        </div>
-        <div class="form-text">Kosongkan jika tidak diperlukan.</div>
-    </div>
-</div>
+    
       <div class="grid grid-2">
         <div class="form-group"><label class="form-label">Supplier</label><input type="text" name="supplier_name" class="form-control" value="<?= htmlspecialchars($row['supplier_name']??'') ?>"></div>
         <div class="form-group"><label class="form-label">No. Invoice</label><input type="text" name="invoice_number" class="form-control" value="<?= htmlspecialchars($row['invoice_number']??'') ?>"></div>

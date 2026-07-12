@@ -86,7 +86,7 @@ include __DIR__ . '/../../partials/head.php';
       <div class="table-responsive">
         <table class="table">
           <thead>
-            <tr><th>#</th><th>Tanggal</th><th>Material</th><th>Jumlah</th><th>Harga/Unit</th><th>Supplier</th><th>No. Invoice</th><th>Diterima Oleh</th><th>Aksi</th></tr>
+            <tr><th>No</th><th>Tanggal</th><th>Material</th><th>Jumlah</th><th>Supplier</th><th>No. Invoice</th><th>Diterima Oleh</th><th>Aksi</th></tr>
           </thead>
           <tbody>
             <?php foreach ($paginated['items'] as $i => $row): ?>
@@ -97,7 +97,7 @@ include __DIR__ . '/../../partials/head.php';
                 <div style="font-weight:600;font-size:13.5px;"><?= htmlspecialchars($row['material_name']) ?></div>
               </td>
               <td style="font-weight:700;color:var(--brand-600);"><?= formatNumber($row['quantity']) ?> <span style="font-size:12px;font-weight:400;color:var(--text-muted);"><?= $row['unit'] ?></span></td>
-              <td style="font-size:13px;"><?= $row['price_per_unit'] ? formatRupiah($row['price_per_unit']) : '-' ?></td>
+              
               <td style="font-size:13px;"><?= htmlspecialchars($row['supplier_name'] ?? '-') ?></td>
               <td style="font-size:12px;" class="text-mono"><?= htmlspecialchars($row['invoice_number'] ?? '-') ?></td>
               <td style="font-size:13px;"><?= htmlspecialchars($row['received_by_name'] ?? '-') ?></td>

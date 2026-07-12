@@ -8,7 +8,7 @@ $pageTitle = 'Catat Barang Masuk';
 $errors    = [];
 $user      = currentUser();
 $materials = Database::fetchAll("SELECT id, name, unit, type FROM materials WHERE is_active=true ORDER BY type, name");
-$data      = ['material_id'=>'','quantity'=>'','price_per_unit'=>'','supplier_name'=>'','invoice_number'=>'','notes'=>'','received_date'=>date('Y-m-d')];
+$data      = ['material_id'=>'','quantity'=>'','supplier_name'=>'','invoice_number'=>'','notes'=>'','received_date'=>date('Y-m-d')];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf()) { $errors[] = 'Token keamanan tidak valid.'; }
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $data = [
               'material_id'    => postInt('material_id'),
               'quantity'       => postInt('quantity'),
-              'price_per_unit' => sanitizeFloat($_POST['price_per_unit'] ?? 0) ?: null,
+              
               'supplier_name'  => post('entry_type') === 'production' ? 'Produksi Internal' : post('supplier_name'),
               'invoice_number' => post('entry_type') === 'production' ? 'PROD-' . date('Y-m-d') : post('invoice_number'),
               'notes'          => post('notes') ?: null,
@@ -83,28 +83,18 @@ include __DIR__ . '/../../partials/head.php';
     </optgroup>
 </select>
       </div>
-      <div class="grid grid-2">
-        <div class="form-group">
-          <label class="form-label">Jumlah <span>*</span></label>
-          <div class="input-group">
-            <input type="number" name="quantity" class="form-control" value="<?= $data['quantity'] ?>" min="1" required placeholder="0">
-            <span style="position:absolute;right:12px;font-size:12px;color:var(--text-muted);" id="unit-label"></span>
-          </div>
-        </div>
-        <div class="form-group">
-    <label class="form-label">Harga/Unit (Opsional)</label>
-    <div class="input-group">
-        <span class="input-group-icon" style="font-size:12px;font-weight:600;">Rp</span>
-        <input type="number" name="price_per_unit" class="form-control" value="<?= $data['price_per_unit'] ?>" min="0" step="1000">
+      <div class="grid grid-2" style="gap:16px;">
+  <div class="form-group">
+    <label class="form-label">Jumlah <span>*</span></label>
+    <div style="position:relative;">
+      <input type="number" name="quantity" class="form-control" value="<?= $data['quantity'] ?>" min="1" required placeholder="0" style="padding-right:50px;">
+      <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-muted);" id="unit-label"></span>
     </div>
-    <div class="form-text">Kosongkan jika tidak diperlukan.</div>
+  </div>
+  <div class="form-group">
+    <!-- Biarkan kosong agar grid 2 kolom tetap rapi -->
+  </div>
 </div>
-          <div class="input-group">
-            <span class="input-group-icon" style="font-size:12px;font-weight:600;">Rp</span>
-            <input type="number" name="price_per_unit" class="form-control" value="<?= $data['price_per_unit'] ?>" min="0" step="1000" placeholder="0">
-          </div>
-        </div>
-      </div>
       <div class="grid grid-2">
       <div class="form-group">
           <label class="form-label">Jenis Penerimaan <span>*</span></label>

@@ -3,11 +3,26 @@
 $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 $currentDir  = basename(dirname($_SERVER['PHP_SELF']));
 
-// Fungsi isActive yang lebih baik
+// ===== FUNGSI isActive YANG LEBIH AKURAT =====
 function isActive($targetDir, $targetPages = []) {
     global $currentDir, $currentPage;
-    if ($currentDir === $targetDir) return 'active';
-    if (in_array($currentPage, $targetPages)) return 'active';
+    
+    // Jika folder saat ini sama dengan target
+    if ($currentDir === $targetDir) {
+        // Halaman index atau kosong -> aktif
+        if ($currentPage === 'index' || $currentPage === '') {
+            return 'active';
+        }
+        // Halaman ada di daftar targetPages -> aktif
+        if (in_array($currentPage, $targetPages)) {
+            return 'active';
+        }
+        // Halaman create/edit/view/delete dari folder yang sama -> aktif
+        if (in_array($currentPage, ['create', 'edit', 'view', 'delete'])) {
+            return 'active';
+        }
+    }
+    
     return '';
 }
 
