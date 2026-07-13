@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
+    gettext \
     && docker-php-ext-install pdo_pgsql pgsql zip
 
 # Enable mod_rewrite Apache

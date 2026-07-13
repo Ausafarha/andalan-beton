@@ -75,9 +75,9 @@ ServerSignature Off
 </IfModule>
 
 # ── PROTECT UPLOADS ────────────────────────────────────────
-<FilesMatch "\.php$">
-    <If "%{REQUEST_URI} =~ m#^/uploads/#">
-        Header set Content-Disposition "attachment"
+<Directory "/var/www/html/uploads">
+    Options -Indexes
+    <FilesMatch "\.(php|phtml)$">
         Deny from all
-    </If>
-</FilesMatch>
+    </FilesMatch>
+</Directory>
