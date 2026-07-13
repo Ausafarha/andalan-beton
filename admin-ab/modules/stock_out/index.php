@@ -45,7 +45,7 @@ include __DIR__.'/../../partials/head.php';
     <?php else:?>
       <div class="table-responsive">
         <table class="table">
-          <thead><tr><th>#</th><th>Tanggal</th><th>Material</th><th>Jumlah</th><th>Tujuan</th><th>Driver</th><th>Kendaraan</th><th>Oleh</th><th>Aksi</th></tr></thead>
+          <thead><tr><th>#</th><th>Tanggal</th><th>Material</th><th>Jumlah</th><th>Pelanggan</th><th>Tujuan</th><th>Driver</th><th>Kendaraan</th><th>Oleh</th><th>Aksi</th></tr></thead>
           <tbody>
             <?php foreach($paginated['items'] as $i=>$row):?>
             <tr>
@@ -53,7 +53,8 @@ include __DIR__.'/../../partials/head.php';
               <td style="font-size:13px;"><?=formatDate($row['out_date'])?></td>
               <td style="font-weight:600;font-size:13.5px;"><?=htmlspecialchars($row['material_name'])?></td>
               <td style="font-weight:700;color:var(--danger);"><?=formatNumber($row['quantity'])?> <span style="font-size:12px;font-weight:400;color:var(--text-muted);"><?=$row['unit']?></span></td>
-              <td style="font-size:13px;max-width:160px;" class="truncate"><?=htmlspecialchars($row['destination']??'-')?></td>
+              <td style="font-size:13px;"><?=htmlspecialchars($row['customer_name']??'-')?></td>
+<td style="font-size:13px;max-width:160px;" class="truncate"><?=htmlspecialchars($row['destination']??'-')?></td>
               <td style="font-size:13px;"><?=htmlspecialchars($row['driver_name']??'-')?></td>
               <td style="font-size:12px;" class="text-mono"><?=htmlspecialchars($row['vehicle_number']??'-')?></td>
               <td style="font-size:13px;"><?=htmlspecialchars($row['processed_by_name']??'-')?></td>

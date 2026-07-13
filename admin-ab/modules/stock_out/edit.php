@@ -42,7 +42,7 @@ include __DIR__.'/../../partials/head.php';
   <div class="form-group"><label class="form-label">Tujuan</label><input type="text" name="destination" class="form-control" value="<?=htmlspecialchars($row['destination']??'')?>"></div>
   <div class="grid grid-2">
     <div class="form-group"><label class="form-label">Driver</label><input type="text" name="driver_name" class="form-control" value="<?=htmlspecialchars($row['driver_name']??'')?>"></div>
-    <div class="form-group"><label class="form-label">Kendaraan</label><input type="text" name="vehicle_number" class="form-control" value="<?=htmlspecialchars($row['vehicle_number']??'')?>"></div>
+    <div class="form-group"><label class="form-label">Kendaraan(PLAT)</label><input type="text" name="vehicle_number" class="form-control" value="<?=htmlspecialchars($row['vehicle_number']??'')?>"></div>
   </div>
   <div class="form-group"><label class="form-label">Catatan</label><textarea name="notes" class="form-control" rows="3"><?=htmlspecialchars($row['notes']??'')?></textarea></div>
   <div style="display:flex;gap:10px;"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button><a href="<?=APP_URL?>/admin-ab/modules/stock_out/index.php" class="btn btn-secondary">Batal</a></div>

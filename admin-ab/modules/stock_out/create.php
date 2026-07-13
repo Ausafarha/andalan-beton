@@ -56,7 +56,14 @@ include __DIR__.'/../../partials/head.php';
         <div class="form-group"><label class="form-label">Jumlah <span>*</span></label><input type="number" name="quantity" class="form-control" value="<?=$data['quantity']?>" min="1" required placeholder="0"></div>
         <div class="form-group"><label class="form-label">Tanggal Keluar <span>*</span></label><input type="date" name="out_date" class="form-control" value="<?=$data['out_date']?>" required></div>
       </div>
-      <div class="form-group"><label class="form-label">Tujuan/Proyek</label><input type="text" name="destination" class="form-control" value="<?=htmlspecialchars($data['destination']??'')?>" placeholder="Nama proyek atau tujuan pengiriman"></div>
+      <div class="form-group">
+    <label class="form-label">Tujuan/Proyek</label>
+    <input type="text" name="destination" class="form-control" value="<?=htmlspecialchars($data['destination']??'')?>" placeholder="Nama proyek atau tujuan pengiriman">
+</div>
+<div class="form-group">
+    <label class="form-label">Nama Pelanggan (Opsional)</label>
+    <input type="text" name="customer_name" class="form-control" value="<?=htmlspecialchars($data['customer_name']??'')?>" placeholder="Nama pelanggan penerima">
+</div>
       <div class="grid grid-2">
         <div class="form-group"><label class="form-label">Nama Driver</label><input type="text" name="driver_name" class="form-control" value="<?=htmlspecialchars($data['driver_name']??'')?>"></div>
         <div class="form-group"><label class="form-label">Nomor Kendaraan</label><input type="text" name="vehicle_number" class="form-control" value="<?=htmlspecialchars($data['vehicle_number']??'')?>" placeholder="B 1234 CD" class="text-mono"></div>
