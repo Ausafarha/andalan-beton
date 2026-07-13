@@ -10,24 +10,50 @@ $currentSlug  = $currentSlug ?? '';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="<?= $metaDesc ?>">
+  
+  <!-- Meta SEO Dinamis -->
+  <meta name="description" content="<?= !empty($metaDesc) ? $metaDesc : 'PT. MITRA ANDALAN BETON PANTURA menyediakan solusi beton ready mix dan precast berkualitas tinggi berstandar SNI untuk kebutuhan proyek konstruksi Anda.' ?>">
+  <meta name="keywords" content="PT Mitra Andalan Beton Pantura, Andalan Beton, ready mix, precast, supplier beton, konstruksi pantura, andalanbeton.com">
   <title><?= $pageTitle ?></title>
+
+  <!-- Schema Markup / Structured Data JSON-LD (Biar Google ngenalin nama PT & Brand Lu) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "PT. MITRA ANDALAN BETON PANTURA",
+    "alternateName": "Andalan Beton",
+    "image": "<?= APP_URL ?>/assets/img/logo-hero.png",
+    "url": "https://andalanbeton.com",
+    "telephone": "<?= htmlspecialchars($cp['whatsapp'] ?? '') ?>",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Jalur Pantura",
+      "addressLocality": "Pantura",
+      "addressRegion": "Jawa Tengah",
+      "addressCountry": "ID"
+    }
+  }
+  </script>
+
   <!-- PWA Manifest -->
-<link rel="manifest" href="<?= APP_URL ?>/manifest.json">
-<meta name="theme-color" content="#1e3a8a">
-<link rel="apple-touch-icon" href="<?= APP_URL ?>/assets/img/icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="<?= APP_URL ?>/manifest.json">
+  <meta name="theme-color" content="#1e3a8a">
+  <link rel="apple-touch-icon" href="<?= APP_URL ?>/assets/img/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
   <link rel="icon" href="<?= ASSETS_URL ?>img/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/main.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/public.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/footer.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/responsive.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/hero.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/product-card.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/feature.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/gallery.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/public.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/footer.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/responsive.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/hero.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/product-card.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/feature.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/gallery.css?v=<?= APP_VERSION ?>">
   <script>(function(){const t=localStorage.getItem('andalan_theme')||'light';document.documentElement.setAttribute('data-theme',t);})();</script>
   <script src="<?= ASSETS_URL ?>js/main.js?v=<?= APP_VERSION ?>"></script>
 </head>
@@ -59,8 +85,8 @@ $currentSlug  = $currentSlug ?? '';
   </nav>
 
   <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-<button class="topbar-btn nav-mobile-toggle" onclick="document.getElementById('pub-nav').classList.toggle('open');">
-    <i class="fas fa-bars"></i>
-</button>
+    <button class="topbar-btn nav-mobile-toggle" onclick="document.getElementById('pub-nav').classList.toggle('open');">
+        <i class="fas fa-bars"></i>
+    </button>
   </div>
 </header>
