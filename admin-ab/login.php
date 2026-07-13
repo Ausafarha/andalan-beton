@@ -203,10 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h1>Masuk ke Admin</h1>
     <p>Silakan masuk dengan akun admin Anda</p>
 
-    <div class="login-hint">
-      <i class="fas fa-info-circle"></i>
-      <strong>Demo:</strong> username <code>admin-andalanbeton</code> / password <code>andalanbeton123</code>
-    </div>
+    
 
     <?php if ($error): ?>
     <div class="alert alert-danger" data-auto-dismiss="5000">
