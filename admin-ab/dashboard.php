@@ -50,48 +50,49 @@ $topRevenueMaterials = Database::fetchAll("
     LIMIT 5
 ");
 
-// ── Monthly chart data (last 7 months) ────────────────────
+// ── UPGRADE: OPTIMASI GRAFIK BULANAN DENGAN 1 KUERI (GROUP BY) ──
 $chartMonths = [];
 $chartIn     = [];
 $chartOut    = [];
 $chartOrders = [];
-
-// ── Monthly chart data ────────────────────────────────────
-$chartIn     = [];
-$chartOut    = [];
-$chartOrders = [];
-
-// Ambil data stock_in, stock_out, orders untuk 12 bulan
-for ($i = 11; $i >= 0; $i--) {
-    $date    = date('Y-m', strtotime("-{$i} months"));
-    $monthIn = (int)Database::fetchColumn(
-        "SELECT COALESCE(SUM(quantity),0) FROM stock_in WHERE TO_CHAR(received_date,'YYYY-MM')=?", [$date]
-    );
-    $monthOut = (int)Database::fetchColumn(
-        "SELECT COALESCE(SUM(quantity),0) FROM stock_out WHERE TO_CHAR(out_date,'YYYY-MM')=?", [$date]
-    );
-    $monthOrd = (int)Database::fetchColumn(
-        "SELECT COUNT(*) FROM orders WHERE TO_CHAR(created_at,'YYYY-MM')=?", [$date]
-    );
-    $chartIn[]  = $monthIn;
-    $chartOut[] = $monthOut;
-    $chartOrders[] = $monthOrd;
-}
-
-// ── Revenue chart data (last 12 months) ───────────────────
-$chartMonths = [];
 $chartRevenue = [];
+
+// 1. Buat array penampung 12 bulan terakhir secara statis di PHP agar cepat
 for ($i = 11; $i >= 0; $i--) {
-    $date = date('Y-m', strtotime("-{$i} months"));
-    $label = date('M Y', strtotime("-{$i} months"));
-    $chartMonths[] = $label;
-    $revenue = (float)Database::fetchColumn(
-        "SELECT COALESCE(SUM(total_amount),0) FROM orders 
-         WHERE status = 'completed' AND TO_CHAR(created_at,'YYYY-MM') = ?", 
-        [$date]
-    );
-    $chartRevenue[] = round($revenue / 1000000, 1);
+    $ym = date('Y-m', strtotime("-{$i} months"));
+    $lbl = date('M Y', strtotime("-{$i} months"));
+    $chartMonths[] = $lbl;
+    $chartData[$ym] = ['in' => 0, 'out' => 0, 'orders' => 0, 'revenue' => 0];
 }
+
+// Ambil batas tanggal awal bulan ke-11 yang lalu agar filter data di SQL presisi 12 bulan penuh
+$startDate = date('Y-m-01', strtotime("-11 months"));
+
+// 2. Tarik data Stock In sekaligus
+$rawIn = Database::fetchAll("SELECT TO_CHAR(received_date,'YYYY-MM') as ym, SUM(quantity) as total FROM stock_in WHERE received_date >= ? GROUP BY ym", [$startDate]);
+foreach($rawIn as $r) { if(isset($chartData[$r['ym']])) $chartData[$r['ym']]['in'] = (int)$r['total']; }
+
+// 3. Tarik data Stock Out sekaligus
+$rawOut = Database::fetchAll("SELECT TO_CHAR(out_date,'YYYY-MM') as ym, SUM(quantity) as total FROM stock_out WHERE out_date >= ? GROUP BY ym", [$startDate]);
+foreach($rawOut as $r) { if(isset($chartData[$r['ym']])) $chartData[$r['ym']]['out'] = (int)$r['total']; }
+
+// 4. Tarik data Orders & Revenue sekaligus (Menggunakan filter tanggal string yang aman)
+$rawOrders = Database::fetchAll("SELECT TO_CHAR(created_at,'YYYY-MM') as ym, COUNT(*) as total_orders, SUM(CASE WHEN status='completed' THEN total_amount ELSE 0 END) as total_rev FROM orders WHERE created_at >= ? GROUP BY ym", [$startDate]);
+foreach($rawOrders as $r) {
+    if(isset($chartData[$r['ym']])) {
+        $chartData[$r['ym']]['orders'] = (int)$r['total_orders'];
+        $chartData[$r['ym']]['revenue'] = round((float)$r['total_rev'] / 1000000, 1); // Dalam satuan Juta
+    }
+}
+
+// 5. Pindahkan data ke array Chart.js
+foreach($chartData as $ym => $v) {
+    $chartIn[] = $v['in'];
+    $chartOut[] = $v['out'];
+    $chartOrders[] = $v['orders'];
+    $chartRevenue[] = $v['revenue'];
+}
+// ── END OF UPGRADE ──
 
 // ── Weekly chart (last 7 days) ─────────────────────────────
 $weekDays   = [];

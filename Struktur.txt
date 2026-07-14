@@ -1,0 +1,49 @@
+Folder PATH listing for volume DATA
+Volume serial number is 0000025B 0E74:1EB9
+D:\PHPPROJECT\ANDALAN-BETON\ADMIN-AB
+¦   dashboard.php
+¦   login.php
+¦   logout.php
+¦   
++---modules
+¦   +---dashboard
+¦   ¦       install-prompt.php
+¦   ¦       
+¦   +---gallery
+¦   ¦       index.php
+¦   ¦       
+¦   +---material
+¦   ¦       create.php
+¦   ¦       delete.php
+¦   ¦       edit.php
+¦   ¦       index.php
+¦   ¦       
+¦   +---orders
+¦   ¦       delete.php
+¦   ¦       index.php
+¦   ¦       view.php
+¦   ¦       
+¦   +---reports
+¦   ¦       index.php
+¦   ¦       
+¦   +---settings
+¦   ¦       index.php
+¦   ¦       
+¦   +---stock_in
+¦   ¦       create.php
+¦   ¦       delete.php
+¦   ¦       edit.php
+¦   ¦       index.php
+¦   ¦       
+¦   +---stock_out
+¦           create.php
+¦           delete.php
+¦           edit.php
+¦           index.php
+¦           
++---partials
+        footer.php
+        head.php
+        sidebar.php
+        topbar.php
+        

@@ -17,9 +17,19 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             $stock=(int)Database::fetchColumn("SELECT current_stock FROM material_stock WHERE id=?",[$data['material_id']]);
             if ($data['quantity']>$stock) $errors[]="Stok tidak mencukupi. Stok tersedia: {$stock}";
         }
-        if (empty($errors)) {
+if (empty($errors)) {
             Database::insert('stock_out',$data);
-            $matName=Database::fetchColumn("SELECT name FROM materials WHERE id=?",[$data['material_id']]);
+            
+            // --- KODE UPGRADE: OTOMATIS POTONG TABEL STOK ---
+            Database::query("
+                UPDATE material_stock 
+                SET current_stock = current_stock - ?, 
+                    total_out = total_out + ? 
+                WHERE id = ?
+            ", [$data['quantity'], $data['quantity'], $data['material_id']]);
+            // ------------------------------------------------
+            
+            $matName=Database::fetchColumn("SELECT name FROM materials WHERE id=?", [$data['material_id']]);
             logActivity('create','stock_out',"Mencatat barang keluar: {$matName} sebanyak {$data['quantity']}");
             setFlash('success','Data barang keluar berhasil dicatat.');
             redirect(APP_URL.'/admin-ab/modules/stock_out/index.php');

@@ -27,8 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$data['material_id']) $errors[] = 'Pilih material.';
         if ($data['quantity'] <= 0) $errors[] = 'Jumlah harus lebih dari 0.';
 
-        if (empty($errors)) {
+if (empty($errors)) {
             Database::insert('stock_in', $data);
+            
+            // --- KODE UPGRADE: OTOMATIS UPDATE TABEL STOK ---
+            Database::query("
+                UPDATE material_stock 
+                SET current_stock = current_stock + ?, 
+                    total_in = total_in + ? 
+                WHERE id = ?
+            ", [$data['quantity'], $data['quantity'], $data['material_id']]);
+            // ------------------------------------------------
+            
             $matName = Database::fetchColumn("SELECT name FROM materials WHERE id=?", [$data['material_id']]);
             logActivity('create', 'stock_in', "Mencatat barang masuk: {$matName} sebanyak {$data['quantity']}");
             setFlash('success', 'Data barang masuk berhasil dicatat.');

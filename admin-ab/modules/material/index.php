@@ -39,8 +39,9 @@ if ($type !== '') {
 $whereStr = implode(' AND ', $where);
 
 $sql = "
-    SELECT m.*, mc.name AS category_name,
-           ms.current_stock, ms.total_in, ms.total_out, ms.stock_status
+    SELECT m.id, m.code, m.name, m.unit, m.price, m.image, m.is_active, m.type,
+           mc.name AS category_name,
+           ms.current_stock, ms.stock_status
     FROM materials m
     LEFT JOIN material_categories mc ON m.category_id = mc.id
     LEFT JOIN material_stock ms ON ms.id = m.id
