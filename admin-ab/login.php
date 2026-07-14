@@ -257,7 +257,7 @@ redirect($redirect);
   </div>
 </div>
 
-<script src="<?= ASSETS_URL ?>js/main.js"></script>
+<script src="<?= ASSETS_URL ?>js/main.js?v=<?= time() ?>"></script>
 <script>
 function togglePassword() {
   const inp = document.getElementById('password');

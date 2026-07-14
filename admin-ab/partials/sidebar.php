@@ -178,9 +178,16 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Menangani tombol 'Back' dan 'Forward' di browser agar halaman ikut berganti
-    window.addEventListener('popstate', function() {
+// UPGRADE: Deteksi tombol Back/Forward browser dan matikan BFCache
+window.addEventListener('popstate', function() {
+    window.location.reload();
+});
+
+window.addEventListener('pageshow', function(event) {
+    // Jika halaman dimuat dari cache history browser (tombol back)
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
         window.location.reload();
-    });
+    }
+});
 });
 </script>
