@@ -55,6 +55,19 @@ $categories = Database::fetchAll("SELECT * FROM material_categories ORDER BY nam
 include __DIR__ . '/../../partials/head.php';
 ?>
 <style>
+  /* Mencegah gambar/modal pratinjau pecah ke bawah saat perpindahan halaman AJAX */
+img[src*="uploads/"], 
+.modal, 
+#preview-container, 
+.material-image-preview {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Jika itu adalah elemen pop-up/modal gambar, pastikan tersembunyi secara default */
+.modal-hidden-default {
+    display: none !important;
+}
 /* Card view untuk HP */
 @media (max-width: 768px) {
   .material-table-view {
@@ -345,5 +358,11 @@ include __DIR__ . '/../../partials/head.php';
 </div> <!-- Penutup <div class="page-body"> -->
 </div> <!-- KOREKSI: Penutup <div class="main-content"> -->
 </div> <!-- KOREKSI: Penutup <div class="admin-wrapper"> -->
-
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Memastikan elemen modal/preview yang tidak dibutuhkan langsung disembunyikan secara instan oleh JS
+    const imagePreviews = document.querySelectorAll('.preview-box');
+    imagePreviews.forEach(el => el.style.display = 'none');
+});
+</script>
 <?php include __DIR__ . '/../../partials/footer.php'; ?>

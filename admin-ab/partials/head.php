@@ -34,13 +34,39 @@
 <link rel="stylesheet" href="<?= ASSETS_URL ?>css/base/typography.css?v=<?= APP_VERSION ?>">
 
 <!-- Components CSS -->
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/buttons.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/cards.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/forms.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/modal.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/toast.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/pagination.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/tables.css?v=<?= APP_VERSION ?>">
+  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/buttons.css?v=<?= APP_VERSION ?>\">
+  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/cards.css?v=<?= APP_VERSION ?>\">
+  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/forms.css?v=<?= APP_VERSION ?>\">
+  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/modal.css?v=<?= APP_VERSION ?>\">
+  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/toast.css?v=<?= APP_VERSION ?>\">
+  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/pagination.css?v=<?= APP_VERSION ?>\">
+  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/tables.css?v=<?= APP_VERSION ?>\">
+
+  <style>
+    /* Kunci 1: Singkirkan background bocor stabilo pada body utama */
+    body {
+      background-color: var(--bg-main, #f8fafc) !important;
+      overflow-x: hidden;
+    }
+
+    /* Kunci 2: Cegah elemen pop-up/preview foto/modal bawaan material 
+       agar TIDAK jebol ke bawah tabel sebelum JavaScript AJAX ter-load sempurna */
+    .modal, 
+    .modal-preview, 
+    #preview-container, 
+    [id^="modal-"], 
+    .material-preview,
+    .preview-box {
+      display: none !important;
+    }
+
+    /* Kunci 3: Jika modal sedang aktif (di-trigger JS), baru tampilkan secara normal */
+    .modal.open, 
+    .modal.show, 
+    .modal.active {
+      display: flex !important;
+    }
+  </style>
 
   <?= $extraCss ?? '' ?>
 </head>
