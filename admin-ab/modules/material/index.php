@@ -4,10 +4,11 @@ require_once __DIR__ . '/../../../config/app.php';
 initSession();
 requireLogin();
 
-// Tambahkan header anti-cache agar browser tidak meng-cache halaman ini
+// --- 1. KUNCI MATI CACHE BROWSER (Biar tidak perlu refresh-refresh lagi!) ---
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 
 $pageTitle    = 'Material';
 $pageSubtitle = 'Kelola data material dan produk';
@@ -61,7 +62,7 @@ include __DIR__ . '/../../partials/head.php';
 ?>
 
 <style>
-/* Pastikan tabel luar bisa di-scroll secara horizontal di HP */
+/* Pastikan area tabel luar bisa di-scroll secara horizontal di HP (Persis Barang Masuk/Keluar) */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -72,7 +73,6 @@ include __DIR__ . '/../../partials/head.php';
   background: var(--bg-surface);
 }
 
-/* Memastikan image di tabel desktop/mobile tidak merusak baris */
 .material-img-thumb {
   width: 44px;
   height: 44px;
@@ -125,8 +125,8 @@ include __DIR__ . '/../../partials/head.php';
       </select>
       <select name="type" class="form-control" style="width:160px;">
         <option value="">Semua Tipe</option>
-        <option value="product" <?= (get('type') === 'product') ? 'selected' : '' ?>>少 Produk Jadi</option>
-        <option value="raw" <?= (get('type') === 'raw') ? 'selected' : '' ?>>逃 Bahan Baku</option>
+        <option value="product" <?= ($type === 'product') ? 'selected' : '' ?>>📦 Produk Jadi</option>
+        <option value="raw" <?= ($type === 'raw') ? 'selected' : '' ?>>🪵 Bahan Baku</option>
       </select>
       <select name="status" class="form-control" style="width:150px;">
         <option value="">Semua Status</option>
@@ -175,7 +175,7 @@ include __DIR__ . '/../../partials/head.php';
                       <?php if ($mat['image']): ?>
                           <img src="<?= uploadUrl($mat['image']) ?>" alt="" class="material-img-thumb">
                       <?php else: ?>
-                          <div class="material-emoji-thumb">ｧｱ</div>
+                          <div class="material-emoji-thumb">🧱</div>
                       <?php endif; ?>
                   </td>
                   <td><span class="text-mono" style="font-size:12px;background:var(--bg-muted);padding:3px 8px;border-radius:4px;"><?= htmlspecialchars($mat['code']) ?></span></td>
@@ -193,7 +193,7 @@ include __DIR__ . '/../../partials/head.php';
                   <td><?= stockStatusLabel($mat['stock_status'] ?? 'available') ?></td>
                   <td>
                       <span class="badge badge-<?= ($mat['type'] ?? 'product') === 'raw' ? 'warning' : 'info' ?>">
-                          <?= ($mat['type'] ?? 'product') === 'raw' ? '逃 Bahan Baku' : '少 Produk Jadi' ?>
+                          <?= ($mat['type'] ?? 'product') === 'raw' ? '🪵 Bahan Baku' : '📦 Produk Jadi' ?>
                       </span>
                   </td>
                   <td>
@@ -222,4 +222,12 @@ include __DIR__ . '/../../partials/head.php';
   </div>
 </div>
 
-</div> </div> </div> <?php include __DIR__ . '/../../partials/footer.php'; ?>
+</div> </div> </div> <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Sembunyikan elemen preview bawaan secara instan saat DOM siap
+    const imagePreviews = document.querySelectorAll('.preview-box');
+    imagePreviews.forEach(el => el.style.display = 'none');
+});
+</script>
+
+<?php include __DIR__ . '/../../partials/footer.php'; ?>
