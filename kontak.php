@@ -10,6 +10,32 @@ $cp          = getCompanyProfile();
 include __DIR__ . '/includes/public_head.php';
 ?>
 
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Default 1 kolom di HP */
+    gap: 24px;
+    align-items: start;
+  }
+  
+  .social-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Tombol sosmed jadi 2x2 di HP biar rapi */
+    gap: 10px;
+  }
+
+  /* Tampilan Laptop / Tablet */
+  @media (min-width: 768px) {
+    .contact-grid {
+      grid-template-columns: 1fr 1.4fr; /* Kembali 2 kolom di layar lebar */
+      gap: 48px;
+    }
+    .social-buttons-grid {
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Sejajar kembali di laptop */
+    }
+  }
+</style>
+
 <div style="padding-top:70px;">
 
 <div style="background: linear-gradient(135deg, #0f172a 0%, #20bc95 50%, #0f172a 100%); padding:60px 0;">
@@ -22,7 +48,7 @@ include __DIR__ . '/includes/public_head.php';
 
 <section class="section">
   <div class="container">
-    <div class="grid" style="grid-template-columns:1fr 1.4fr;gap:48px;align-items:start;">
+    <div class="contact-grid">
 
       <div>
         <h2 style="font-size:26px;font-weight:800;margin-bottom:24px;">Informasi Kontak</h2>
@@ -71,27 +97,28 @@ include __DIR__ . '/includes/public_head.php';
         
         <div style="padding:20px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);">
             <div style="font-size:14px;font-weight:700;margin-bottom:14px;">Ikuti Kami di Media Sosial</div>
-            <div style="display:flex;gap:12px;">
+            
+            <div class="social-buttons-grid">
                <?php if($cp['social_facebook'] ?? false): ?>
-                <a href="<?=$cp['social_facebook']?>" target="_blank" style="flex:1;padding:12px;background:#1877f2;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <a href="<?=$cp['social_facebook']?>" target="_blank" style="padding:12px;background:#1877f2;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
                     <i class="fab fa-facebook-f"></i> Facebook
                 </a>
                 <?php endif; ?>
 
                 <?php if($cp['social_instagram'] ?? false): ?>
-                <a href="<?=$cp['social_instagram']?>" target="_blank" style="flex:1;padding:12px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <a href="<?=$cp['social_instagram']?>" target="_blank" style="padding:12px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
                     <i class="fab fa-instagram"></i> Instagram
                 </a>
                 <?php endif; ?>
 
                 <?php if($cp['social_youtube'] ?? false): ?>
-                <a href="<?=$cp['social_youtube']?>" target="_blank" style="flex:1;padding:12px;background:#ff0000;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <a href="<?=$cp['social_youtube']?>" target="_blank" style="padding:12px;background:#ff0000;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
                     <i class="fab fa-youtube"></i> YouTube
                 </a>
                 <?php endif; ?>
 
                 <?php if($cp['social_tiktok'] ?? false): ?>
-                <a href="<?=$cp['social_tiktok']?>" target="_blank" style="flex:1;padding:12px;background:#000000;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <a href="<?=$cp['social_tiktok']?>" target="_blank" style="padding:12px;background:#000000;color:white;border-radius:var(--radius-md);text-align:center;font-size:13.5px;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
                     <i class="fab fa-tiktok"></i> TikTok
                 </a>
                 <?php endif; ?>
