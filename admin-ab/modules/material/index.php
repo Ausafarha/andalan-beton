@@ -10,7 +10,7 @@ $pageSubtitle = 'Kelola data material dan produk';
 $search   = get('search');
 $category = getInt('category');
 $status   = get('status');
-$type     = get('type'); // TAMBAHKAN INI
+$type     = get('type'); 
 $page     = max(1, getInt('page', 1));
 
 $params = [];
@@ -31,7 +31,6 @@ if ($status !== '') {
     if ($status === 'low')      { $where[] = "ms.stock_status = 'low_stock'"; }
     if ($status === 'out')      { $where[] = "ms.stock_status = 'out_of_stock'"; }
 }
-// TAMBAHKAN FILTER TIPE
 if ($type !== '') {
     $where[] = "m.type = ?";
     $params[] = $type;
@@ -161,13 +160,10 @@ include __DIR__ . '/../../partials/head.php';
 <div class="card mb-20">
   <div class="card-body" style="padding: 16px 20px;">
     <form method="GET" class="filter-bar">
-    <div class="search-box">
-  <input type="text" name="search" class="form-control"
-         placeholder="Cari nama atau kode material..."
-         value="<?= htmlspecialchars($search) ?>">
-
-  <i class="fas fa-search search-icon"></i>
-</div>
+      <div class="search-box">
+        <input type="text" name="search" class="form-control" placeholder="Cari nama atau kode material..." value="<?= htmlspecialchars($search) ?>">
+        <i class="fas fa-search search-icon"></i>
+      </div>
       
       <select name="category" class="form-control" style="width:180px;">
         <option value="">Semua Kategori</option>
@@ -177,8 +173,8 @@ include __DIR__ . '/../../partials/head.php';
       </select>
       <select name="type" class="form-control" style="width:160px;">
         <option value="">Semua Tipe</option>
-        <option value="product" <?= (get('type') === 'product') ? 'selected' : '' ?>>🏭 Produk Jadi</option>
-        <option value="raw" <?= (get('type') === 'raw') ? 'selected' : '' ?>>📦 Bahan Baku</option>
+        <option value="product" <?= (get('type') === 'product') ? 'selected' : '' ?>>少 Produk Jadi</option>
+        <option value="raw" <?= (get('type') === 'raw') ? 'selected' : '' ?>>逃 Bahan Baku</option>
       </select>
       <select name="status" class="form-control" style="width:150px;">
         <option value="">Semua Status</option>
@@ -208,58 +204,58 @@ include __DIR__ . '/../../partials/head.php';
     <?php else: ?>
       <div class="table-responsive">
         <table class="table">
-    <thead>
-        <tr>
-            <th>Foto</th>
-            <th>Kode</th>
-            <th>Nama Material</th>
-            <th>Kategori</th>
-            <th>Harga</th>
-            <th>Stok</th>
-            <th>Status</th>
-            <th>Tipe</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($materials as $mat): ?>
-        <tr>
-            <td>
-                <?php if ($mat['image']): ?>
-                    <img src="<?= uploadUrl($mat['image']) ?>" alt="" style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
-                <?php else: ?>
-                    <div style="width:44px;height:44px;border-radius:8px;background:var(--bg-muted);display:flex;align-items:center;justify-content:center;font-size:18px;">🧱</div>
-                <?php endif; ?>
-            </td>
-            <td><span class="text-mono" style="font-size:12px;background:var(--bg-muted);padding:3px 8px;border-radius:4px;"><?= htmlspecialchars($mat['code']) ?></span></td>
-            <td>
-                <div style="font-weight:600;font-size:13.5px;"><?= htmlspecialchars($mat['name']) ?></div>
-                <div style="font-size:11px;color:var(--text-muted);"><?= htmlspecialchars($mat['unit']) ?></div>
-            </td>
-            <td style="font-size:13px;"><?= htmlspecialchars($mat['category_name'] ?? '-') ?></td>
-            <td style="font-weight:600;font-size:13px;"><?= formatRupiah($mat['price']) ?></td>
-            <td>
-                <div style="font-size:13.5px;font-weight:700;color:<?= $mat['stock_status']==='out_of_stock'?'var(--danger)':($mat['stock_status']==='low_stock'?'var(--warning)':'var(--success)') ?>;">
-                    <?= formatNumber($mat['current_stock'] ?? 0) ?>
-                </div>
-                <div style="font-size:10px;color:var(--text-muted);">masuk:<?= formatNumber($mat['total_in']??0) ?> keluar:<?= formatNumber($mat['total_out']??0) ?></div>
-            </td>
-            <td><?= stockStatusLabel($mat['stock_status'] ?? 'available') ?></td>
-            <td>
-                <span class="badge badge-<?= ($mat['type'] ?? 'product') === 'raw' ? 'warning' : 'info' ?>">
-                    <?= ($mat['type'] ?? 'product') === 'raw' ? '📦 Bahan Baku' : '🏭 Produk Jadi' ?>
-                </span>
-            </td>
-            <td>
-                <div class="actions">
-                    <a href="<?= APP_URL ?>/admin-ab/modules/material/edit.php?id=<?= $mat['id'] ?>" class="btn btn-sm btn-secondary" data-tooltip="Edit"><i class="fas fa-edit"></i></a>
-                    <button onclick="confirmDelete('<?= APP_URL ?>/admin-ab/modules/material/delete.php?id=<?= $mat['id'] ?>&token=<?= csrfToken() ?>','<?= htmlspecialchars(addslashes($mat['name'])) ?>')" class="btn btn-sm btn-danger" data-tooltip="Hapus"><i class="fas fa-trash"></i></button>
-                </div>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
+          <thead>
+              <tr>
+                  <th>Foto</th>
+                  <th>Kode</th>
+                  <th>Nama Material</th>
+                  <th>Kategori</th>
+                  <th>Harga</th>
+                  <th>Stok</th>
+                  <th>Status</th>
+                  <th>Tipe</th>
+                  <th>Aksi</th>
+              </tr>
+          </thead>
+          <tbody>
+              <?php foreach ($materials as $mat): ?>
+              <tr>
+                  <td>
+                      <?php if ($mat['image']): ?>
+                          <img src="<?= uploadUrl($mat['image']) ?>" alt="" style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
+                      <?php else: ?>
+                          <div style="width:44px;height:44px;border-radius:8px;background:var(--bg-muted);display:flex;align-items:center;justify-content:center;font-size:18px;">ｧｱ</div>
+                      <?php endif; ?>
+                  </td>
+                  <td><span class="text-mono" style="font-size:12px;background:var(--bg-muted);padding:3px 8px;border-radius:4px;"><?= htmlspecialchars($mat['code']) ?></span></td>
+                  <td>
+                      <div style="font-weight:600;font-size:13.5px;"><?= htmlspecialchars($mat['name']) ?></div>
+                      <div style="font-size:11px;color:var(--text-muted);"><?= htmlspecialchars($mat['unit']) ?></div>
+                  </td>
+                  <td style="font-size:13px;"><?= htmlspecialchars($mat['category_name'] ?? '-') ?></td>
+                  <td style="font-weight:600;font-size:13px;"><?= formatRupiah($mat['price']) ?></td>
+                  <td>
+                      <div style="font-size:13.5px;font-weight:700;color:<?= $mat['stock_status']==='out_of_stock'?'var(--danger)':($mat['stock_status']==='low_stock'?'var(--warning)':'var(--success)') ?>;">
+                          <?= formatNumber($mat['current_stock'] ?? 0) ?>
+                      </div>
+                      <div style="font-size:10px;color:var(--text-muted);">masuk:<?= formatNumber($mat['total_in']??0) ?> keluar:<?= formatNumber($mat['total_out']??0) ?></div>
+                  </td>
+                  <td><?= stockStatusLabel($mat['stock_status'] ?? 'available') ?></td>
+                  <td>
+                      <span class="badge badge-<?= ($mat['type'] ?? 'product') === 'raw' ? 'warning' : 'info' ?>">
+                          <?= ($mat['type'] ?? 'product') === 'raw' ? '逃 Bahan Baku' : '少 Produk Jadi' ?>
+                      </span>
+                  </td>
+                  <td>
+                      <div class="actions">
+                          <a href="<?= APP_URL ?>/admin-ab/modules/material/edit.php?id=<?= $mat['id'] ?>" class="btn btn-sm btn-secondary" data-tooltip="Edit"><i class="fas fa-edit"></i></a>
+                          <button onclick="confirmDelete('<?= APP_URL ?>/admin-ab/modules/material/delete.php?id=<?= $mat['id'] ?>&token=<?= csrfToken() ?>','<?= htmlspecialchars(addslashes($mat['name'])) ?>')" class="btn btn-sm btn-danger" data-tooltip="Hapus"><i class="fas fa-trash"></i></button>
+                      </div>
+                  </td>
+              </tr>
+              <?php endforeach; ?>
+          </tbody>
+        </table>
       </div>
       <!-- Pagination -->
       <?php if ($paginated['pages'] > 1): ?>
@@ -292,7 +288,7 @@ include __DIR__ . '/../../partials/head.php';
           <?php if ($mat['image']): ?>
             <img src="<?= uploadUrl($mat['image']) ?>" class="material-card-image">
           <?php else: ?>
-            <div class="material-card-image" style="display:flex;align-items:center;justify-content:center;font-size:28px;">🧱</div>
+            <div class="material-card-image" style="display:flex;align-items:center;justify-content:center;font-size:28px;">ｧｱ</div>
           <?php endif; ?>
         </div>
         <div class="material-card-info">
@@ -346,5 +342,8 @@ include __DIR__ . '/../../partials/head.php';
   <?php endif; ?>
 </div>
 
-</div>
+</div> <!-- Penutup <div class="page-body"> -->
+</div> <!-- KOREKSI: Penutup <div class="main-content"> -->
+</div> <!-- KOREKSI: Penutup <div class="admin-wrapper"> -->
+
 <?php include __DIR__ . '/../../partials/footer.php'; ?>
