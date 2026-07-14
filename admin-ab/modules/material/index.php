@@ -55,7 +55,7 @@ $categories = Database::fetchAll("SELECT * FROM material_categories ORDER BY nam
 include __DIR__ . '/../../partials/head.php';
 ?>
 <style>
-  /* Mencegah gambar/modal pratinjau pecah ke bawah saat perpindahan halaman AJAX */
+/* Mencegah gambar/modal pratinjau pecah ke bawah saat perpindahan halaman AJAX */
 img[src*="uploads/"], 
 .modal, 
 #preview-container, 
@@ -64,18 +64,44 @@ img[src*="uploads/"],
     height: auto;
 }
 
-/* Jika itu adalah elemen pop-up/modal gambar, pastikan tersembunyi secara default */
+/* Secara default sembunyikan semua modal/preview bawaan */
 .modal-hidden-default {
     display: none !important;
 }
-/* Card view untuk HP */
-@media (max-width: 768px) {
+
+/* ========================================================
+   KUNCI MATI: Pemisah Tampilan Desktop vs Mobile (Anti-Tabrakan)
+   ======================================================== */
+
+/* 1. Kondisi Layar Desktop/Laptop (Lebar layar mulai dari 769px ke atas) */
+@media (min-width: 769px) {
+  /* Paksa tabel desktop untuk tampil */
   .material-table-view {
-    display: none;
+    display: block !important;
   }
-  .material-card-view {
-    display: block;
+  
+  /* Hancurkan & kunci mati card view agar tidak bisa dipaksa muncul oleh grid-2 */
+  .material-card-view, 
+  div.grid-2.material-card-view,
+  .main-content .material-card-view {
+    display: none !important;
   }
+}
+
+/* 2. Kondisi Layar Mobile (Lebar layar maksimal 768px) */
+@media (max-width: 768px) {
+  /* Kunci tabel desktop agar sembunyi total di HP */
+  .material-table-view {
+    display: none !important;
+  }
+  
+  /* Tampilkan card view di HP */
+  .material-card-view,
+  div.grid-2.material-card-view {
+    display: flex !important; /* Gunakan flex agar mengikuti style grid-2 admin-responsive */
+  }
+  
+  /* Style Card di HP */
   .material-card {
     background: var(--bg-surface);
     border: 1px solid var(--border);
@@ -141,14 +167,6 @@ img[src*="uploads/"],
   .material-card-footer .btn {
     flex: 1;
     justify-content: center;
-  }
-}
-@media (min-width: 769px) {
-  .material-table-view {
-    display: block;
-  }
-  .material-card-view {
-    display: none;
   }
 }
 </style>
