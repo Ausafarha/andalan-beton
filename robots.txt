@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /admin-ab/
+
+Sitemap: https://andalanbeton.com/sitemap.xml
