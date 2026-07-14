@@ -5,7 +5,7 @@
 // ============================================================
 date_default_timezone_set('Asia/Jakarta');
 
-define('APP_NAME', 'PT Andalan Beton');
+define('APP_NAME', 'PT. MITRA ANDALAN BETON PANTURA');
 define('APP_VERSION', date('YmdHis')); // Auto version based on timestamp
 define('APP_URL', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost:8000'));
 define('APP_ROOT', dirname(__DIR__));
