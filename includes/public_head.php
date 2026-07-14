@@ -61,16 +61,17 @@ $currentSlug  = $currentSlug ?? '';
 <div class="toast-container"></div>
 
 <!-- Public Header -->
-<header class="public-header" id="pub-header">
-  <a href="<?= APP_URL ?>/" style="display:flex;align-items:center;gap:14px;text-decoration:none;flex-shrink:0;">
+<header class="public-header" id="pub-header" style="display:flex; align-items:center; justify-content:space-between; width:100%; box-sizing:border-box; gap:10px;">
+  
+  <a href="<?= APP_URL ?>/" style="display:flex; align-items:center; gap:12px; text-decoration:none; flex:1; min-width:0;">
   <?php if (!empty($cp['logo'])): ?>
-    <img src="<?= uploadUrl($cp['logo']) ?>" alt="Logo" style="height:42px;width:42px;object-fit:contain;border-radius:10px;">
+    <img src="<?= uploadUrl($cp['logo']) ?>" alt="Logo" style="height:38px; width:38px; object-fit:contain; border-radius:10px; flex-shrink:0;">
   <?php else: ?>
-    <div style="width:42px;height:42px;background:linear-gradient(135deg,var(--brand-500),var(--brand-700));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:16px;">AB</div>
+    <div style="width:38px; height:38px; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; font-size:14px; flex-shrink:0;">AB</div>
   <?php endif; ?>
-  <div>
-    <div style="font-size:16px;font-weight:800;color:var(--text-primary);line-height:1.3;"><?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?></div>
-    <div style="font-size:11px;color:var(--text-muted);margin-top:2px;"><?= htmlspecialchars($cp['tagline'] ?? 'Industri Readymix dan Precast') ?></div>
+  <div style="min-width:0;">
+    <div style="font-size:14px; font-weight:800; color:var(--text-primary); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?></div>
+    <div style="font-size:10px; color:var(--text-muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?= htmlspecialchars($cp['tagline'] ?? 'Industri Readymix dan Precast') ?></div>
   </div>
 </a>
 
@@ -84,8 +85,8 @@ $currentSlug  = $currentSlug ?? '';
     <button id="theme-toggle" class="topbar-btn" style="margin-left:4px;" title="Ganti Tema"><i class="fas fa-moon" id="theme-icon"></i></button>
   </nav>
 
-  <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-    <button class="topbar-btn nav-mobile-toggle" onclick="document.getElementById('pub-nav').classList.toggle('open');">
+  <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
+    <button class="topbar-btn nav-mobile-toggle" style="flex-shrink:0; padding:8px 12px;" onclick="document.getElementById('pub-nav').classList.toggle('open');">
         <i class="fas fa-bars"></i>
     </button>
   </div>
