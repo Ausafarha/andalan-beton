@@ -10,7 +10,10 @@ if (isLoggedIn()) {
 }
 // Redirect if already logged in
 if (isLoggedIn()) {
-    redirect(APP_URL . '/admin-ab/dashboard.php');
+    // Cek apakah ada redirect intent
+$redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
+unset($_SESSION['login_redirect']);
+redirect($redirect);
 }
 
 $error = '';
@@ -59,7 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     [$user['id'], 'login', 'auth', 'User ' . $user['username'] . ' berhasil login', $_SERVER['REMOTE_ADDR'] ?? '']
                 );
 
-                redirect(APP_URL . '/admin-ab/dashboard.php');
+                // Cek apakah ada redirect intent
+$redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
+unset($_SESSION['login_redirect']);
+redirect($redirect);
             } else {
                 $error = 'Username atau password salah.';
                 // Simulate delay to prevent brute force

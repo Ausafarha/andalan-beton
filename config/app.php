@@ -69,6 +69,8 @@ function isLoggedIn(): bool {
 
 function requireLogin(): void {
     if (!isLoggedIn()) {
+        // Simpan redirect intent di session
+        $_SESSION['login_redirect'] = $_SERVER['REQUEST_URI'];
         header('Location: ' . APP_URL . '/admin-ab/login.php');
         exit;
     }
