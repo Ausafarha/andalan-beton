@@ -45,7 +45,7 @@ include __DIR__.'/../../partials/head.php';
     <?php else:?>
       <div class="table-responsive">
         <table class="table">
-          <thead><tr><th>#</th><th>Tanggal</th><th>Material</th><th>Jumlah</th><th>Pelanggan</th><th>Tujuan</th><th>Driver</th><th>Kendaraan</th><th>Oleh</th><th>Aksi</th></tr></thead>
+          <thead><tr><th>No</th><th>Tanggal</th><th>Material</th><th>Jumlah</th><th>Pelanggan</th><th>Tujuan</th><th>Driver</th><th>Kendaraan</th><th>Oleh</th><th>Aksi</th></tr></thead>
           <tbody>
             <?php foreach($paginated['items'] as $i=>$row):?>
             <tr>

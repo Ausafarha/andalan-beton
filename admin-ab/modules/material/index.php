@@ -4,6 +4,11 @@ require_once __DIR__ . '/../../../config/app.php';
 initSession();
 requireLogin();
 
+// Tambahkan header anti-cache agar browser tidak meng-cache halaman ini
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 $pageTitle    = 'Material';
 $pageSubtitle = 'Kelola data material dan produk';
 
@@ -55,6 +60,38 @@ $categories = Database::fetchAll("SELECT * FROM material_categories ORDER BY nam
 include __DIR__ . '/../../partials/head.php';
 ?>
 
+<style>
+/* Pastikan tabel luar bisa di-scroll secara horizontal di HP */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 15px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+}
+
+/* Memastikan image di tabel desktop/mobile tidak merusak baris */
+.material-img-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.material-emoji-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--bg-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+</style>
 
 <div class="admin-wrapper">
 <?php include __DIR__ . '/../../partials/sidebar.php'; ?>
@@ -72,7 +109,6 @@ include __DIR__ . '/../../partials/head.php';
   </a>
 </div>
 
-<!-- Filter -->
 <div class="card mb-20">
   <div class="card-body" style="padding: 16px 20px;">
     <form method="GET" class="filter-bar">
@@ -100,15 +136,14 @@ include __DIR__ . '/../../partials/head.php';
         <option value="out"      <?= $status==='out'     ?'selected':'' ?>>Stok Habis</option>
       </select>
       <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
-      <?php if ($search || $category || $status): ?>
+      <?php if ($search || $category || $status || $type): ?>
         <a href="<?= APP_URL ?>/admin-ab/modules/material/index.php" class="btn btn-secondary"><i class="fas fa-times"></i> Reset</a>
       <?php endif; ?>
     </form>
   </div>
 </div>
 
-<!-- TABLE VIEW (Desktop) -->
-<div class="card material-table-view">
+<div class="card">
   <div class="card-body" style="padding:0;">
     <?php if (empty($materials)): ?>
       <div class="empty-state">
@@ -138,9 +173,9 @@ include __DIR__ . '/../../partials/head.php';
               <tr>
                   <td>
                       <?php if ($mat['image']): ?>
-                          <img src="<?= uploadUrl($mat['image']) ?>" alt="" style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
+                          <img src="<?= uploadUrl($mat['image']) ?>" alt="" class="material-img-thumb">
                       <?php else: ?>
-                          <div style="width:44px;height:44px;border-radius:8px;background:var(--bg-muted);display:flex;align-items:center;justify-content:center;font-size:18px;">ｧｱ</div>
+                          <div class="material-emoji-thumb">ｧｱ</div>
                       <?php endif; ?>
                   </td>
                   <td><span class="text-mono" style="font-size:12px;background:var(--bg-muted);padding:3px 8px;border-radius:4px;"><?= htmlspecialchars($mat['code']) ?></span></td>
@@ -154,7 +189,6 @@ include __DIR__ . '/../../partials/head.php';
                       <div style="font-size:13.5px;font-weight:700;color:<?= $mat['stock_status']==='out_of_stock'?'var(--danger)':($mat['stock_status']==='low_stock'?'var(--warning)':'var(--success)') ?>;">
                           <?= formatNumber($mat['current_stock'] ?? 0) ?>
                       </div>
-                      <div style="font-size:10px;color:var(--text-muted);">masuk:<?= formatNumber($mat['total_in']??0) ?> keluar:<?= formatNumber($mat['total_out']??0) ?></div>
                   </td>
                   <td><?= stockStatusLabel($mat['stock_status'] ?? 'available') ?></td>
                   <td>
@@ -173,13 +207,13 @@ include __DIR__ . '/../../partials/head.php';
           </tbody>
         </table>
       </div>
-      <!-- Pagination -->
+
       <?php if ($paginated['pages'] > 1): ?>
-      <div class="card-footer" style="justify-content:space-between;">
+      <div class="card-footer" style="justify-content:space-between; flex-wrap: wrap; gap: 10px;">
         <span style="font-size:13px;color:var(--text-muted);">Halaman <?= $page ?> dari <?= $paginated['pages'] ?> (<?= $paginated['total'] ?> data)</span>
         <div class="pagination">
           <?php for ($p = 1; $p <= $paginated['pages']; $p++): ?>
-            <a href="?page=<?= $p ?>&search=<?= urlencode($search) ?>&category=<?= $category ?>&status=<?= $status ?>" class="page-btn <?= $p==$page?'active':'' ?>"><?= $p ?></a>
+            <a href="?page=<?= $p ?>&search=<?= urlencode($search) ?>&category=<?= $category ?>&status=<?= $status ?>&type=<?= $type ?>" class="page-btn <?= $p==$page?'active':'' ?>"><?= $p ?></a>
           <?php endfor; ?>
         </div>
       </div>
@@ -188,84 +222,4 @@ include __DIR__ . '/../../partials/head.php';
   </div>
 </div>
 
-<!-- CARD VIEW (Mobile/HP) -->
-<div class="material-card-view">
-  <?php if (empty($materials)): ?>
-    <div class="empty-state">
-      <div class="empty-state-icon"><i class="fas fa-boxes"></i></div>
-      <div class="empty-state-title">Tidak ada material ditemukan</div>
-      <div class="empty-state-desc">Coba ubah filter atau tambah material baru.</div>
-    </div>
-  <?php else: ?>
-    <?php foreach ($materials as $mat): ?>
-    <div class="material-card">
-      <div class="material-card-body">
-        <div>
-          <?php if ($mat['image']): ?>
-            <img src="<?= uploadUrl($mat['image']) ?>" class="material-card-image">
-          <?php else: ?>
-            <div class="material-card-image" style="display:flex;align-items:center;justify-content:center;font-size:28px;">ｧｱ</div>
-          <?php endif; ?>
-        </div>
-        <div class="material-card-info">
-          <div class="material-card-name"><?= htmlspecialchars($mat['name']) ?></div>
-          <span class="material-card-code"><?= htmlspecialchars($mat['code']) ?></span>
-          <div class="material-card-detail">
-            <div class="material-card-detail-item">
-              <div class="material-card-detail-label">Kategori</div>
-              <div class="material-card-detail-value"><?= htmlspecialchars($mat['category_name'] ?? '-') ?></div>
-            </div>
-            <div class="material-card-detail-item">
-              <div class="material-card-detail-label">Harga</div>
-              <div class="material-card-detail-value"><?= formatRupiah($mat['price']) ?> / <?= $mat['unit'] ?></div>
-            </div>
-            <div class="material-card-detail-item">
-              <div class="material-card-detail-label">Stok</div>
-              <div class="material-card-detail-value" style="color:<?= $mat['stock_status']==='out_of_stock'?'var(--danger)':($mat['stock_status']==='low_stock'?'var(--warning)':'var(--success)') ?>;">
-                <?= formatNumber($mat['current_stock'] ?? 0) ?>
-              </div>
-            </div>
-          </div>
-          <div style="margin-top:8px;">
-            <?= stockStatusLabel($mat['stock_status'] ?? 'available') ?>
-            <?php if (!$mat['is_active']): ?>
-              <span class="badge badge-secondary">Nonaktif</span>
-            <?php endif; ?>
-          </div>
-        </div>
-      </div>
-      <div class="material-card-footer">
-        <a href="<?= APP_URL ?>/admin-ab/modules/material/edit.php?id=<?= $mat['id'] ?>" class="btn btn-secondary btn-sm">
-          <i class="fas fa-edit"></i> Edit
-        </a>
-        <button onclick="confirmDelete('<?= APP_URL ?>/admin-ab/modules/material/delete.php?id=<?= $mat['id'] ?>&token=<?= csrfToken() ?>','<?= htmlspecialchars(addslashes($mat['name'])) ?>')" class="btn btn-danger btn-sm">
-          <i class="fas fa-trash"></i> Hapus
-        </button>
-      </div>
-    </div>
-    <?php endforeach; ?>
-    
-    <!-- Pagination di mobile -->
-    <?php if ($paginated['pages'] > 1): ?>
-    <div class="flex-between" style="margin-top:20px; flex-wrap:wrap; gap:10px; justify-content:center;">
-      <div class="pagination">
-        <?php for ($p = 1; $p <= $paginated['pages']; $p++): ?>
-          <a href="?page=<?= $p ?>&search=<?= urlencode($search) ?>&category=<?= $category ?>&status=<?= $status ?>" class="page-btn <?= $p==$page?'active':'' ?>"><?= $p ?></a>
-        <?php endfor; ?>
-      </div>
-    </div>
-    <?php endif; ?>
-  <?php endif; ?>
-</div>
-
-</div> <!-- Penutup <div class="page-body"> -->
-</div> <!-- KOREKSI: Penutup <div class="main-content"> -->
-</div> <!-- KOREKSI: Penutup <div class="admin-wrapper"> -->
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Memastikan elemen modal/preview yang tidak dibutuhkan langsung disembunyikan secara instan oleh JS
-    const imagePreviews = document.querySelectorAll('.preview-box');
-    imagePreviews.forEach(el => el.style.display = 'none');
-});
-</script>
-<?php include __DIR__ . '/../../partials/footer.php'; ?>
+</div> </div> </div> <?php include __DIR__ . '/../../partials/footer.php'; ?>
