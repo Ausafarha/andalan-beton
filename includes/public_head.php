@@ -61,17 +61,17 @@ $currentSlug  = $currentSlug ?? '';
 <div class="toast-container"></div>
 
 <!-- Public Header -->
-<header class="public-header" id="pub-header" style="display:flex; align-items:center; justify-content:space-between; width:100%; box-sizing:border-box; gap:10px;">
+<header class="public-header" id="pub-header" style="display:flex; align-items:center; justify-content:space-between; width:100%; box-sizing:border-box; gap:12px; padding: 10px 16px;">
   
   <a href="<?= APP_URL ?>/" style="display:flex; align-items:center; gap:12px; text-decoration:none; flex:1; min-width:0;">
   <?php if (!empty($cp['logo'])): ?>
-    <img src="<?= uploadUrl($cp['logo']) ?>" alt="Logo" style="height:38px; width:38px; object-fit:contain; border-radius:10px; flex-shrink:0;">
+    <img src="<?= uploadUrl($cp['logo']) ?>" alt="Logo" style="height:40px; width:40px; object-fit:contain; border-radius:10px; flex-shrink:0;">
   <?php else: ?>
-    <div style="width:38px; height:38px; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; font-size:14px; flex-shrink:0;">AB</div>
+    <div style="width:40px; height:40px; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; font-size:14px; flex-shrink:0;">AB</div>
   <?php endif; ?>
-  <div style="min-width:0;">
-    <div style="font-size:14px; font-weight:800; color:var(--text-primary); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?></div>
-    <div style="font-size:10px; color:var(--text-muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?= htmlspecialchars($cp['tagline'] ?? 'Industri Readymix dan Precast') ?></div>
+  <div style="min-width:0; display:flex; flex-direction:column;">
+    <div style="font-size:14px; font-weight:800; color:var(--text-primary); line-height:1.3; white-space:normal; word-break:break-word;"><?=$cp['company_name'] ?? APP_NAME?></div>
+    <div style="font-size:10px; color:var(--text-muted); margin-top:2px; white-space:normal; word-break:break-word;"><?= htmlspecialchars($cp['tagline'] ?? 'Industri Readymix dan Precast') ?></div>
   </div>
 </a>
 
