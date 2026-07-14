@@ -117,49 +117,46 @@ try {
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Cari semua link menu di sidebar yang mengarah ke admin panel internal
     const links = document.querySelectorAll(".sidebar-nav .nav-item");
     const mainContent = document.querySelector(".main-content");
 
     if (!mainContent) return;
 
     links.forEach(link => {
-        // Abaikan tombol keluar/logout
-        if (link.getAttribute("href").includes("logout.php")) return;
+        const url = link.getAttribute("href");
+        
+        // --- 1. BYPASS HALAMAN YANG BUTUH INITIALISASI BERAT (DASHBOARD & GALERI) ---
+        if (url && (url.includes("logout.php") || url.includes("dashboard.php") || url.includes("modules/gallery/"))) {
+            return; // Biarkan browser melakukan reload normal (F5) untuk halaman ini agar tidak bug
+        }
 
         link.addEventListener("click", function(e) {
-            const url = this.getAttribute("href");
-            
-            // Cek jika link valid dan bukan tab baru
             if (url && !link.getAttribute("target")) {
                 e.preventDefault();
 
-                // 1. Ubah visual menu aktif di sidebar secara instan
+                // Ubah visual menu aktif di sidebar
                 links.forEach(l => l.classList.remove("active"));
                 this.classList.add("active");
 
-                // 2. Beri efek loading halus pada konten utama
+                // Beri efek loading halus pada konten utama
                 mainContent.style.opacity = "0.5";
                 mainContent.style.transition = "opacity 0.2s ease";
 
-                // 3. Ambil data halaman baru di latar belakang menggunakan Fetch API
+                // Ambil data halaman baru di latar belakang
                 fetch(url)
                     .then(response => response.text())
                     .then(html => {
-                        // Parsir HTML yang didapat
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(html, 'text/html');
                         const newContent = doc.querySelector(".main-content");
 
                         if (newContent) {
-                            // Ganti isi konten utama tanpa reload page penuh
                             mainContent.innerHTML = newContent.innerHTML;
                             mainContent.style.opacity = "1";
                             
-                            // Perbarui URL di address bar browser agar bisa di-back/forward
                             window.history.pushState({path: url}, '', url);
                             
-                            // Re-eksekusi jika ada script inline baru di halaman yang dimuat
+                            // Eksekusi ulang inline script bawaan modul yang dimuat
                             newContent.querySelectorAll("script").forEach(oldScript => {
                                 const newScript = document.createElement("script");
                                 Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
@@ -167,7 +164,6 @@ document.addEventListener("DOMContentLoaded", function() {
                                 oldScript.parentNode.replaceChild(newScript, oldScript);
                             });
                         } else {
-                            // Jika struktur gagal, fallback ke reload biasa
                             window.location.href = url;
                         }
                     })
@@ -178,16 +174,15 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-// UPGRADE: Deteksi tombol Back/Forward browser dan matikan BFCache
-window.addEventListener('popstate', function() {
-    window.location.reload();
-});
-
-window.addEventListener('pageshow', function(event) {
-    // Jika halaman dimuat dari cache history browser (tombol back)
-    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+    // Menangani tombol Back/Forward browser agar selalu segar
+    window.addEventListener('popstate', function() {
         window.location.reload();
-    }
-});
+    });
+
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            window.location.reload();
+        }
+    });
 });
 </script>
