@@ -175,7 +175,9 @@ include __DIR__ . '/../../partials/head.php';
                       <?php if ($mat['image']): ?>
                           <img src="<?= uploadUrl($mat['image']) ?>" alt="" class="material-img-thumb">
                       <?php else: ?>
-                          <div class="material-emoji-thumb">🧱</div>
+                          <div class="material-emoji-thumb">
+                              <i class="fas fa-boxes" style="color: var(--text-muted); font-size: 16px;"></i>
+                          </div>
                       <?php endif; ?>
                   </td>
                   <td><span class="text-mono" style="font-size:12px;background:var(--bg-muted);padding:3px 8px;border-radius:4px;"><?= htmlspecialchars($mat['code']) ?></span></td>
@@ -192,9 +194,15 @@ include __DIR__ . '/../../partials/head.php';
                   </td>
                   <td><?= stockStatusLabel($mat['stock_status'] ?? 'available') ?></td>
                   <td>
-                      <span class="badge badge-<?= ($mat['type'] ?? 'product') === 'raw' ? 'warning' : 'info' ?>">
-                          <?= ($mat['type'] ?? 'product') === 'raw' ? '🪵 Bahan Baku' : '📦 Produk Jadi' ?>
-                      </span>
+                      <?php if (($mat['type'] ?? 'product') === 'raw'): ?>
+                          <span class="badge badge-warning">
+                              <i class="fas fa-mountain" style="margin-right: 4px;"></i> Bahan Baku
+                          </span>
+                      <?php else: ?>
+                          <span class="badge badge-info">
+                              <i class="fas fa-cubes" style="margin-right: 4px;"></i> Produk Jadi
+                          </span>
+                      <?php endif; ?>
                   </td>
                   <td>
                       <div class="actions">
