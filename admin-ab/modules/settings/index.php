@@ -172,6 +172,8 @@ include __DIR__.'/../../partials/head.php';
             <div class="form-group"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<?=htmlspecialchars($profile['email']??'')?>"></div>
             <div class="form-group"><label class="form-label">Google Maps Embed URL</label><input type="text" name="maps_embed" class="form-control" value="<?=htmlspecialchars($profile['maps_embed']??'')?>" placeholder="https://maps.google.com/maps?..."></div>
           </div>
+          
+          </div>
       </div>
       <div class="card mb-20">
         <div class="card-header"><div class="card-title">Media Sosial</div></div>
