@@ -87,9 +87,9 @@ include __DIR__ . '/includes/public_head.php';
           <div class="hero-stat-label">Jenis Material</div>
         </div>
         <div>
-          <div class="hero-stat-value" style="color:#4ade80;" data-counter data-target="<?= $totalProyek ?>"><?= $totalProyek ?>+</div>
-          <div class="hero-stat-label">Proyek Selesai</div>
-        </div>
+  <div class="hero-stat-value" style="color:#4ade80;">50+</div>
+  <div class="hero-stat-label">Proyek Selesai</div>
+</div>
         <div>
           <div class="hero-stat-value" style="color:#4ade80;" data-counter data-target="<?= $experience ?>"><?= $experience ?>+</div>
           <div class="hero-stat-label">Tahun Pengalaman</div>
@@ -177,7 +177,7 @@ include __DIR__ . '/includes/public_head.php';
       ] as [$icon,$val,$lbl]): ?>
       <div style="text-align:center;padding:40px 20px;" data-animate>
         <div style="font-size:32px;color:var(--brand-400);margin-bottom:14px;"><i class="<?=$icon?>"></i></div>
-        <div style="font-size:42px;font-weight:800;color:white;" data-counter><?=$val?></div>
+        <div style="font-size:42px;font-weight:800;color:white;">50+</div>
         <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:6px;"><?=$lbl?></div>
       </div>
       <?php endforeach; ?>
