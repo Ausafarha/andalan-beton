@@ -31,16 +31,20 @@ include __DIR__ . '/includes/public_head.php';
           <h2 class="section-title">Industri Readymix dan Precast</h2>
         <p style="color:var(--text-secondary);font-size:15px;line-height:1.8;margin-top:16px;"><?= nl2br(htmlspecialchars($cp['description'] ?? '')) ?></p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px;">
-          <!-- Ditambahkan parameter Boolean (hasCounter & hasPlus) agar format tahun berdiri dan lainnya murni, tidak diotak-atik javascript -->
           <?php foreach([
             [$cp['established_year']??2010, 'Tahun Berdiri', false, false],
             [$cp['total_employees']??50, 'Karyawan', false, false],
             [$experience, 'Tahun Pengalaman', false, false],
-            [$cp['total_projects']??50, 'Proyek Selesai', true, true], // <-- Hanya ini yang pakai data-counter dan tanda +
+            [$cp['total_projects']??50, 'Proyek Selesai', true, true], 
           ] as [$val, $lbl, $hasCounter, $hasPlus]): ?>
           <div style="padding:20px;background:var(--bg-muted);border-radius:var(--radius-lg);text-align:center;">
-            <div style="font-size:28px;font-weight:800;color:var(--brand-600);" <?= $hasCounter ? 'data-counter' : '' ?>>
+            <div style="font-size:28px;font-weight:800;color:var(--brand-600);">
+              <?php if ($hasCounter): ?>
+                <!-- data-counter ditaruh di dalam span agar Javascript hanya menganimasikan angkanya saja, dan tanda + tetap aman di luarnya -->
+                <span data-counter><?= htmlspecialchars($val) ?></span><?= $hasPlus ? '+' : '' ?>
+              <?php else: ?>
                 <?= htmlspecialchars($val) ?><?= $hasPlus ? '+' : '' ?>
+              <?php endif; ?>
             </div>
             <div style="font-size:13px;color:var(--text-muted);margin-top:4px;"><?=$lbl?></div>
           </div>
