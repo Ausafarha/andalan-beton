@@ -16,7 +16,7 @@ include __DIR__ . '/includes/public_head.php';
 <!-- Page Header -->
 <div style="background: linear-gradient(135deg, #0f172a 0%, #20bc95 50%, #0f172a 100%); padding:60px 0;">
   <div class="container" style="text-align:center;">
-    <div class="section-tag"  style="color: #4ade80; >Tentang Kami</div>
+    <div class="section-tag"  style="color: #4ade80;">Tentang Kami</div>
     <h1 style="font-size:clamp(30px,5vw,48px);font-weight:800;color:white;margin-top:10px;"><?= htmlspecialchars($cp['company_name'] ?? APP_NAME) ?></h1>
     <p style="color:rgba(255,255,255,.6);font-size:16px;margin-top:12px;"><?= htmlspecialchars($cp['tagline'] ?? '') ?></p>
   </div>
@@ -31,14 +31,17 @@ include __DIR__ . '/includes/public_head.php';
           <h2 class="section-title">Industri Readymix dan Precast</h2>
         <p style="color:var(--text-secondary);font-size:15px;line-height:1.8;margin-top:16px;"><?= nl2br(htmlspecialchars($cp['description'] ?? '')) ?></p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px;">
+          <!-- Ditambahkan parameter Boolean (hasCounter & hasPlus) agar format tahun berdiri dan lainnya murni, tidak diotak-atik javascript -->
           <?php foreach([
-            [$cp['established_year']??2010,'Tahun Berdiri'],
-            [($cp['total_employees']??50).'+','Karyawan'],
-            [$experience.'+','Tahun Pengalaman'],
-            [($cp['total_projects']??50).'+','Proyek Selesai'],
-          ] as [$val,$lbl]): ?>
+            [$cp['established_year']??2010, 'Tahun Berdiri', false, false],
+            [$cp['total_employees']??50, 'Karyawan', false, false],
+            [$experience, 'Tahun Pengalaman', false, false],
+            [$cp['total_projects']??50, 'Proyek Selesai', true, true], // <-- Hanya ini yang pakai data-counter dan tanda +
+          ] as [$val, $lbl, $hasCounter, $hasPlus]): ?>
           <div style="padding:20px;background:var(--bg-muted);border-radius:var(--radius-lg);text-align:center;">
-            <div style="font-size:28px;font-weight:800;color:var(--brand-600);" data-counter><?=$val?></div>
+            <div style="font-size:28px;font-weight:800;color:var(--brand-600);" <?= $hasCounter ? 'data-counter' : '' ?>>
+                <?= htmlspecialchars($val) ?><?= $hasPlus ? '+' : '' ?>
+            </div>
             <div style="font-size:13px;color:var(--text-muted);margin-top:4px;"><?=$lbl?></div>
           </div>
           <?php endforeach; ?>
@@ -114,7 +117,6 @@ include __DIR__ . '/includes/public_head.php';
     </div>
   </div>
 </section>
-<!-- Social Media -->
 <!-- Social Media -->
 <section class="section">
   <div class="container">

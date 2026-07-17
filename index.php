@@ -52,6 +52,7 @@ include __DIR__ . '/includes/public_head.php';
 <section class="hero">
   <div class="hero-content" style="grid-template-columns: 1fr !important; text-align:center; max-width:900px; margin:0 auto; padding:60px 20px;">
     <div data-animate>
+      <!-- Menghilangkan tag data-counter di sini agar tahun tetap tercetak 2019 murni -->
       <div class="hero-badge" style="background: rgba(34,197,94,0.15); border: 1px solid rgb(137, 255, 154); color: #09dc2d;">
         <i class="fas fa-award"></i>
         Terpercaya Sejak <?= $cp['established_year'] ?? 2010 ?>
@@ -83,15 +84,18 @@ include __DIR__ . '/includes/public_head.php';
 
       <div class="hero-stats" style="justify-content:center;">
         <div>
-          <div class="hero-stat-value" style="color:#4ade80;" data-counter data-target="<?= $totalMat ?>"><?= $totalMat ?>+</div>
+          <!-- Menghilangkan tanda + di sini -->
+          <div class="hero-stat-value" style="color:#4ade80;" data-counter data-target="<?= $totalMat ?>"><?= $totalMat ?></div>
           <div class="hero-stat-label">Jenis Material</div>
         </div>
         <div>
+          <!-- Hanya Proyek Selesai yang memiliki tanda + -->
           <div class="hero-stat-value" style="color:#4ade80;"><span data-counter data-target="<?= $totalProyek ?>"><?= $totalProyek ?></span>+</div>
           <div class="hero-stat-label">Proyek Selesai</div>
         </div>
         <div>
-          <div class="hero-stat-value" style="color:#4ade80;" data-counter data-target="<?= $experience ?>"><?= $experience ?>+</div>
+          <!-- Menghilangkan tanda + di sini -->
+          <div class="hero-stat-value" style="color:#4ade80;" data-counter data-target="<?= $experience ?>"><?= $experience ?></div>
           <div class="hero-stat-label">Tahun Pengalaman</div>
         </div>
       </div>
@@ -169,15 +173,22 @@ include __DIR__ . '/includes/public_head.php';
 <section class="section" style="background:linear-gradient(135deg,#0f172a,#1e3a8a);">
   <div class="container">
     <div class="grid grid-4" style="gap:0;">
+      <!-- Array diatur dinamis: elemen terakhir (bool) menentukan apakah memakai data-counter & tanda + -->
       <?php foreach([
-        ['fas fa-building',''.($totalMat??0).'+','Jenis Material'],
-        ['fas fa-users',($cp['total_employees']??50).'+','Karyawan Profesional'],
-        ['fas fa-hard-hat',$totalProyek,'Proyek Selesai'],
-        ['fas fa-trophy',$experience.'+','Tahun Pengalaman'],
-      ] as [$icon,$val,$lbl]): ?>
+        ['fas fa-building', ($totalMat??0), 'Jenis Material', false],
+        ['fas fa-users', ($cp['total_employees']??50), 'Karyawan Profesional', false],
+        ['fas fa-hard-hat', $totalProyek, 'Proyek Selesai', true], // <-- Hanya ini yang diset TRUE agar punya +
+        ['fas fa-trophy', $experience, 'Tahun Pengalaman', false],
+      ] as [$icon,$val,$lbl,$hasPlus]): ?>
       <div style="text-align:center;padding:40px 20px;" data-animate>
         <div style="font-size:32px;color:var(--brand-400);margin-bottom:14px;"><i class="<?=$icon?>"></i></div>
-        <div style="font-size:42px;font-weight:800;color:white;" ><span data-counter><?=$val?></span>+</div>
+        <div style="font-size:42px;font-weight:800;color:white;">
+          <?php if($hasPlus): ?>
+            <span data-counter><?=$val?></span>+
+          <?php else: ?>
+            <span><?=$val?></span>
+          <?php endif; ?>
+        </div>
         <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:6px;"><?=$lbl?></div>
       </div>
       <?php endforeach; ?>
