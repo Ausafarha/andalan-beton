@@ -35,7 +35,7 @@ include __DIR__ . '/includes/public_head.php';
             [$cp['established_year']??2010,'Tahun Berdiri'],
             [($cp['total_employees']??50).'+','Karyawan'],
             [$experience.'+','Tahun Pengalaman'],
-            ['50+','Proyek Selesai'],
+            [($cp['total_projects']??50).'+','Proyek Selesai'],
           ] as [$val,$lbl]): ?>
           <div style="padding:20px;background:var(--bg-muted);border-radius:var(--radius-lg);text-align:center;">
             <div style="font-size:28px;font-weight:800;color:var(--brand-600);" data-counter><?=$val?></div>

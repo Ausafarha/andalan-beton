@@ -38,7 +38,7 @@ $featuredMats = Database::fetchAll("
 ");
 $categories   = Database::fetchAll("SELECT * FROM material_categories ORDER BY name");
 $totalMat     = Database::fetchColumn("SELECT COUNT(*) FROM materials WHERE is_active=true");
-$totalProyek  = 50;
+$totalProyek  = $cp['total_projects'] ?? 50;
 $experience   = date('Y') - ($cp['established_year'] ?? 2010);
 
 include __DIR__ . '/includes/public_head.php';
@@ -87,7 +87,7 @@ include __DIR__ . '/includes/public_head.php';
           <div class="hero-stat-label">Jenis Material</div>
         </div>
         <div>
-          <div class="hero-stat-value" style="color:#4ade80;" data-counter data-target="<?= $totalProyek ?>"><?= $totalProyek ?>+</div>
+          <div class="hero-stat-value" style="color:#4ade80;"><span data-counter data-target="<?= $totalProyek ?>"><?= $totalProyek ?></span>+</div>
           <div class="hero-stat-label">Proyek Selesai</div>
         </div>
         <div>
@@ -172,12 +172,12 @@ include __DIR__ . '/includes/public_head.php';
       <?php foreach([
         ['fas fa-building',''.($totalMat??0).'+','Jenis Material'],
         ['fas fa-users',($cp['total_employees']??50).'+','Karyawan Profesional'],
-        ['fas fa-hard-hat',$totalProyek.'+','Proyek Selesai'],
+        ['fas fa-hard-hat',$totalProyek,'Proyek Selesai'],
         ['fas fa-trophy',$experience.'+','Tahun Pengalaman'],
       ] as [$icon,$val,$lbl]): ?>
       <div style="text-align:center;padding:40px 20px;" data-animate>
         <div style="font-size:32px;color:var(--brand-400);margin-bottom:14px;"><i class="<?=$icon?>"></i></div>
-        <div style="font-size:42px;font-weight:800;color:white;" data-counter><?=$val?></div>
+        <div style="font-size:42px;font-weight:800;color:white;" ><span data-counter><?=$val?></span>+</div>
         <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:6px;"><?=$lbl?></div>
       </div>
       <?php endforeach; ?>
