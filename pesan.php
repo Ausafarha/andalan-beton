@@ -272,12 +272,12 @@ include __DIR__ . '/includes/public_head.php';
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label">Nomor HP / WhatsApp <span>*</span></label>
-              <input type="tel" name="customer_phone" class="form-control" value="<?= htmlspecialchars($_POST['customer_phone']??'') ?>" placeholder="08xxxxxxxxxx" required>
+              <input type="tel" name="customer_phone" class="form-control" value="<?= htmlspecialchars($_POST['customer_phone']??'') ?>" placeholder="" required>
             </div>
           </div>
           <div class="form-group" style="margin-top:16px;margin-bottom:0;">
             <label class="form-label">Email (opsional)</label>
-            <input type="email" name="customer_email" class="form-control" value="<?= htmlspecialchars($_POST['customer_email']??'') ?>" placeholder="email@contoh.com">
+            <input type="email" name="customer_email" class="form-control" value="<?= htmlspecialchars($_POST['customer_email']??'') ?>" placeholder="">
           </div>
           <div class="form-group" style="margin-top:16px;margin-bottom:0;">
             <label class="form-label">Alamat Pengiriman <span>*</span></label>
