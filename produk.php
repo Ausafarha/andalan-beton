@@ -269,6 +269,7 @@ $cartTotal = getCartTotalItems();
     display: inline-block;
 }
 .product-modal-info h2 {
+    color: #000000
     font-size: 22px;
     font-weight: 800;
     margin: 8px 0 4px;
