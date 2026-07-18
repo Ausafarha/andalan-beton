@@ -44,10 +44,10 @@
 
   <style>
     /* Kunci 1: Singkirkan background bocor stabilo pada body utama */
-    body {
-      background-color: var(--bg-main, #f8fafc) !important;
-      overflow-x: hidden;
-    }
+body {
+    background-color: var(--bg-base) !important;
+    overflow-x: hidden;
+}
 
     /* Kunci 2: Cegah elemen pop-up/preview foto/modal bawaan material 
        agar TIDAK jebol ke bawah tabel sebelum JavaScript AJAX ter-load sempurna */

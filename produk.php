@@ -104,8 +104,8 @@ $cartTotal = getCartTotalItems();
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #0ea5e9;
-    background: #f0f9ff;
+    color: #11ef2e;
+    background: #074213;
     display: inline-block;
     padding: 2px 10px;
     border-radius: 20px;
@@ -139,7 +139,7 @@ $cartTotal = getCartTotalItems();
 .product-card-price {
     font-size: 18px;
     font-weight: 800;
-    color: #0ea5e9;
+    color: #1ab007;
     margin-top: auto;
 }
 .product-card-unit {
@@ -181,7 +181,7 @@ $cartTotal = getCartTotalItems();
     background: #e2e8f0;
 }
 .btn-order {
-    background: #0ea5e9;
+    background: #44e83d;
     color: #ffffff;
 }
 .btn-order:hover {
@@ -261,8 +261,8 @@ $cartTotal = getCartTotalItems();
     object-fit: contain;
 }
 .product-modal-info .category {
-    background: #f0f9ff;
-    color: #0ea5e9;
+    background: #081b27;
+    color: #0ee917;
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 12px;
@@ -276,7 +276,7 @@ $cartTotal = getCartTotalItems();
 .product-modal-info .price {
     font-size: 24px;
     font-weight: 800;
-    color: #0ea5e9;
+    color: #0ee924;
 }
 .product-modal-info .unit {
     font-size: 14px;
@@ -304,7 +304,7 @@ $cartTotal = getCartTotalItems();
 <div style="background: linear-gradient(135deg, #0f172a 0%, #20bc95 50%, #0f172a 100%); padding:60px 0 50px;">
   <div class="container">
     <div style="text-align:center;">
-      <div class="section-tag" style="color:var(--brand-300);">Katalog Produk</div>
+      <div class="section-tag" style="color: #0f172a;">Katalog Produk</div>
       <h1 style="font-size:clamp(28px,5vw,44px);font-weight:800;color:white;margin-top:10px;">Material Bangunan Berkualitas</h1>
       <p style="color:rgba(255,255,255,.6);font-size:15px;margin-top:12px;">Temukan material bangunan terbaik untuk proyek Anda</p>
       <!-- Search -->
