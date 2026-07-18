@@ -208,7 +208,7 @@ redirect($redirect);
 
   <!-- Right Panel -->
   <div class="login-right">
-    <h1>Masuk ke Admin</h1>
+    <h1>Admin Andalan Beton</h1>
     <p>Silakan masuk dengan akun admin Anda</p>
 
     
