@@ -33,7 +33,7 @@ include __DIR__ . '/includes/public_head.php';
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px;">
           <?php foreach([
             [$cp['established_year']??2010, 'Tahun Berdiri', false, false],
-            [$cp['total_employees']??50, 'Karyawan', false, false],
+            [$cp['total_employees']??50, 'Karyawan Profesional', false, false],
             [$experience, 'Tahun Pengalaman', false, false],
             [$cp['total_projects']??50, 'Proyek Selesai', true, true], 
           ] as [$val, $lbl, $hasCounter, $hasPlus]): ?>

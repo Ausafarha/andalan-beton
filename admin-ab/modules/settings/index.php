@@ -149,7 +149,7 @@ include __DIR__.'/../../partials/head.php';
           <div class="form-group"><label class="form-label">Deskripsi Perusahaan</label><textarea name="description" class="form-control" rows="4"><?=htmlspecialchars($profile['description']??'')?></textarea></div>
           <div class="grid grid-2">
             <div class="form-group"><label class="form-label">Tahun Berdiri</label><input type="number" name="established_year" class="form-control" value="<?=$profile['established_year']??2010?>"></div>
-            <div class="form-group"><label class="form-label">Jumlah Karyawan</label><input type="number" name="total_employees" class="form-control" value="<?=$profile['total_employees']??50?>"></div>
+            <div class="form-group"><label class="form-label">Jumlah Karyawan Profesional</label><input type="number" name="total_employees" class="form-control" value="<?=$profile['total_employees']??50?>"></div>
             <div class="form-group"><label class="form-label">Proyek Selesai</label><input type="number" name="total_projects" class="form-control" value="<?=$profile['total_projects']??50?>"></div>
           </div>
           <div class="form-group"><label class="form-label">Visi</label><textarea name="vision" class="form-control" rows="3"><?=htmlspecialchars($profile['vision']??'')?></textarea></div>
