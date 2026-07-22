@@ -207,7 +207,6 @@ include __DIR__ . '/../../partials/head.php';
 </div>
 </div>
 </div>
-
 <!-- MODAL UPLOAD -->
 <div class="modal-overlay" id="upload-modal">
     <div class="modal">
@@ -319,5 +318,3 @@ function editGallery(item) {
     document.getElementById('edit-modal').classList.add('open');
 }
 </script>
-
-<?php include __DIR__ . '/../../partials/footer.php'; ?>
