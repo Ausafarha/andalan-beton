@@ -13,8 +13,7 @@ $pArr    = [];
 if ($cat) { $params[] = "g.category = ?"; $pArr[] = $cat; }
 
 $where   = implode(' AND ', $params);
-// KODE BARU (Urutkan berdasarkan ID terbaru):
-$gallery = Database::fetchAll("SELECT * FROM gallery WHERE is_active=true ORDER BY id DESC");
+$gallery = Database::fetchAll("SELECT * FROM gallery WHERE is_active=true ORDER BY sort_order, id DESC");
 $cats    = Database::fetchAll("SELECT DISTINCT category FROM gallery WHERE is_active=true ORDER BY category");
 
 include __DIR__ . '/includes/public_head.php';
