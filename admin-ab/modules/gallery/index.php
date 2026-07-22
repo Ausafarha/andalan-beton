@@ -15,57 +15,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if (!verifyCsrf()) {
         $errors[] = 'Token keamanan tidak valid.';
     } else {
-       if ($_POST['action'] === 'upload') {
-    if (empty($_FILES['image']['name'])) {
-        $errors[] = 'Pilih file gambar terlebih dahulu.';
-    } else {
-        require_once __DIR__ . '/../../../config/cloudinary.php';
-        $upload = uploadToCloudinary($_FILES['image'], 'gallery');
-        if ($upload['success']) {
-            Database::insert('gallery', [
+        if ($_POST['action'] === 'upload') {
+            if (empty($_FILES['image']['name'])) {
+                $errors[] = 'Pilih file gambar terlebih dahulu.';
+            } else {
+                require_once __DIR__ . '/../../../config/cloudinary.php';
+                $upload = uploadToCloudinary($_FILES['image'], 'gallery');
+                if ($upload['success']) {
+                    Database::insert('gallery', [
+                        'title'       => post('title'),
+                        'description' => post('description'),
+                        'category'    => post('category'),
+                        'image'       => $upload['url'],
+                        'sort_order'  => 0,
+                        'is_active'   => postInt('is_active', 1)
+                    ]);
+                    logActivity('create', 'gallery', 'Menambah foto galeri: ' . post('title'));
+                    setFlash('success', 'Foto berhasil ditambahkan.');
+                    redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
+                } else {
+                    $errors[] = $upload['message'];
+                }
+            }
+        }
+        
+        if ($_POST['action'] === 'edit') {
+            $id = postInt('id');
+            $data = [
                 'title'       => post('title'),
                 'description' => post('description'),
                 'category'    => post('category'),
-                'image'       => $upload['url'], // Simpan URL Cloudinary
-                'sort_order'  => 0,
                 'is_active'   => postInt('is_active', 1)
-            ]);
-            logActivity('create', 'gallery', 'Menambah foto galeri: ' . post('title'));
-            setFlash('success', 'Foto berhasil ditambahkan.');
-            redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
-        } else {
-            $errors[] = $upload['message'];
+            ];
+            
+            if (!empty($_FILES['image']['name'])) {
+                require_once __DIR__ . '/../../../config/cloudinary.php';
+                $upload = uploadToCloudinary($_FILES['image'], 'gallery');
+                if ($upload['success']) {
+                    $data['image'] = $upload['url'];
+                } else {
+                    $errors[] = $upload['message'];
+                }
+            }
+            
+            if (empty($errors)) {
+                Database::update('gallery', $data, 'id = ?', [$id]);
+                logActivity('update', 'gallery', 'Mengedit foto galeri ID: ' . $id);
+                setFlash('success', 'Foto berhasil diupdate.');
+                redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
+            }
         }
-    }
-}
-        
-if ($_POST['action'] === 'edit') {
-    $id = postInt('id');
-    $data = [
-        'title'       => post('title'),
-        'description' => post('description'),
-        'category'    => post('category'),
-        'is_active'   => postInt('is_active', 1)
-    ];
-    
-    // Handle upload foto baru ke Cloudinary
-    if (!empty($_FILES['image']['name'])) {
-        require_once __DIR__ . '/../../../config/cloudinary.php';
-        $upload = uploadToCloudinary($_FILES['image'], 'gallery');
-        if ($upload['success']) {
-            $data['image'] = $upload['url'];
-        } else {
-            $errors[] = $upload['message'];
-        }
-    }
-    
-    if (empty($errors)) {
-        Database::update('gallery', $data, 'id = ?', [$id]);
-        logActivity('update', 'gallery', 'Mengedit foto galeri ID: ' . $id);
-        setFlash('success', 'Foto berhasil diupdate.');
-        redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
-    }
-}
     }
 }
 
@@ -77,12 +76,11 @@ if (isset($_GET['delete']) && isset($_GET['token'])) {
     $id = (int)$_GET['delete'];
     $gallery = Database::fetchOne("SELECT image FROM gallery WHERE id = ?", [$id]);
     if ($gallery && str_contains($gallery['image'], 'cloudinary.com')) {
-        require_once __DIR__ . '/../../../config/cloudinary.php'; // TAMBAHKAN INI
+        require_once __DIR__ . '/../../../config/cloudinary.php';
         $parts = explode('/upload/', $gallery['image']);
         $publicId = 'andalan-beton/gallery/' . pathinfo($parts[1], PATHINFO_FILENAME);
         deleteFromCloudinary($publicId);
     }
-    // Hapus dari database
     Database::delete('gallery', 'id = ?', [$id]);
     setFlash('success', 'Foto berhasil dihapus.');
     redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
@@ -102,12 +100,13 @@ if (isset($_GET['toggle']) && isset($_GET['token'])) {
     redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
 }
 
-// Get all gallery data (diurutkan berdasarkan id terbaru)
+// Get all gallery data
 $gallery = Database::fetchAll("SELECT * FROM gallery ORDER BY id DESC");
 $categories = Database::fetchAll("SELECT DISTINCT category FROM gallery ORDER BY category");
 
 include __DIR__ . '/../../partials/head.php';
 ?>
+
 <style>
 .gallery-thumb {
     width: 80px;
@@ -124,69 +123,6 @@ include __DIR__ . '/../../partials/head.php';
         min-width: 600px;
     }
 }
-
-/* FIX POPUP MODAL MUNCUL DI TENGAH */
-.modal-overlay {
-    position: fixed !important;
-    inset: 0 !important;
-    background: rgba(0, 0, 0, 0.6) !important;
-    backdrop-filter: blur(4px) !important;
-    display: none !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 99999 !important;
-}
-
-.modal-overlay.open {
-    display: flex !important;
-}
-
-.modal {
-    background: #ffffff !important;
-    border-radius: 12px !important;
-    width: 90% !important;
-    max-width: 500px !important;
-    padding: 0 !important;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3) !important;
-    overflow: hidden !important;
-    color: #1e293b !important;
-}
-
-[data-theme="dark"] .modal {
-    background: #1e293b !important;
-    color: #f8fafc !important;
-}
-
-.modal-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.modal-body {
-    padding: 20px;
-    max-height: 70vh;
-    overflow-y: auto;
-}
-
-.modal-footer {
-    padding: 12px 20px;
-    background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-[data-theme="dark"] .modal-header,
-[data-theme="dark"] .modal-footer {
-    border-color: #334155 !important;
-}
-[data-theme="dark"] .modal-footer {
-    background: #0f172a !important;
-}
 </style>
 
 <div class="admin-wrapper">
@@ -200,7 +136,8 @@ include __DIR__ . '/../../partials/head.php';
         <h2>Galeri Foto</h2>
         <p>Kelola foto galeri proyek dan fasilitas perusahaan</p>
     </div>
-    <button class="btn btn-primary" onclick="document.getElementById('upload-modal').classList.add('open')">
+    <!-- PAKAI Modal.open DARI main.js -->
+    <button class="btn btn-primary" onclick="Modal.open('upload-modal')">
         <i class="fas fa-plus"></i> Tambah Foto
     </button>
 </div>
@@ -266,9 +203,11 @@ include __DIR__ . '/../../partials/head.php';
     </div>
 </div>
 
-</div>
-</div>
-</div>
+</div><!-- /.page-body -->
+</div><!-- /.main-content -->
+</div><!-- /.admin-wrapper -->
+
+<!-- MODAL HARUS DI LUAR .admin-wrapper AGAR TIDAK TERTUTUP BACKGROUND BLUR -->
 
 <!-- MODAL UPLOAD -->
 <div class="modal-overlay" id="upload-modal">
@@ -278,7 +217,7 @@ include __DIR__ . '/../../partials/head.php';
             <?= csrfField() ?>
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-plus-circle"></i> Tambah Foto Galeri</h3>
-                <button type="button" class="modal-close" onclick="document.getElementById('upload-modal').classList.remove('open')"><i class="fas fa-times"></i></button>
+                <button type="button" class="modal-close" onclick="Modal.close('upload-modal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -313,7 +252,7 @@ include __DIR__ . '/../../partials/head.php';
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="document.getElementById('upload-modal').classList.remove('open')">Batal</button>
+                <button type="button" class="btn btn-secondary" onclick="Modal.close('upload-modal')">Batal</button>
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
             </div>
         </form>
@@ -329,7 +268,7 @@ include __DIR__ . '/../../partials/head.php';
             <?= csrfField() ?>
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-edit"></i> Edit Foto Galeri</h3>
-                <button type="button" class="modal-close" onclick="document.getElementById('edit-modal').classList.remove('open')"><i class="fas fa-times"></i></button>
+                <button type="button" class="modal-close" onclick="Modal.close('edit-modal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -364,7 +303,7 @@ include __DIR__ . '/../../partials/head.php';
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="document.getElementById('edit-modal').classList.remove('open')">Batal</button>
+                <button type="button" class="btn btn-secondary" onclick="Modal.close('edit-modal')">Batal</button>
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update</button>
             </div>
         </form>
@@ -378,8 +317,12 @@ function editGallery(item) {
     document.getElementById('edit-desc').value = item.description || '';
     document.getElementById('edit-category').value = item.category || 'umum';
     document.getElementById('edit-active').value = item.is_active ? 1 : 0;
-    document.getElementById('edit-modal').classList.add('open');
+    Modal.open('edit-modal'); // MANGGIL JS BUATAN LU SENDIRI!
 }
 </script>
 
-<?php include __DIR__ . '/../../partials/footer.php'; ?>
+<?php 
+// KARENA DIV WRAPPER SUDAH DITUTUP DI ATAS, KITA KELUARKAN DARI FOOTER.PHP
+// ATAU BIARKAN INCLUDE FOOTER DENGAN MENGHAPUS DIV PENUTUP DARI FOOTER
+include __DIR__ . '/../../partials/footer.php'; 
+?>
