@@ -136,8 +136,7 @@ include __DIR__ . '/../../partials/head.php';
         <h2>Galeri Foto</h2>
         <p>Kelola foto galeri proyek dan fasilitas perusahaan</p>
     </div>
-    <!-- PAKAI Modal.open DARI main.js -->
-    <button class="btn btn-primary" onclick="Modal.open('upload-modal')">
+    <button class="btn btn-primary" onclick="document.getElementById('upload-modal').classList.add('open')">
         <i class="fas fa-plus"></i> Tambah Foto
     </button>
 </div>
@@ -203,12 +202,6 @@ include __DIR__ . '/../../partials/head.php';
     </div>
 </div>
 
-</div><!-- /.page-body -->
-</div><!-- /.main-content -->
-</div><!-- /.admin-wrapper -->
-
-<!-- MODAL HARUS DI LUAR .admin-wrapper AGAR TIDAK TERTUTUP BACKGROUND BLUR -->
-
 <!-- MODAL UPLOAD -->
 <div class="modal-overlay" id="upload-modal">
     <div class="modal">
@@ -217,7 +210,7 @@ include __DIR__ . '/../../partials/head.php';
             <?= csrfField() ?>
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-plus-circle"></i> Tambah Foto Galeri</h3>
-                <button type="button" class="modal-close" onclick="Modal.close('upload-modal')"><i class="fas fa-times"></i></button>
+                <button type="button" class="modal-close" onclick="document.getElementById('upload-modal').classList.remove('open')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -252,7 +245,7 @@ include __DIR__ . '/../../partials/head.php';
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="Modal.close('upload-modal')">Batal</button>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('upload-modal').classList.remove('open')">Batal</button>
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
             </div>
         </form>
@@ -268,7 +261,7 @@ include __DIR__ . '/../../partials/head.php';
             <?= csrfField() ?>
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-edit"></i> Edit Foto Galeri</h3>
-                <button type="button" class="modal-close" onclick="Modal.close('edit-modal')"><i class="fas fa-times"></i></button>
+                <button type="button" class="modal-close" onclick="document.getElementById('edit-modal').classList.remove('open')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -303,7 +296,7 @@ include __DIR__ . '/../../partials/head.php';
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="Modal.close('edit-modal')">Batal</button>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('edit-modal').classList.remove('open')">Batal</button>
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update</button>
             </div>
         </form>
@@ -317,12 +310,8 @@ function editGallery(item) {
     document.getElementById('edit-desc').value = item.description || '';
     document.getElementById('edit-category').value = item.category || 'umum';
     document.getElementById('edit-active').value = item.is_active ? 1 : 0;
-    Modal.open('edit-modal'); // MANGGIL JS BUATAN LU SENDIRI!
+    document.getElementById('edit-modal').classList.add('open');
 }
 </script>
 
-<?php 
-// KARENA DIV WRAPPER SUDAH DITUTUP DI ATAS, KITA KELUARKAN DARI FOOTER.PHP
-// ATAU BIARKAN INCLUDE FOOTER DENGAN MENGHAPUS DIV PENUTUP DARI FOOTER
-include __DIR__ . '/../../partials/footer.php'; 
-?>
+<?php include __DIR__ . '/../../partials/footer.php'; ?>
