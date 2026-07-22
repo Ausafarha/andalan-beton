@@ -108,7 +108,6 @@ $categories = Database::fetchAll("SELECT DISTINCT category FROM gallery ORDER BY
 
 include __DIR__ . '/../../partials/head.php';
 ?>
-
 <style>
 .gallery-thumb {
     width: 80px;
@@ -124,6 +123,69 @@ include __DIR__ . '/../../partials/head.php';
     .table {
         min-width: 600px;
     }
+}
+
+/* FIX POPUP MODAL MUNCUL DI TENGAH */
+.modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(4px) !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 99999 !important;
+}
+
+.modal-overlay.open {
+    display: flex !important;
+}
+
+.modal {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    width: 90% !important;
+    max-width: 500px !important;
+    padding: 0 !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3) !important;
+    overflow: hidden !important;
+    color: #1e293b !important;
+}
+
+[data-theme="dark"] .modal {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 12px 20px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+    border-color: #334155 !important;
+}
+[data-theme="dark"] .modal-footer {
+    background: #0f172a !important;
 }
 </style>
 
