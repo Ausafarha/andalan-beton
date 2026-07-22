@@ -103,8 +103,8 @@ if (isset($_GET['toggle']) && isset($_GET['token'])) {
     redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
 }
 
-// Get all gallery data
-$gallery = Database::fetchAll("SELECT * FROM gallery ORDER BY sort_order ASC, id DESC");
+// KODE BARU (Urutkan berdasarkan ID terbaru):
+$gallery = Database::fetchAll("SELECT * FROM gallery ORDER BY id DESC");
 $categories = Database::fetchAll("SELECT DISTINCT category FROM gallery ORDER BY category");
 
 include __DIR__ . '/../../partials/head.php';
@@ -164,7 +164,7 @@ include __DIR__ . '/../../partials/head.php';
                             <th>Foto</th>
                             <th>Judul</th>
                             <th>Kategori</th>
-                            <th>Urutan</th>
+                            
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -182,7 +182,7 @@ include __DIR__ . '/../../partials/head.php';
                                 <?php endif; ?>
                             </td>
                             <td><span class="badge badge-info"><?= htmlspecialchars($item['category']) ?></span></td>
-                            <td><?= $item['sort_order'] ?></td>
+                            
                             <td>
                                 <a href="?toggle=<?= $item['id'] ?>&token=<?= csrfToken() ?>" class="badge badge-<?= $item['is_active'] ? 'success' : 'secondary' ?>" style="text-decoration:none;">
                                     <?= $item['is_active'] ? 'Aktif' : 'Nonaktif' ?>
@@ -245,11 +245,7 @@ include __DIR__ . '/../../partials/head.php';
                         <option value="umum">Umum</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Urutan Tampil</label>
-                    <input type="number" name="sort_order" class="form-control" value="0">
-                    <div class="form-text">Semakin kecil angka, semakin depan tampilnya.</div>
-                </div>
+               
                 <div class="form-group">
                     <label class="form-label">Status</label>
                     <select name="is_active" class="form-control">
@@ -301,10 +297,7 @@ include __DIR__ . '/../../partials/head.php';
                         <option value="umum">Umum</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Urutan Tampil</label>
-                    <input type="number" name="sort_order" id="edit-order" class="form-control">
-                </div>
+                
                 <div class="form-group">
                     <label class="form-label">Status</label>
                     <select name="is_active" id="edit-active" class="form-control">
