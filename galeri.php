@@ -13,12 +13,12 @@ $pArr    = [];
 if ($cat) { $params[] = "g.category = ?"; $pArr[] = $cat; }
 
 $where   = implode(' AND ', $params);
-$gallery = Database::fetchAll("SELECT * FROM gallery WHERE is_active=true ORDER BY sort_order, id DESC");
+// Mengurutkan berdasarkan ID terbesar (terbaru) ke terkecil
+$gallery = Database::fetchAll("SELECT * FROM gallery WHERE is_active=true ORDER BY id DESC");
 $cats    = Database::fetchAll("SELECT DISTINCT category FROM gallery WHERE is_active=true ORDER BY category");
 
 include __DIR__ . '/includes/public_head.php';
 ?>
-
 
 <div style="padding-top:70px;">
 

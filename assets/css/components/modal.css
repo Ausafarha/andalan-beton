@@ -6,7 +6,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 9999;
   background: var(--bg-overlay);
   display: flex;
   align-items: center;
@@ -14,13 +14,15 @@
   padding: 20px;
   opacity: 0;
   visibility: hidden;
-  transition: all var(--transition-slow);
+  pointer-events: none;
+  transition: opacity var(--transition-slow), visibility var(--transition-slow);
   backdrop-filter: blur(4px);
 }
 
 .modal-overlay.open {
-  opacity: 1;
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 .modal {
@@ -36,7 +38,7 @@
 }
 
 .modal-overlay.open .modal {
-  transform: translateY(0) scale(1);
+  transform: translateY(0) scale(1) !important;
 }
 
 .modal-header {
@@ -53,6 +55,9 @@
 }
 
 .modal-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
   color: var(--text-muted);
   font-size: 20px;
   transition: color var(--transition);
