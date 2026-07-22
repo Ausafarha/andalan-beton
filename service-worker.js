@@ -1,6 +1,7 @@
-const CACHE_NAME = 'andalan-beton-v1.0.3';
+const CACHE_NAME = 'andalan-beton-v1.0.4'; // Naikkan versi cache
 
-// File yang di-cache (statis) - TAMBAHKAN ICON
+// Hanya cache file publik & asset statis!
+// JANGAN masukkan halaman admin yang diproteksi session login ke dalam daftar ini.
 const urlsToCache = [
   '/',
   '/profil.php',
@@ -10,32 +11,34 @@ const urlsToCache = [
   '/pesan.php',
   '/assets/css/main.css',
   '/assets/js/main.js',
-  // ADMIN
-  '/admin-ab/dashboard.php',
   '/admin-ab/login.php',
-  '/admin-ab/modules/material/index.php',
-  '/admin-ab/modules/stock_in/index.php',
-  '/admin-ab/modules/stock_out/index.php',
-  '/admin-ab/modules/orders/index.php',
-  '/admin-ab/modules/reports/index.php',
-  '/admin-ab/modules/gallery/index.php',
-  '/admin-ab/modules/settings/index.php',
   '/assets/css/layouts/admin.css',
   '/assets/css/layouts/admin-responsive.css',
-  // ICON PWA (TAMBAHKAN INI)
   '/assets/img/icon-192.png',
   '/assets/img/icon-512.png'
 ];
 
-// Install Service Worker
+// Install Service Worker (Safe AddAll dengan error handler)
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Caching assets...');
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(async cache => {
+      console.log('Caching assets...');
+      // Mengunduh file satu per satu, jika 1 file gagal (404/redirect), file lain tidak ikut gagal
+      await Promise.allSettled(
+        urlsToCache.map(async url => {
+          try {
+            const response = await fetch(url);
+            if (response.ok) {
+              await cache.put(url, response);
+            } else {
+              console.warn(`[SW Cache Warning] Gagal memuat asset: ${url} (Status: ${response.status})`);
+            }
+          } catch (err) {
+            console.warn(`[SW Cache Error] Tidak dapat mengunduh: ${url}`, err);
+          }
+        })
+      );
+    }).then(() => self.skipWaiting())
   );
 });
 
@@ -56,7 +59,10 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = event.request.url;
   
-  // Redirect root ke admin login (kalo dari PWA)
+  // Abaikan request non-GET (seperti POST upload/edit foto) agar tidak di-cache oleh SW
+  if (event.request.method !== 'GET') return;
+
+  // Redirect root ke admin login jika dari PWA
   if (url.includes('/?pwa=true') || 
       url === 'https://andalanbeton.com/' || 
       url === 'https://andalanbeton.com/?pwa=true' ||
