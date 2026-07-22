@@ -34,39 +34,39 @@
 <link rel="stylesheet" href="<?= ASSETS_URL ?>css/base/typography.css?v=<?= APP_VERSION ?>">
 
 <!-- Components CSS -->
-  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/buttons.css?v=<?= APP_VERSION ?>\">
-  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/cards.css?v=<?= APP_VERSION ?>\">
-  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/forms.css?v=<?= APP_VERSION ?>\">
-  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/modal.css?v=<?= APP_VERSION ?>\">
-  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/toast.css?v=<?= APP_VERSION ?>\">
-  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/pagination.css?v=<?= APP_VERSION ?>\">
-  <link rel=\"stylesheet\" href=\"<?= ASSETS_URL ?>css/components/tables.css?v=<?= APP_VERSION ?>\">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/buttons.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/cards.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/forms.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/modal.css?v=<?= APP_VERSION ?>?v=999">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/toast.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/pagination.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/tables.css?v=<?= APP_VERSION ?>">
 
   <style>
-    /* Kunci 1: Singkirkan background bocor stabilo pada body utama */
-body {
-    background-color: var(--bg-base) !important;
-    overflow-x: hidden;
-}
-
-    /* Kunci 2: Cegah elemen pop-up/preview foto/modal bawaan material 
-       agar TIDAK jebol ke bawah tabel sebelum JavaScript AJAX ter-load sempurna */
-    .modal, 
-    .modal-preview, 
-    #preview-container, 
-    [id^="modal-"], 
-    .material-preview,
-    .preview-box {
-      display: none !important;
+    /* Singkirkan background bocor stabilo pada body utama */
+    body {
+        background-color: var(--bg-base) !important;
+        overflow-x: hidden;
     }
 
-    /* Kunci 3: Jika modal sedang aktif (di-trigger JS), baru tampilkan secara normal */
-    .modal.open, 
-    .modal.show, 
-    .modal.active {
-      display: flex !important;
+    /* FIX TOTAL MODAL KELUAR TAMPIL PUSAT */
+    .modal-overlay.open {
+        display: flex !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+    
+    .modal-overlay.open .modal {
+        display: block !important;
+        transform: translateY(0) scale(1) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
   </style>
+
+  <?= $extraCss ?? '' ?>
+</head>
 
   <?= $extraCss ?? '' ?>
 </head>
