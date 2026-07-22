@@ -184,14 +184,20 @@ include __DIR__ . '/../../partials/head.php';
                                 </a>
                             </td>
                             <td>
-                                <div class="actions">
-                                    <button onclick='editGallery(<?= json_encode($item) ?>)' class="btn btn-sm btn-secondary">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <a href="?delete=<?= $item['id'] ?>&token=<?= csrfToken() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus foto ini?')">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                </div>
+<div class="actions">
+    <!-- Tombol intip foto ukuran penuh di tab baru -->
+    <a href="<?= uploadUrl($item['image']) ?>" target="_blank" class="btn btn-sm btn-info" title="Lihat Foto Full">
+        <i class="fas fa-eye"></i>
+    </a>
+    
+    <button onclick='editGallery(<?= json_encode($item) ?>)' class="btn btn-sm btn-secondary" title="Edit">
+        <i class="fas fa-edit"></i>
+    </button>
+    
+    <a href="?delete=<?= $item['id'] ?>&token=<?= csrfToken() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus foto ini?')" title="Hapus">
+        <i class="fas fa-trash"></i>
+    </a>
+</div>
                             </td>
                         </tr>
                         <?php endforeach; ?>
