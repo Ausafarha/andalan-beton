@@ -15,58 +15,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if (!verifyCsrf()) {
         $errors[] = 'Token keamanan tidak valid.';
     } else {
-       if ($_POST['action'] === 'upload') {
-    if (empty($_FILES['image']['name'])) {
-        $errors[] = 'Pilih file gambar terlebih dahulu.';
-    } else {
-        require_once __DIR__ . '/../../../config/cloudinary.php';
-        $upload = uploadToCloudinary($_FILES['image'], 'gallery');
-        if ($upload['success']) {
-            Database::insert('gallery', [
+        if ($_POST['action'] === 'upload') {
+            if (empty($_FILES['image']['name'])) {
+                $errors[] = 'Pilih file gambar terlebih dahulu.';
+            } else {
+                require_once __DIR__ . '/../../../config/cloudinary.php';
+                $upload = uploadToCloudinary($_FILES['image'], 'gallery');
+                if ($upload['success']) {
+                    Database::insert('gallery', [
+                        'title'       => post('title'),
+                        'description' => post('description'),
+                        'category'    => post('category'),
+                        'image'       => $upload['url'],
+                        'sort_order'  => 0, // Otomatis diset 0
+                        'is_active'   => postInt('is_active', 1)
+                    ]);
+                    logActivity('create', 'gallery', 'Menambah foto galeri: ' . post('title'));
+                    setFlash('success', 'Foto berhasil ditambahkan.');
+                    redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
+                } else {
+                    $errors[] = $upload['message'];
+                }
+            }
+        }
+        
+        if ($_POST['action'] === 'edit') {
+            $id = postInt('id');
+            $data = [
                 'title'       => post('title'),
                 'description' => post('description'),
                 'category'    => post('category'),
-                'image'       => $upload['url'], // Simpan URL Cloudinary
-                'sort_order'  => postInt('sort_order', 0),
+                'sort_order'  => 0, // Otomatis diset 0
                 'is_active'   => postInt('is_active', 1)
-            ]);
-            logActivity('create', 'gallery', 'Menambah foto galeri: ' . post('title'));
-            setFlash('success', 'Foto berhasil ditambahkan.');
-            redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
-        } else {
-            $errors[] = $upload['message'];
+            ];
+            
+            // Handle upload foto baru ke Cloudinary
+            if (!empty($_FILES['image']['name'])) {
+                require_once __DIR__ . '/../../../config/cloudinary.php';
+                $upload = uploadToCloudinary($_FILES['image'], 'gallery');
+                if ($upload['success']) {
+                    $data['image'] = $upload['url'];
+                } else {
+                    $errors[] = $upload['message'];
+                }
+            }
+            
+            if (empty($errors)) {
+                Database::update('gallery', $data, 'id = ?', [$id]);
+                logActivity('update', 'gallery', 'Mengedit foto galeri ID: ' . $id);
+                setFlash('success', 'Foto berhasil diupdate.');
+                redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
+            }
         }
-    }
-}
-        
-if ($_POST['action'] === 'edit') {
-    $id = postInt('id');
-    $data = [
-        'title'       => post('title'),
-        'description' => post('description'),
-        'category'    => post('category'),
-        'sort_order'  => postInt('sort_order', 0),
-        'is_active'   => postInt('is_active', 1)
-    ];
-    
-    // Handle upload foto baru ke Cloudinary
-    if (!empty($_FILES['image']['name'])) {
-        require_once __DIR__ . '/../../../config/cloudinary.php';
-        $upload = uploadToCloudinary($_FILES['image'], 'gallery');
-        if ($upload['success']) {
-            $data['image'] = $upload['url'];
-        } else {
-            $errors[] = $upload['message'];
-        }
-    }
-    
-    if (empty($errors)) {
-        Database::update('gallery', $data, 'id = ?', [$id]);
-        logActivity('update', 'gallery', 'Mengedit foto galeri ID: ' . $id);
-        setFlash('success', 'Foto berhasil diupdate.');
-        redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
-    }
-}
     }
 }
 
@@ -78,12 +78,11 @@ if (isset($_GET['delete']) && isset($_GET['token'])) {
     $id = (int)$_GET['delete'];
     $gallery = Database::fetchOne("SELECT image FROM gallery WHERE id = ?", [$id]);
     if ($gallery && str_contains($gallery['image'], 'cloudinary.com')) {
-        require_once __DIR__ . '/../../../config/cloudinary.php'; // TAMBAHKAN INI
+        require_once __DIR__ . '/../../../config/cloudinary.php';
         $parts = explode('/upload/', $gallery['image']);
         $publicId = 'andalan-beton/gallery/' . pathinfo($parts[1], PATHINFO_FILENAME);
         deleteFromCloudinary($publicId);
     }
-    // Hapus dari database
     Database::delete('gallery', 'id = ?', [$id]);
     setFlash('success', 'Foto berhasil dihapus.');
     redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
@@ -103,7 +102,7 @@ if (isset($_GET['toggle']) && isset($_GET['token'])) {
     redirect(APP_URL . '/admin-ab/modules/gallery/index.php');
 }
 
-// KODE BARU (Urutkan berdasarkan ID terbaru):
+// Urutkan berdasarkan ID terbaru
 $gallery = Database::fetchAll("SELECT * FROM gallery ORDER BY id DESC");
 $categories = Database::fetchAll("SELECT DISTINCT category FROM gallery ORDER BY category");
 
@@ -164,7 +163,6 @@ include __DIR__ . '/../../partials/head.php';
                             <th>Foto</th>
                             <th>Judul</th>
                             <th>Kategori</th>
-                            
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -182,7 +180,6 @@ include __DIR__ . '/../../partials/head.php';
                                 <?php endif; ?>
                             </td>
                             <td><span class="badge badge-info"><?= htmlspecialchars($item['category']) ?></span></td>
-                            
                             <td>
                                 <a href="?toggle=<?= $item['id'] ?>&token=<?= csrfToken() ?>" class="badge badge-<?= $item['is_active'] ? 'success' : 'secondary' ?>" style="text-decoration:none;">
                                     <?= $item['is_active'] ? 'Aktif' : 'Nonaktif' ?>
@@ -245,7 +242,6 @@ include __DIR__ . '/../../partials/head.php';
                         <option value="umum">Umum</option>
                     </select>
                 </div>
-               
                 <div class="form-group">
                     <label class="form-label">Status</label>
                     <select name="is_active" class="form-control">
@@ -297,7 +293,6 @@ include __DIR__ . '/../../partials/head.php';
                         <option value="umum">Umum</option>
                     </select>
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Status</label>
                     <select name="is_active" id="edit-active" class="form-control">
@@ -320,7 +315,6 @@ function editGallery(item) {
     document.getElementById('edit-title').value = item.title || '';
     document.getElementById('edit-desc').value = item.description || '';
     document.getElementById('edit-category').value = item.category || 'umum';
-    document.getElementById('edit-order').value = item.sort_order || 0;
     document.getElementById('edit-active').value = item.is_active ? 1 : 0;
     document.getElementById('edit-modal').classList.add('open');
 }
