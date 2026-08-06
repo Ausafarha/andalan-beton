@@ -1,4 +1,4 @@
-const CACHE_NAME = 'andalan-beton-v1.0.4';
+const CACHE_NAME = 'andalan-beton-v2.0.0';
 
 // File yang di-cache (statis) - TAMBAHKAN ICON
 const urlsToCache = [

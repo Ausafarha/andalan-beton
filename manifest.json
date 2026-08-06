@@ -1,6 +1,6 @@
 {
   "name": "PT Mitra Andalan Beton Pantura",
-  "short_name": "Andalan Beton Admin",
+  "short_name": "AB Beton",
   "description": "Industri Readymix dan Precast",
   "start_url": "/admin-ab/login.php",
   "display": "standalone",
