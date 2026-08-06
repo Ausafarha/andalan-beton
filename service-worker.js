@@ -1,4 +1,4 @@
-const CACHE_NAME = 'andalan-beton-v1.0.3';
+const CACHE_NAME = 'andalan-beton-v1.0.4';
 
 // File yang di-cache (statis) - TAMBAHKAN ICON
 const urlsToCache = [
@@ -22,7 +22,6 @@ const urlsToCache = [
   '/admin-ab/modules/settings/index.php',
   '/assets/css/layouts/admin.css',
   '/assets/css/layouts/admin-responsive.css',
-  // ICON PWA (TAMBAHKAN INI)
   '/assets/img/icon-192.png',
   '/assets/img/icon-512.png'
 ];
