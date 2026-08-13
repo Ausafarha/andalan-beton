@@ -87,7 +87,7 @@ $currentSlug  = $currentSlug ?? '';
 </a>
 
   <nav class="public-nav" id="pub-nav">
-    <a href="<?= APP_URL ?>/" class="<?= $currentSlug===''?'active':'' ?>">Beranda</a>
+    <a href="<?= APP_URL ?>/index.php" class="<?= $currentSlug===''?'active':'' ?>">Beranda</a>
     <a href="<?= APP_URL ?>/profil.php" class="<?= $currentSlug==='profil'?'active':'' ?>">Profil</a>
     <a href="<?= APP_URL ?>/produk.php" class="<?= $currentSlug==='produk'?'active':'' ?>">Produk</a>
     <a href="<?= APP_URL ?>/galeri.php" class="<?= $currentSlug==='galeri'?'active':'' ?>">Galeri</a>
