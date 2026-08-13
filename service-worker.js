@@ -1,25 +1,9 @@
-const CACHE_NAME = 'andalan-beton-v2.0.1';
+const CACHE_NAME = 'andalan-beton-v2.0.2';
 
-// File yang di-cache (statis)
+// File aset statis yang aman di-cache
 const urlsToCache = [
-  '/',
-  '/profil.php',
-  '/produk.php',
-  '/galeri.php',
-  '/kontak.php',
-  '/pesan.php',
   '/assets/css/main.css',
   '/assets/js/main.js',
-  // ADMIN
-  '/admin-ab/dashboard.php',
-  '/admin-ab/login.php',
-  '/admin-ab/modules/material/index.php',
-  '/admin-ab/modules/stock_in/index.php',
-  '/admin-ab/modules/stock_out/index.php',
-  '/admin-ab/modules/orders/index.php',
-  '/admin-ab/modules/reports/index.php',
-  '/admin-ab/modules/gallery/index.php',
-  '/admin-ab/modules/settings/index.php',
   '/assets/css/layouts/admin.css',
   '/assets/css/layouts/admin-responsive.css',
   '/assets/img/icon-192.png',
@@ -31,14 +15,13 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Caching assets...');
         return cache.addAll(urlsToCache);
       })
       .then(() => self.skipWaiting())
   );
 });
 
-// Activate - hapus cache lama
+// Activate - Hapus cache versi lama secara otomatis
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -51,39 +34,37 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ── FETCH + REDIRECT (SUDAH DIPERBAIKI) ──
+// Fetch Handling
 self.addEventListener('fetch', event => {
-  const url = event.request.url;
+  const request = event.request;
   
-  // Redirect root ke INDEX.PHP (bukan login admin!)
-  if (url.includes('/?pwa=true') || 
-      url === 'https://andalanbeton.com/' || 
-      url === 'https://andalanbeton.com/?pwa=true' ||
-      url === 'http://localhost:8000/' || 
-      url === 'http://localhost:8000/?pwa=true') {
+  // 1. Abaikan Non-GET request (POST, PUT, DELETE)
+  if (request.method !== 'GET') return;
+
+  // 2. Strategi Network First untuk Dokumen / Halaman PHP / PWA Route
+  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
-      fetch('/index.php')  // ← SEKARANG KE BERANDA
+      fetch(request)
+        .catch(() => caches.match('/index.php'))
     );
     return;
   }
-  
+
+  // 3. Strategi Cache First untuk Aset Statis (CSS, JS, Gambar)
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
+    caches.match(request).then(cachedResponse => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(request).then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, responseToCache);
+          });
         }
-        return fetch(event.request).then(response => {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME)
-            .then(cache => {
-              cache.put(event.request, responseToCache);
-            });
-          return response;
-        });
-      })
+        return networkResponse;
+      });
+    })
   );
 });

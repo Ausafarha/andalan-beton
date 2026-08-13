@@ -56,6 +56,17 @@ $currentSlug  = $currentSlug ?? '';
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/pages/gallery.css?v=<?= APP_VERSION ?>">
   <script>(function(){const t=localStorage.getItem('andalan_theme')||'light';document.documentElement.setAttribute('data-theme',t);})();</script>
   <script src="<?= ASSETS_URL ?>js/main.js?v=<?= APP_VERSION ?>"></script>
+
+  <!-- Pendaftaran Service Worker & Paksa Update Cache -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('<?= APP_URL ?>/sw.js').then(function(reg) {
+          reg.update();
+        });
+      });
+    }
+  </script>
 </head>
 <body>
 <div class="toast-container"></div>
