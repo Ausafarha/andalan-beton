@@ -1,6 +1,6 @@
-const CACHE_NAME = 'andalan-beton-v2.0.0';
+const CACHE_NAME = 'andalan-beton-v2.0.1';
 
-// File yang di-cache (statis) - TAMBAHKAN ICON
+// File yang di-cache (statis)
 const urlsToCache = [
   '/',
   '/profil.php',
@@ -51,18 +51,18 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ── FETCH + REDIRECT PWA ADMIN ──────────────────────────────
+// ── FETCH + REDIRECT (SUDAH DIPERBAIKI) ──
 self.addEventListener('fetch', event => {
   const url = event.request.url;
   
-  // Redirect root ke admin login (kalo dari PWA)
+  // Redirect root ke INDEX.PHP (bukan login admin!)
   if (url.includes('/?pwa=true') || 
       url === 'https://andalanbeton.com/' || 
       url === 'https://andalanbeton.com/?pwa=true' ||
       url === 'http://localhost:8000/' || 
       url === 'http://localhost:8000/?pwa=true') {
     event.respondWith(
-      fetch('/admin-ab/login.php')
+      fetch('/index.php')  // ← SEKARANG KE BERANDA
     );
     return;
   }
