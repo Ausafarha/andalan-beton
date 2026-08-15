@@ -1,11 +1,9 @@
-const CACHE_NAME = 'andalan-beton-v2.0.2';
+const CACHE_NAME = 'andalan-beton-v2.0.4';
 
-// File aset statis yang aman di-cache
+// File aset statis publik saja
 const urlsToCache = [
   '/assets/css/main.css',
   '/assets/js/main.js',
-  '/assets/css/layouts/admin.css',
-  '/assets/css/layouts/admin-responsive.css',
   '/assets/img/icon-192.png',
   '/assets/img/icon-512.png'
 ];
@@ -14,9 +12,7 @@ const urlsToCache = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
       .then(() => self.skipWaiting())
   );
 });
@@ -37,34 +33,29 @@ self.addEventListener('activate', event => {
 // Fetch Handling
 self.addEventListener('fetch', event => {
   const request = event.request;
-  
-  // 1. Abaikan Non-GET request (POST, PUT, DELETE)
+  const url = new URL(request.url);
+
+  // 1. PENTING: ABAIKAN SEMUA REQUEST DIREKTORI ADMIN!
+  if (url.pathname.includes('/admin-ab/')) {
+    return; // Biarkan browser berkomunikasi murni langsung dengan server PHP
+  }
+
+  // 2. Abaikan Request Non-GET (POST, PUT, DELETE)
   if (request.method !== 'GET') return;
 
-  // 2. Strategi Network First untuk Dokumen / Halaman PHP / PWA Route
+  // 3. Strategi Network First untuk halaman publik
   if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
-      fetch(request)
-        .catch(() => caches.match('/index.php'))
+      fetch(request).catch(() => caches.match('/index.php'))
     );
     return;
   }
 
-  // 3. Strategi Cache First untuk Aset Statis (CSS, JS, Gambar)
+  // 4. Cache First untuk aset statis
   event.respondWith(
     caches.match(request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(request).then(networkResponse => {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(request, responseToCache);
-          });
-        }
-        return networkResponse;
-      });
+      if (cachedResponse) return cachedResponse;
+      return fetch(request);
     })
   );
 });
