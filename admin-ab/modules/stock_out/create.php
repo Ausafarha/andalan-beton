@@ -14,20 +14,17 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         if ($data['quantity']<=0)  $errors[]='Jumlah harus lebih dari 0.';
         // Check stock availability
         if ($data['material_id'] && $data['quantity']>0) {
-            $stock=(int)Database::fetchColumn("SELECT current_stock FROM material_stock WHERE id=?",[$data['material_id']]);
+            $stock=(int)Database::fetchColumn("SELECT current_stock FROM materials WHERE id=?",[$data['material_id']]);
             if ($data['quantity']>$stock) $errors[]="Stok tidak mencukupi. Stok tersedia: {$stock}";
         }
 if (empty($errors)) {
             Database::insert('stock_out',$data);
             
-            // --- KODE UPGRADE: OTOMATIS POTONG TABEL STOK ---
-            Database::query("
-                UPDATE material_stock 
-                SET current_stock = current_stock - ?, 
-                    total_out = total_out + ? 
-                WHERE id = ?
-            ", [$data['quantity'], $data['quantity'], $data['material_id']]);
-            // ------------------------------------------------
+Database::query("
+    UPDATE materials 
+    SET current_stock = current_stock - ? 
+    WHERE id = ?
+", [$data['quantity'], $data['material_id']]);
             
             $matName=Database::fetchColumn("SELECT name FROM materials WHERE id=?", [$data['material_id']]);
             logActivity('create','stock_out',"Mencatat barang keluar: {$matName} sebanyak {$data['quantity']}");
@@ -86,7 +83,7 @@ include __DIR__.'/../../partials/head.php';
 </div>
 <?php include __DIR__.'/../../partials/footer.php'; ?>
 <script>
-const stockData = <?= json_encode(array_column(Database::fetchAll("SELECT id, current_stock, unit FROM material_stock WHERE is_active=true"), null, 'id')) ?>;
+const stockData = <?= json_encode(array_column(Database::fetchAll("SELECT id, current_stock, unit FROM materials WHERE is_active=true"), null, 'id')) ?>;
 document.getElementById('mat-out').addEventListener('change', function() {
   const id = this.value;
   const info = document.getElementById('stock-info');
