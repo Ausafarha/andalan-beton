@@ -1,4 +1,4 @@
-const CACHE_NAME = 'andalan-beton-v3.0.0';
+const CACHE_NAME = 'andalan-beton-v3.1.0';
 
 // File aset statis yang aman di-cache
 const urlsToCache = [
@@ -14,14 +14,12 @@ const urlsToCache = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
       .then(() => self.skipWaiting())
   );
 });
 
-// Activate - Hapus cache versi lama secara otomatis
+// Activate - Hapus cache versi lama
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -37,27 +35,31 @@ self.addEventListener('activate', event => {
 // Fetch Handling
 self.addEventListener('fetch', event => {
   const request = event.request;
-  
-  // 1. Abaikan Non-GET request (POST, PUT, DELETE)
+
+  // 1. Abaikan Non-GET
   if (request.method !== 'GET') return;
 
-  // 2. Strategi Network First untuk Dokumen / Halaman PHP / PWA Route
+  // 2. JANGAN intercept halaman admin sama sekali - biarkan browser handle langsung
+  const url = new URL(request.url);
+  if (url.pathname.startsWith('/admin-ab/')) return;
+
+  // 3. Network First untuk semua halaman HTML/PHP - TANPA fallback ke index.php
   if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
-    event.respondWith(
-      fetch(request)
-        .catch(() => caches.match('/index.php'))
-    );
+    event.respondWith(fetch(request));
     return;
   }
 
-  // 3. Strategi Cache First untuk Aset Statis (CSS, JS, Gambar)
+  // 4. Cache First untuk aset statis saja (CSS, JS, Gambar)
   event.respondWith(
     caches.match(request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+      if (cachedResponse) return cachedResponse;
+
       return fetch(request).then(networkResponse => {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+        if (
+          networkResponse &&
+          networkResponse.status === 200 &&
+          networkResponse.type === 'basic'
+        ) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => {
             cache.put(request, responseToCache);
