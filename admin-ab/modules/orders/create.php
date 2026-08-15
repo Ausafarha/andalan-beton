@@ -3,7 +3,7 @@ require_once __DIR__.'/../../../config/database.php';
 require_once __DIR__.'/../../../config/app.php';
 initSession(); requireLogin();
 
-$pageTitle = 'Tambah Pesanan Baru (Offline)';
+$pageTitle = 'Tambah Pesanan Baru ';
 $errors = [];
 $user = currentUser();
 
@@ -118,8 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            logActivity('create', 'orders', "Membuat pesanan manual offline: {$orderNumber}");
-            setFlash('success', 'Pesanan offline berhasil dibuat dan stok barang otomatis terpotong.');
+            logActivity('create', 'orders', "Membuat pesanan manual: {$orderNumber}");
+            setFlash('success', 'Pesanan baru berhasil dibuat dan stok barang otomatis terpotong.');
             redirect(APP_URL . '/admin-ab/modules/orders/index.php');
         }
     }
@@ -135,7 +135,7 @@ include __DIR__ . '/../../partials/head.php';
 
 <div class="mb-20">
   <a href="<?= APP_URL ?>/admin-ab/modules/orders/index.php" class="btn btn-ghost btn-sm" style="margin-bottom:8px;"><i class="fas fa-arrow-left"></i> Kembali</a>
-  <h2 style="font-size:20px;font-weight:800;">Buat Pesanan Baru (Offline)</h2>
+  <h2 style="font-size:20px;font-weight:800;">Buat Pesanan Baru</h2>
 </div>
 
 <?php foreach ($errors as $e): ?>
