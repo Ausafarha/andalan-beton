@@ -17,7 +17,7 @@
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-        navigator.serviceWorker.register('<?= APP_URL ?>/service-worker.js')
+        // navigator.serviceWorker.register('<?= APP_URL ?>/service-worker.js')
             .then(function(registration) {
                 console.log('Service Worker registered for admin');
             })
