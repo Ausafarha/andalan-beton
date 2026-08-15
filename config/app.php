@@ -34,7 +34,7 @@ function initSession(): void {
         session_set_cookie_params([
             'lifetime' => SESSION_LIFETIME,
             'path'     => '/',
-            'secure'   => false, // set true in production with HTTPS
+            'secure'   => true, // set true in production with HTTPS
             'httponly' => true,
             'samesite' => 'Lax',
         ]);

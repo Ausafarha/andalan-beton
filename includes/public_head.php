@@ -61,7 +61,7 @@ $currentSlug  = $currentSlug ?? '';
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('<?= APP_URL ?>/sw.js').then(function(reg) {
+        navigator.serviceWorker.register('<?= APP_URL ?>/service-worker.js').then(function(reg) {
           reg.update();
         });
       });

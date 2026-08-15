@@ -5,10 +5,15 @@ initSession();
 
 // Jika udah login, langsung redirect ke dashboard
 if (isLoggedIn()) {
-    $redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
-    unset($_SESSION['login_redirect']);
-    header('Location: ' . $redirect);
+    header('Location: ' . APP_URL . '/admin-ab/dashboard.php');
     exit;
+}
+// Redirect if already logged in
+if (isLoggedIn()) {
+    // Cek apakah ada redirect intent
+$redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
+unset($_SESSION['login_redirect']);
+redirect($redirect);
 }
 
 $error = '';
@@ -23,7 +28,6 @@ if (isset($_GET['msg']) && $_GET['msg'] === 'session_expired') {
 if (empty($_SESSION['csrf_token']) || isset($_GET['refresh'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf()) {
         $error = 'Token keamanan tidak valid. Silakan muat ulang halaman.';
@@ -34,10 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($username) || empty($password)) {
             $error = 'Username dan password wajib diisi.';
         } else {
-            $user = Database::fetchOne(
-                "SELECT * FROM users WHERE username = ? AND is_active = true LIMIT 1",
-                [$username]
-            );
+            try {
+                $user = Database::fetchOne(
+                    "SELECT * FROM users WHERE username = ? AND is_active = true LIMIT 1",
+                    [$username]
+                );
 
             if ($user && password_verify($password, $user['password'])) {
                 // Login success
@@ -58,14 +63,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
 
                 // Cek apakah ada redirect intent
-                $redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
-                unset($_SESSION['login_redirect']);
-                header('Location: ' . $redirect);
-                exit;
-            } else {
-                $error = 'Username atau password salah.';
-                // Simulate delay to prevent brute force
-                sleep(1);
+$redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
+unset($_SESSION['login_redirect']);
+redirect($redirect);
+           } else {
+                    $error = 'Username atau password salah.';
+                    sleep(1);
+                }
+            } catch (PDOException $e) {
+                $error = '⚠️ Gagal terhubung ke database. Silakan coba beberapa saat lagi. (' . $e->getMessage() . ')';
             }
         }
     }
@@ -206,6 +212,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="login-right">
     <h1>Admin Andalan Beton</h1>
     <p>Silakan masuk dengan akun admin Anda</p>
+
+    
 
     <?php if ($error): ?>
     <div class="alert alert-danger" data-auto-dismiss="5000">
