@@ -5,15 +5,10 @@ initSession();
 
 // Jika udah login, langsung redirect ke dashboard
 if (isLoggedIn()) {
-    header('Location: ' . APP_URL . '/admin-ab/dashboard.php');
+    $redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
+    unset($_SESSION['login_redirect']);
+    header('Location: ' . $redirect);
     exit;
-}
-// Redirect if already logged in
-if (isLoggedIn()) {
-    // Cek apakah ada redirect intent
-$redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
-unset($_SESSION['login_redirect']);
-redirect($redirect);
 }
 
 $error = '';
@@ -63,9 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
 
                 // Cek apakah ada redirect intent
-$redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
-unset($_SESSION['login_redirect']);
-redirect($redirect);
+                $redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
+                unset($_SESSION['login_redirect']);
+                header('Location: ' . $redirect);
+                exit;
             } else {
                 $error = 'Username atau password salah.';
                 // Simulate delay to prevent brute force
@@ -210,8 +206,6 @@ redirect($redirect);
   <div class="login-right">
     <h1>Admin Andalan Beton</h1>
     <p>Silakan masuk dengan akun admin Anda</p>
-
-    
 
     <?php if ($error): ?>
     <div class="alert alert-danger" data-auto-dismiss="5000">
