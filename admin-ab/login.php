@@ -8,16 +8,10 @@ if (isLoggedIn()) {
     header('Location: ' . APP_URL . '/admin-ab/dashboard.php');
     exit;
 }
-// Redirect if already logged in
-if (isLoggedIn()) {
-    // Cek apakah ada redirect intent
-$redirect = $_SESSION['login_redirect'] ?? APP_URL . '/admin-ab/dashboard.php';
-unset($_SESSION['login_redirect']);
-redirect($redirect);
-}
 
 $error = '';
 $username = '';
+
 
 // Cek apakah session expired (dari redirect dashboard)
 if (isset($_GET['msg']) && $_GET['msg'] === 'session_expired') {

@@ -21,42 +21,36 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Main CSS (harus pertama) -->
+  <!-- Main CSS -->
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/main.css?v=<?= APP_VERSION ?>">
   
   <!-- Admin Layout CSS -->
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/admin.css?v=<?= APP_VERSION ?>">
-  
-  <!-- Admin Responsive CSS (paling akhir biar override) -->
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/layouts/admin-responsive.css?v=<?= APP_VERSION ?>">
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/base/variables.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/base/reset.css?v=<?= APP_VERSION ?>">
-<link rel="stylesheet" href="<?= ASSETS_URL ?>css/base/typography.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/base/reset.css?v=<?= APP_VERSION ?>">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/base/typography.css?v=<?= APP_VERSION ?>">
 
-<!-- Components CSS -->
+  <!-- Components CSS -->
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/buttons.css?v=<?= APP_VERSION ?>">
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/cards.css?v=<?= APP_VERSION ?>">
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/forms.css?v=<?= APP_VERSION ?>">
-  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/modal.css?v=<?= APP_VERSION ?>?v=999">
+  <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/modal.css?v=<?= APP_VERSION ?>">
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/toast.css?v=<?= APP_VERSION ?>">
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/pagination.css?v=<?= APP_VERSION ?>">
   <link rel="stylesheet" href="<?= ASSETS_URL ?>css/components/tables.css?v=<?= APP_VERSION ?>">
 
   <style>
-    /* Singkirkan background bocor stabilo pada body utama */
     body {
         background-color: var(--bg-base) !important;
         overflow-x: hidden;
     }
-
-    /* FIX TOTAL MODAL KELUAR TAMPIL PUSAT */
     .modal-overlay.open {
         display: flex !important;
         opacity: 1 !important;
         visibility: visible !important;
         pointer-events: auto !important;
     }
-    
     .modal-overlay.open .modal {
         display: block !important;
         transform: translateY(0) scale(1) !important;
@@ -67,14 +61,10 @@
 
   <?= $extraCss ?? '' ?>
 </head>
-
-  <?= $extraCss ?? '' ?>
-</head>
 <body>
 <div class="toast-container"></div>
 <script src="<?= ASSETS_URL ?>js/main.js?v=<?= APP_VERSION ?>"></script>
 <script>
-// Apply theme early to prevent flash
 (function() {
   const t = localStorage.getItem('andalan_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', t);
