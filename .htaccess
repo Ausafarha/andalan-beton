@@ -1,8 +1,7 @@
 # ============================================================
-# .htaccess - PT Andalan Beton (REVISI FINAL ANTI-REDIRECT)
+# .htaccess - PT Andalan Beton
 # ============================================================
 
-# Paksa server membaca index.php sebagai halaman utama
 DirectoryIndex index.php
 
 Options -Indexes
@@ -13,7 +12,6 @@ ServerSignature Off
     RewriteEngine On
     RewriteBase /
 
-    # Jika akses root domain (andalanbeton.com atau /), paksa HANYA jalankan index.php
     RewriteRule ^$ index.php [L]
 
     # Block direct access ke folder internal sensitif
@@ -23,13 +21,7 @@ ServerSignature Off
     RewriteRule ^vendor/ - [F,L]
 </IfModule>
 
-# ── 2. CEGAH BROWSER MENYIMPAN REDIRECT LAMA (NO-CACHE HTML) ─
-<IfModule mod_headers.c>
-    # Unset header Location bekas redirect lama jika ada
-    Header unset Location
-</IfModule>
-
-# Matikan cache KHUSUS untuk Dokumen PHP/HTML agar selalu Ambil Versi Baru dari Server
+# ── 2. CACHE CONTROL UNTUK PHP/HTML ─────────────────────────
 <FilesMatch "\.(php|html)$">
     <IfModule mod_headers.c>
         Header set Cache-Control "no-cache, no-store, must-revalidate, private"
@@ -38,7 +30,7 @@ ServerSignature Off
     </IfModule>
 </FilesMatch>
 
-# ── 3. CACHE HANYA UNTUK ASET STATIS (CSS, JS, GAMBAR) ────────
+# ── 3. CACHE UNTUK ASET STATIS ──────────────────────────────
 <IfModule mod_headers.c>
     <FilesMatch "\.(css|js|jpg|jpeg|png|webp|svg|ico|woff2|ttf)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
