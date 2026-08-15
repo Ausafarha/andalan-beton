@@ -21,6 +21,7 @@ include __DIR__.'/../../partials/head.php';
 
 <div class="flex-between mb-20">
   <div class="section-header" style="margin-bottom:0;"><h2>Daftar Pesanan</h2><p>Kelola semua pesanan dari pelanggan</p></div>
+  <a href="<?=APP_URL?>/admin-ab/modules/orders/create.php" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Pesanan Offline</a>
 </div>
 
 <!-- Status tabs -->

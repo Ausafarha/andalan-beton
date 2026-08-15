@@ -17,45 +17,43 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['update_status'])) {
         if (in_array($newStatus,$allowedStatuses)) {
             $user=currentUser();
             
-           // 🔥 AUTO STOCK OUT: Jika status berubah ke 'processing' atau 'completed'
-if (in_array($newStatus, ['processing', 'completed']) && $ord['status'] !== $newStatus) {
+          // 🔥 AUTO STOCK OUT & UPDATE STOK: Jika status berubah ke 'processing' atau 'completed'
+if (in_array($newStatus, ['processing', 'completed']) && !in_array($ord['status'], ['processing', 'completed'])) {
     $items = Database::fetchAll("SELECT * FROM order_items WHERE order_id = ?", [$id]);
     $hasError = false;
-    
+
+    // Validasi Stok dulu sebelum potong
     foreach ($items as $item) {
-        // Hitung stok dari stock_in - stock_out
-        $stock = (int)Database::fetchColumn("
-            SELECT COALESCE(
-                (SELECT COALESCE(SUM(quantity), 0) FROM stock_in WHERE material_id = ?) -
-                (SELECT COALESCE(SUM(quantity), 0) FROM stock_out WHERE material_id = ?),
-                0
-            ) AS current_stock
-        ", [$item['material_id'], $item['material_id']]);
-        
+        $stock = (int)Database::fetchColumn("SELECT current_stock FROM materials WHERE id = ?", [$item['material_id']]);
         if ($stock < $item['quantity']) {
             $matName = Database::fetchColumn("SELECT name FROM materials WHERE id = ?", [$item['material_id']]);
             setFlash('error', "Stok {$matName} tidak mencukupi! Tersedia: {$stock}, Dibutuhkan: {$item['quantity']}");
             $hasError = true;
             break;
         }
-        
-    Database::insert('stock_out', [
-        'material_id'   => $item['material_id'],
-        'order_id'      => $id,
-        'quantity'      => $item['quantity'],
-        'destination'   => "Pengiriman pesanan " . $ord['order_number'],
-        'customer_name' => $ord['customer_name'], // <-- TAMBAHKAN INI
-        'driver_name'   => null,
-        'vehicle_number'=> null,
-        'notes'         => "Otomatis dari pesanan #{$ord['order_number']}",
-        'processed_by'  => $user['id'],
-        'out_date'      => date('Y-m-d')
-    ]);
     }
-    
+
     if ($hasError) {
         redirect(APP_URL.'/admin-ab/modules/orders/view.php?id='.$id);
         exit;
+    }
+
+    // Potong stok dan insert ke stock_out
+    foreach ($items as $item) {
+        Database::query("UPDATE materials SET current_stock = current_stock - ? WHERE id = ?", [$item['quantity'], $item['material_id']]);
+
+        Database::insert('stock_out', [
+            'material_id'   => $item['material_id'],
+            'order_id'      => $id,
+            'quantity'      => $item['quantity'],
+            'destination'   => $ord['delivery_address'] ?: ("Pengiriman pesanan " . $ord['order_number']),
+            'customer_name' => $ord['customer_name'],
+            'driver_name'   => null,
+            'vehicle_number'=> null,
+            'notes'         => "Otomatis dari pesanan #{$ord['order_number']}",
+            'processed_by'  => $user['id'],
+            'out_date'      => date('Y-m-d')
+        ]);
     }
 }
             

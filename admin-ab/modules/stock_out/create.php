@@ -9,7 +9,7 @@ $data=['material_id'=>'','quantity'=>'','destination'=>'','driver_name'=>'','veh
 if ($_SERVER['REQUEST_METHOD']==='POST') {
     if (!verifyCsrf()){$errors[]='Token tidak valid.';}
     else {
-        $data=['material_id'=>postInt('material_id'),'quantity'=>postInt('quantity'),'destination'=>post('destination')?:null,'driver_name'=>post('driver_name')?:null,'vehicle_number'=>post('vehicle_number')?:null,'notes'=>post('notes')?:null,'out_date'=>post('out_date')?:date('Y-m-d'),'processed_by'=>$user['id']];
+        $data=['material_id'=>postInt('material_id'),'quantity'=>postInt('quantity'),'destination'=>post('destination')?:null,'customer_name'=>post('customer_name')?:null,'driver_name'=>post('driver_name')?:null,'vehicle_number'=>post('vehicle_number')?:null,'notes'=>post('notes')?:null,'out_date'=>post('out_date')?:date('Y-m-d'),'processed_by'=>$user['id']];
         if (!$data['material_id']) $errors[]='Pilih material.';
         if ($data['quantity']<=0)  $errors[]='Jumlah harus lebih dari 0.';
         // Check stock availability
