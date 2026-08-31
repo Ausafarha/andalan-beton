@@ -6,7 +6,7 @@ function renderAddressWithMap($address) {
     if (empty($address)) return '-';
     // Menjadikan URL maps bisa diklik otomatis
     $pattern = '/(https?:\/\/[^\s<]+)/i';
-    $replacement = '<br><a href="$1" target="_blank" class="btn btn-sm btn-outline" style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;color:#2563eb;border-color:#2563eb;"><i class="fas fa-directions"></i> Buka Navigasi Driver (Google Maps)</a>';
+    $replacement = '<br><a href="$1" target="_blank" class="btn btn-sm btn-outline" style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;color:#2563eb;border-color:#2563eb;"><i class="fas fa-hand-pointer"></i> Klik untuk Buka Lokasi di Google Maps</a>';
     return preg_replace($pattern, $replacement, htmlspecialchars($address, ENT_QUOTES, 'UTF-8'));
 }
 $id  = getInt('id');
