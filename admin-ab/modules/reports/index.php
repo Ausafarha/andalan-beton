@@ -138,7 +138,9 @@ if (isset($_GET['export']) && $_GET['export']==='pdf') {
     <style>
     body{font-family:Arial,sans-serif;font-size:12px;color:#222;margin:20px;}
     h2{font-size:18px;margin:0;}h3{font-size:14px;margin:0;color:#555;}
-    .header{border-bottom:2px solid #1d4ed8;padding-bottom:12px;margin-bottom:16px;}
+    .header{border-bottom:2px solid #1d4ed8;padding-bottom:12px;margin-bottom:16px;display:flex;align-items:center;gap:15px;}
+    .header-logo img{max-height:55px;width:auto;object-fit:contain;}
+    .header-text{flex:1;}
     .company{font-size:10px;color:#888;margin-top:4px;}
     .summary-box{background:#f0fdf4;border:1px solid #bbf7d0;padding:12px;margin-bottom:16px;border-radius:8px;}
     .summary-box p{margin:4px 0;font-size:12px;}
@@ -151,9 +153,16 @@ if (isset($_GET['export']) && $_GET['export']==='pdf') {
     </style>
     </head><body>
     <div class="header">
-      <h2><?=$reportTitle?></h2>
-      <h3><?=htmlspecialchars($cp['company_name']??APP_NAME)?></h3>
-      <div class="company">Periode: <?=formatDate($dateFrom)?> s/d <?=formatDate($dateTo)?> | Dicetak: <?=date('d M Y H:i')?></div>
+      <?php if (!empty($cp['logo'])): ?>
+        <div class="header-logo">
+          <img src="<?= uploadUrl($cp['logo']) ?>" alt="Logo PT">
+        </div>
+      <?php endif; ?>
+      <div class="header-text">
+        <h2><?=$reportTitle?></h2>
+        <h3><?=htmlspecialchars($cp['company_name']??APP_NAME)?></h3>
+        <div class="company">Periode: <?=formatDate($dateFrom)?> s/d <?=formatDate($dateTo)?> | Dicetak: <?=formatDateTime(date('Y-m-d H:i:s'))?></div>
+      </div>
     </div>
     <?php if (!empty($summary)): ?>
     <div class="summary-box">
