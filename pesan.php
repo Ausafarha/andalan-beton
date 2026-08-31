@@ -494,8 +494,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const defaultLng = 108.98123;
     
     const map = L.map('map-select').setView([defaultLat, defaultLng], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
+L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        attribution: '&copy; Google Maps'
     }).addTo(map);
 
     let marker;
