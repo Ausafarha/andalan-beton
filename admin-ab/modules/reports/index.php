@@ -19,15 +19,15 @@ $totalRows  = 0;
 $summary = []; // Untuk ringkasan
 
 switch ($type) {
-    case 'stock_in':
+case 'stock_in':
         $reportTitle = 'Rekap Barang Masuk';
         $params = [$dateFrom, $dateTo];
         $extraWhere = '';
         if ($matId) { $extraWhere = ' AND si.material_id=?'; $params[] = $matId; }
         if ($matType) { $extraWhere .= ' AND m.type=?'; $params[] = $matType; }
         $reportData = Database::fetchAll("
-            SELECT si.received_date AS tanggal, m.name AS material, m.unit, si.quantity AS jumlah,
-                  si.price_per_unit AS harga_satuan, si.supplier_name AS supplier,
+            SELECT si.received_date AS tanggal, m.name AS material, si.quantity AS jumlah, m.unit AS satuan,
+                  si.supplier_name AS supplier,
                   si.invoice_number AS invoice,
                   CASE WHEN m.type = 'raw' THEN '📦 Bahan Baku' ELSE '🏭 Produk Jadi' END AS tipe
             FROM stock_in si JOIN materials m ON si.material_id=m.id
