@@ -167,14 +167,26 @@ function formatNumber(float|int $num): string {
     return number_format($num, 0, ',', '.');
 }
 
-function formatDate(string|null $date, string $format = 'd M Y'): string {
+function formatDate(string|null $date): string {
     if (!$date) return '-';
-    return date($format, strtotime($date));
+    $time = strtotime($date);
+    $bulanIndo = [
+        1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    $m = (int)date('n', $time);
+    return date('d', $time) . ' ' . $bulanIndo[$m] . ' ' . date('Y', $time);
 }
 
 function formatDateTime(string|null $dt): string {
     if (!$dt) return '-';
-    return date('d M Y H:i', strtotime($dt));
+    $time = strtotime($dt);
+    $bulanIndo = [
+        1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    $m = (int)date('n', $time);
+    return date('d', $time) . ' ' . $bulanIndo[$m] . ' ' . date('Y', $time) . ' ' . date('H:i', $time);
 }
 
 function timeAgo(string $datetime): string {
