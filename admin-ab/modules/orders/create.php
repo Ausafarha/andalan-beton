@@ -127,6 +127,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 include __DIR__ . '/../../partials/head.php';
 ?>
+<!-- Leaflet Maps CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <div class="admin-wrapper">
 <?php include __DIR__ . '/../../partials/sidebar.php'; ?>
 <div class="main-content">
@@ -166,7 +170,11 @@ include __DIR__ . '/../../partials/head.php';
           </div>
           <div class="form-group">
             <label class="form-label">Alamat Pengiriman / Proyek <span>*</span></label>
-            <textarea name="delivery_address" class="form-control" rows="2" required placeholder="Alamat lengkap tujuan pengiriman..."><?= htmlspecialchars($data['delivery_address']) ?></textarea>
+            <textarea name="delivery_address" id="admin_delivery_address" class="form-control" rows="2" required placeholder="Alamat lengkap tujuan pengiriman..."><?= htmlspecialchars($data['delivery_address']) ?></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fas fa-map-marker-alt" style="color:#ef4444;"></i> Tandai Titik Pengiriman (Klik Peta)</label>
+            <div id="admin-map" style="height:220px; border-radius:8px; border:1px solid var(--border);"></div>
           </div>
           <div class="form-group">
             <label class="form-label">Catatan Pesanan</label>
@@ -307,4 +315,21 @@ document.getElementById('add-item-btn').addEventListener('click', createRow);
 
 // Tambah row pertama saat halaman dimuat
 createRow();
+document.addEventListener('DOMContentLoaded', function() {
+    const mapAdmin = L.map('admin-map').setView([-7.24583, 108.98123], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapAdmin);
+    let adminMarker;
+
+    mapAdmin.on('click', function(e) {
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
+        if (adminMarker) adminMarker.setLatLng(e.latlng);
+        else adminMarker = L.marker(e.latlng).addTo(mapAdmin);
+
+        const txt = document.getElementById('admin_delivery_address');
+        const mapUrl = `https://maps.google.com/?q=${lat},${lng}`;
+        let cleanText = txt.value.replace(/\n\n📍 Titik Lokasi Maps: https:\/\/maps\.google\.com\/\?q=[^\s]+/g, '').trim();
+        txt.value = cleanText + (cleanText ? '\n\n' : '') + '📍 Titik Lokasi Maps: ' + mapUrl;
+    });
+});
 </script>

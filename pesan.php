@@ -169,9 +169,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
         }
     }
 }
+?> <!-- 💡 PERBAIKAN: Tutup tag PHP di sini -->
 
-include __DIR__ . '/includes/public_head.php';
-?>
+<?php include __DIR__ . '/includes/public_head.php'; ?>
+
+<!-- Leaflet Maps CSS & JS (Gratis) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <div style="padding-top:70px;">
 
@@ -281,7 +285,16 @@ include __DIR__ . '/includes/public_head.php';
           </div>
           <div class="form-group" style="margin-top:16px;margin-bottom:0;">
             <label class="form-label">Alamat Pengiriman <span>*</span></label>
-            <textarea name="delivery_address" class="form-control" rows="3" placeholder="Alamat lengkap pengiriman material..." required><?= htmlspecialchars($_POST['delivery_address']??'') ?></textarea>
+            <textarea name="delivery_address" id="delivery_address" class="form-control" rows="3" placeholder="Isi alamat patokan lengkap (Rt/Rw/Desa)..." required><?= htmlspecialchars($_POST['delivery_address']??'') ?></textarea>
+          </div>
+
+          <!-- Peta Leaflet Interaktif -->
+          <div class="form-group" style="margin-top:16px;">
+            <label class="form-label"><i class="fas fa-map-marker-alt" style="color:#ef4444;"></i> Tandai Titik Lokasi Pengiriman (Peta Interaktif)</label>
+            <div id="map-select" style="height:250px; width:100%; border-radius:var(--radius-md); border:1px solid var(--border); box-shadow:var(--shadow-sm);"></div>
+            <small style="color:var(--text-muted); display:block; margin-top:6px; font-size:12px;">
+              💡 <b>Petunjuk:</b> Geser atau klik titik lokasi persis proyek/rumah Anda di peta di atas untuk membantu driver kami.
+            </small>
           </div>
         </div>
       </div>
@@ -474,5 +487,35 @@ document.addEventListener('DOMContentLoaded', function() {
         endif; 
     endif; 
     ?>
+});
+// Inisialisasi Leaflet Map
+document.addEventListener('DOMContentLoaded', function() {
+    const defaultLat = -7.24583; // Koordinat default (Jawa Tengah/Bumiayu)
+    const defaultLng = 108.98123;
+    
+    const map = L.map('map-select').setView([defaultLat, defaultLng], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    let marker;
+
+    map.on('click', function(e) {
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
+        
+        if (marker) {
+            marker.setLatLng(e.latlng);
+        } else {
+            marker = L.marker(e.latlng).addTo(map);
+        }
+
+        const addressTextarea = document.getElementById('delivery_address');
+        const mapUrl = `https://maps.google.com/?q=${lat},${lng}`;
+        
+        // Hapus link lokasi lama jika ada, lalu perbarui dengan titik lokasi baru
+        let currentText = addressTextarea.value.replace(/\n\n📍 Titik Lokasi Maps: https:\/\/maps\.google\.com\/\?q=[^\s]+/g, '').trim();
+        addressTextarea.value = currentText + (currentText ? '\n\n' : '') + '📍 Titik Lokasi Maps: ' + mapUrl;
+    });
 });
 </script>

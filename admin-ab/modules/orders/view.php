@@ -2,6 +2,13 @@
 require_once __DIR__.'/../../../config/database.php';
 require_once __DIR__.'/../../../config/app.php';
 initSession(); requireLogin();
+function renderAddressWithMap($address) {
+    if (empty($address)) return '-';
+    // Menjadikan URL maps bisa diklik otomatis
+    $pattern = '/(https?:\/\/[^\s<]+)/i';
+    $replacement = '<br><a href="$1" target="_blank" class="btn btn-sm btn-outline" style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;color:#2563eb;border-color:#2563eb;"><i class="fas fa-directions"></i> Buka Navigasi Driver (Google Maps)</a>';
+    return preg_replace($pattern, $replacement, htmlspecialchars($address, ENT_QUOTES, 'UTF-8'));
+}
 $id  = getInt('id');
 $ord = Database::fetchOne("SELECT o.*, u.name AS processed_by_name FROM orders o LEFT JOIN users u ON o.processed_by=u.id WHERE o.id=?",[$id]);
 if (!$ord){setFlash('error','Pesanan tidak ditemukan.');redirect(APP_URL.'/admin-ab/modules/orders/index.php');}
@@ -73,6 +80,8 @@ if (in_array($newStatus, ['processing', 'completed']) && !in_array($ord['status'
 }
 include __DIR__.'/../../partials/head.php';
 ?>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <div class="admin-wrapper">
 <?php include __DIR__.'/../../partials/sidebar.php'; ?>
 <div class="main-content">
@@ -99,7 +108,32 @@ include __DIR__.'/../../partials/head.php';
           <?php if($ord['customer_email']):?><div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email</div><div style="font-weight:600;"><?=htmlspecialchars($ord['customer_email'])?></div></div><?php endif;?>
           <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Tanggal Pesan</div><div style="font-weight:600;"><?=formatDateTime($ord['created_at'])?></div></div>
         </div>
-        <div style="margin-top:16px;"><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Alamat Pengiriman</div><div style="font-weight:600;line-height:1.5;"><?=nl2br(htmlspecialchars($ord['delivery_address']))?></div></div>
+        <div style="margin-top:16px;">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Alamat Pengiriman</div>
+          <div style="font-weight:600;line-height:1.5;"><?=nl2br(renderAddressWithMap($ord['delivery_address']))?></div>
+        </div>
+
+        <?php
+        // Ekstrak koordinat lat & lng dari teks alamat jika ada
+        preg_match('/maps\.google\.com\/\?q=(-?\d+\.\d+),(-?\d+\.\d+)/', $ord['delivery_address'], $matches);
+        $hasCoords = !empty($matches[1]) && !empty($matches[2]);
+        ?>
+        
+        <?php if ($hasCoords): ?>
+        <div style="margin-top:16px;">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">Visual Lokasi Pengiriman</div>
+          <div id="view-map" style="height:220px; border-radius:8px; border:1px solid var(--border);"></div>
+        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const lat = <?= $matches[1] ?>;
+            const lng = <?= $matches[2] ?>;
+            const viewMap = L.map('view-map').setView([lat, lng], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(viewMap);
+            L.marker([lat, lng]).addTo(viewMap).bindPopup('Lokasi Pengiriman Pesanan').openPopup();
+        });
+        </script>
+        <?php endif; ?>
         <?php if($ord['notes']):?><div style="margin-top:12px;padding:12px;background:var(--bg-muted);border-radius:8px;"><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Catatan Pelanggan</div><div style="font-size:13.5px;"><?=nl2br(htmlspecialchars($ord['notes']))?></div></div><?php endif;?>
       </div>
     </div>
