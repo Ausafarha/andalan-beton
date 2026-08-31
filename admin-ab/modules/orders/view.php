@@ -129,7 +129,10 @@ include __DIR__.'/../../partials/head.php';
             const lat = <?= $matches[1] ?>;
             const lng = <?= $matches[2] ?>;
             const viewMap = L.map('view-map').setView([lat, lng], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(viewMap);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+    subdomains: 'abcd'
+}).addTo(viewMap);
             L.marker([lat, lng]).addTo(viewMap).bindPopup('Lokasi Pengiriman Pesanan').openPopup();
         });
         </script>
