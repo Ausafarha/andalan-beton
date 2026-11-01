@@ -1,0 +1,142 @@
+/* ============================================================
+   pages/pesan.css
+   Halaman Pemesanan Online — style khusus halaman ini
+   ============================================================ */
+
+.public-main { padding-top: 60px; }
+
+#pesan-page .hero { justify-content: center !important; }
+#pesan-page .hero-content {
+  margin: 0 auto !important;
+  max-width: 700px !important;
+  width: 100%;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  text-align: center !important;
+}
+#pesan-page .hero-content h1,
+#pesan-page .hero-content p {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+#pesan-page .hero h1 { font-size: clamp(24px, 4vw, 36px) !important; }
+
+.section-pesan-list > section {
+  position: relative;
+  z-index: 1;
+}
+
+html[data-theme="dark"] .section-pesan-list {
+  background: linear-gradient(to bottom, #04380a 0%, rgb(6,28,1) 35%, rgb(6,28,1) 100%);
+}
+
+/* ===== STEPPER "PROSES" =====
+   Catatan: lebar stepper ini ngikutin lebar form di bawahnya (max-width: 860px),
+   biar ujung kiri-kanannya sejajar. Kalau mau icon lebih deket/jauh dari tepi,
+   cukup ubah "gap" di .pesan-stepper — garis penghubung otomatis ikut molor/
+   nyusut sendiri (karena pakai flex:1, gak dibatasi max-width lagi). */
+.pesan-stepper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  background: #16a34a;
+  border: 4px solid #ffffff;
+  border-radius: 999px;
+  padding: 14px 40px;
+  margin: -50px auto 20px;
+  max-width: 860px;
+  width: 100%;
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  box-sizing: border-box;
+}
+
+.pesan-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pesan-step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  background: #ffffff;
+  color: #9ca3af;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.pesan-step.active .pesan-step-icon {
+  color: #1F8606;
+  border-color: #1F8606;
+}
+
+.pesan-step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+.pesan-step.active .pesan-step-label {
+  color: #ffffff;
+}
+
+.pesan-step-line {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.3);
+  margin-top: 20px;
+  transition: background 0.3s ease;
+}
+
+.pesan-step-line.active {
+  background: #ffffff;
+}
+
+/* ===== MAP LOKASI ===== */
+#delivery-map {
+  width: 100%;
+  height: 320px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-top: 8px;
+}
+.delivery-map-hint {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+/* ===== SHADOW UNTUK CARD FORM ===== */
+.pesan-card-box {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+}
+
+#pesan-page .hero {
+  padding-bottom: 100px !important;
+}
+
+#pesan-page {
+  background: #f5faf5;
+}
+
+html[data-theme="dark"] #pesan-page {
+  background: #061C01;
+}

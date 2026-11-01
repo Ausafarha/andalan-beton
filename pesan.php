@@ -20,7 +20,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'add_cart' && $_SERVER['REQUES
     if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
         $_SESSION['cart'] = [];
     }
-    // Format baru: key = material_id, value = quantity
     if (isset($_SESSION['cart'][$materialId])) {
         $_SESSION['cart'][$materialId] += $qty;
     } else {
@@ -58,18 +57,18 @@ $currentSlug = 'pesan';
 $pageTitle   = 'Pemesanan Online';
 $cp          = getCompanyProfile();
 
-$errors    = [];
-$success   = false;
-$materials = Database::fetchAll("SELECT id, name, unit, price FROM materials WHERE is_active=true ORDER BY name");
+$errors       = [];
+$success      = false;
+$successOrder = null;
+$orderId      = null;
+$materials    = Database::fetchAll("SELECT id, name, unit, price FROM materials WHERE is_active=true ORDER BY name");
 
 $preMatId = getInt('material');
 
-// ── SESSION CART (format baru) ──
 if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 
-// Tambah item dari URL (tombol "Pesan" langsung)
 if (getInt('material') && getInt('qty', 0) > 0) {
     $matId = getInt('material');
     $qty   = getInt('qty', 1);
@@ -82,7 +81,6 @@ if (getInt('material') && getInt('qty', 0) > 0) {
     exit;
 }
 
-// Hapus item via GET (fallback)
 if (getInt('remove') > 0) {
     $removeId = getInt('remove');
     if (isset($_SESSION['cart'][$removeId])) {
@@ -92,14 +90,12 @@ if (getInt('remove') > 0) {
     exit;
 }
 
-// Kosongkan keranjang
 if (get('clear_cart')) {
     $_SESSION['cart'] = [];
     header('Location: ' . APP_URL . '/pesan.php');
     exit;
 }
 
-// ── PROSES FORM PESANAN ──────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
     if (!verifyCsrf()) {
         $errors[] = 'Token keamanan tidak valid. Silakan muat ulang halaman.';
@@ -108,6 +104,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
         $customerPhone   = post('customer_phone');
         $customerEmail   = post('customer_email');
         $deliveryAddress = post('delivery_address');
+        $deliveryDate    = post('delivery_date') ?: date('Y-m-d');
+        $deliveryTime    = post('delivery_time') ?: '08:00:00';
         $notes           = post('notes');
 
         if (empty($customerName))    $errors[] = 'Nama pemesan wajib diisi.';
@@ -149,6 +147,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
                     'customer_phone'   => $customerPhone,
                     'customer_email'   => $customerEmail ?: null,
                     'delivery_address' => $deliveryAddress,
+                    'delivery_date'    => $deliveryDate,
+                    'delivery_time'    => $deliveryTime,
                     'notes'            => $notes ?: null,
                     'status'           => 'pending',
                     'total_amount'     => $totalAmount,
@@ -169,30 +169,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
         }
     }
 }
-?> <!-- 💡 PERBAIKAN: Tutup tag PHP di sini -->
 
-<?php include __DIR__ . '/includes/public_head.php'; ?>
+include __DIR__ . '/includes/public_head.php';
 
-<!-- Leaflet Maps CSS & JS (Gratis) -->
+$heroTitle = [
+  'pre'       => 'PESAN MATERIAL ',
+  'highlight' => 'ONLINE',
+  'break'     => true,
+];
+$heroTagline = '';
+$heroBody = '
+      <p style="color:rgba(255,255,255,0.85);font-size:15px;line-height:1.8;max-width:500px;margin:0;">
+        Isi formulir di bawah dan tim kami akan segera menghubungi Anda.
+      </p>';
+?>
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<div style="padding-top:70px;">
+<style>
+.section-pesan-list {
+  position: relative;
+  overflow: hidden;
+  background: #f5faf5;
+}
 
-<div style="background: linear-gradient(135deg, #0f172a 0%, #20bc95 50%, #0f172a 100%); padding:60px 0;">
-  <div class="container" style="text-align:center;">
-    <div class="section-tag" style="color:var(--brand-300);">Pemesanan</div>
-    <h1 style="font-size:clamp(28px,5vw,44px);font-weight:800;color:white;margin-top:10px;">Pesan Material Online</h1>
-    <p style="color:rgba(255,255,255,.6);font-size:15px;margin-top:12px;">Isi formulir di bawah dan tim kami akan segera menghubungi Anda</p>
-  </div>
-</div>
+.section-pesan-list::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('<?= ASSETS_URL ?>img/background.png');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: repeat-y;
+  opacity: 0.6;
+  z-index: 0;
+  pointer-events: none;
+}
 
-<section class="section">
+html[data-theme="dark"] .section-pesan-list::before {
+  opacity: 0.6;
+}
+</style>
+
+<div id="pesan-page">
+<?php include __DIR__ . '/includes/hero.php'; ?>
+
+<?php if (!$success): ?>
+      <div class="pesan-stepper">
+        <div class="pesan-step" id="step-1">
+          <div class="pesan-step-icon"><i class="fas fa-user"></i></div>
+          <div class="pesan-step-label">Data</div>
+        </div>
+        <div class="pesan-step-line" id="line-1"></div>
+        <div class="pesan-step" id="step-2">
+          <div class="pesan-step-icon"><i class="fas fa-cart-shopping"></i></div>
+          <div class="pesan-step-label">Pesanan</div>
+        </div>
+        <div class="pesan-step-line" id="line-2"></div>
+        <div class="pesan-step" id="step-3">
+          <div class="pesan-step-icon"><i class="fas fa-paper-plane"></i></div>
+          <div class="pesan-step-label">Kirim</div>
+        </div>
+      </div>
+  <?php endif; ?>
+
+<div class="section-pesan-list">
+<section class="section" style="background:transparent;">
   <div class="container" style="max-width:860px;">
 
     <?php if ($success): ?>
-    <!-- Success State (sama) -->
-    <div style="text-align:center;padding:60px 40px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);">
+    <div id="success-card" style="text-align:center;padding:60px 40px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);">
       <div style="width:80px;height:80px;border-radius:50%;background:var(--success-bg);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;">
         <i class="fas fa-check-circle"></i>
       </div>
@@ -263,8 +310,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
     <form method="POST" id="order-form">
       <?= csrfField() ?>
 
-      <!-- Customer Info -->
-      <div class="card mb-20">
+      <div class="card pesan-card-box mb-20" style="border-radius:var(--radius-xl); overflow:hidden;">
         <div class="card-header">
           <div class="card-title"><i class="fas fa-user" style="margin-right:8px;color:var(--brand-600);"></i>Data Pemesan</div>
         </div>
@@ -283,33 +329,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
             <label class="form-label">Email (opsional)</label>
             <input type="email" name="customer_email" class="form-control" value="<?= htmlspecialchars($_POST['customer_email']??'') ?>" placeholder="">
           </div>
+          <div class="grid grid-2" style="gap:16px;margin-top:16px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Rencana Tanggal Pengiriman <span>*</span></label>
+              <input type="date" name="delivery_date" class="form-control" value="<?= htmlspecialchars($_POST['delivery_date'] ?? date('Y-m-d')) ?>" min="<?= date('Y-m-d') ?>" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Estimasi Jam Pengiriman <span>*</span></label>
+              <input type="time" name="delivery_time" class="form-control" value="<?= htmlspecialchars($_POST['delivery_time'] ?? '08:00') ?>" required>
+            </div>
+          </div>
           <div class="form-group" style="margin-top:16px;margin-bottom:0;">
             <label class="form-label">Alamat Pengiriman <span>*</span></label>
-            <textarea name="delivery_address" id="delivery_address" class="form-control" rows="3" placeholder="Isi alamat patokan lengkap (Rt/Rw/Desa)..." required><?= htmlspecialchars($_POST['delivery_address']??'') ?></textarea>
+            <textarea name="delivery_address" id="delivery_address" class="form-control" rows="3" placeholder="Alamat lengkap pengiriman material..." required><?= htmlspecialchars($_POST['delivery_address']??'') ?></textarea>
           </div>
 
-          <!-- Peta Leaflet Interaktif -->
-          <div class="form-group" style="margin-top:16px;">
-            <label class="form-label"><i class="fas fa-map-marker-alt" style="color:#ef4444;"></i> Tandai Titik Lokasi Pengiriman (Peta Interaktif)</label>
-            <div id="map-select" style="height:250px; width:100%; border-radius:var(--radius-md); border:1px solid var(--border); box-shadow:var(--shadow-sm);"></div>
-            <small style="color:var(--text-muted); display:block; margin-top:6px; font-size:12px;">
-              💡 <b>Petunjuk:</b> Geser atau klik titik lokasi persis proyek/rumah Anda di peta di atas untuk membantu driver kami.
-            </small>
+          <div class="form-group" style="margin-top:20px;margin-bottom:0;">
+            <label class="form-label"><i class="fas fa-map-marker-alt" style="color:var(--brand-600);"></i> Tandai Titik Lokasi Pengiriman (Peta Interaktif)</label>
+            <div id="delivery-map" style="height:250px; width:100%; border-radius:var(--radius-md); border:1px solid var(--border);"></div>
+            <div class="delivery-map-hint" style="margin-top:6px; font-size:12px; color:var(--text-muted);">
+              <span>💡</span>
+              <span>Petunjuk: Geser atau klik titik lokasi persis proyek/rumah Anda di peta di atas untuk membantu driver kami.</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- ── KERANJANG PESANAN ─────────────────────────────── -->
-      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:20px;">
+      <div class="pesan-card-box" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px 18px;margin-bottom:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
           <span style="font-size:14px;font-weight:700;color:var(--text-primary);">
-            🛒 Keranjang Pesanan
+            <i class="fas fa-cart-shopping" style="color:var(--brand-600);margin-right:6px;"></i>Keranjang Pesanan
           </span>
-          <span id="item-count" style="font-size:12px;background:var(--brand-50);color:var(--brand-600);padding:2px 12px;border-radius:20px;font-weight:600;">0 item</span>
+          <span id="item-count" style="font-size:12px;background:#3b82f6;color:#fff;padding:2px 12px;border-radius:20px;font-weight:600;">0 Item</span>
         </div>
-        <div id="order-items" style="display:flex;flex-direction:column;gap:12px;">
-          <!-- Item rows akan diisi JS -->
-        </div>
+        <div id="order-items" style="display:flex;flex-direction:column;gap:12px;"></div>
         <button type="button" onclick="addItem()" class="btn btn-outline w-100" style="margin-top:8px;border-style:dashed;padding:12px;margin-bottom:20px;">
           <i class="fas fa-plus"></i> Tambah Material Lain
         </button>
@@ -327,17 +380,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
         </div>
       </div>
 
-      <!-- Notes -->
-      <div class="card mb-20">
+      <div class="card pesan-card-box mb-20" style="border-radius:var(--radius-xl); overflow:hidden;">
         <div class="card-header"><div class="card-title"><i class="fas fa-sticky-note" style="margin-right:8px;color:var(--brand-600);"></i>Catatan</div></div>
         <div class="card-body">
           <textarea name="notes" class="form-control" rows="3" placeholder="Catatan tambahan seperti waktu pengiriman, instruksi khusus, dll..."><?= htmlspecialchars($_POST['notes']??'') ?></textarea>
         </div>
-      </div>
-
-      <div style="background:var(--info-bg);border:1px solid var(--brand-200);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:20px;font-size:13.5px;color:var(--text-primary);">
-        <i class="fas fa-info-circle"></i>
-        Pesanan Anda akan dikonfirmasi oleh tim kami melalui telepon atau WhatsApp dalam waktu 1x24 jam.
       </div>
 
       <button type="submit" class="btn btn-primary btn-lg w-100" style="justify-content:center;font-size:16px;padding:15px;">
@@ -348,7 +395,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['action'])) {
 
   </div>
 </section>
-
+</div>
 </div>
 
 <?php include __DIR__ . '/includes/public_footer.php'; ?>
@@ -372,7 +419,6 @@ function addItem(matId = '', qty = 1) {
     background: var(--bg-muted);
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
-    transition: all 0.2s ease;
   `;
 
   let opts = '<option value="">-- Pilih Material --</option>';
@@ -402,6 +448,7 @@ function addItem(matId = '', qty = 1) {
   document.getElementById('order-items').appendChild(div);
   if (matId) updateSubtotal(i);
   updateGrandTotal();
+  updateStepperStatus();
 }
 
 function removeItem(i) {
@@ -411,6 +458,7 @@ function removeItem(i) {
   if (!matId) {
     el.remove();
     updateGrandTotal();
+    updateStepperStatus();
     return;
   }
   fetch('<?= APP_URL ?>/pesan.php?action=remove&id=' + matId, {
@@ -422,15 +470,11 @@ function removeItem(i) {
     if (data.success) {
       el.remove();
       updateGrandTotal();
+      updateStepperStatus();
       if (typeof updateCartBadge === 'function') {
         updateCartBadge(data.cart_count);
       }
-    } else {
-      alert('Gagal menghapus: ' + data.message);
     }
-  })
-  .catch(err => {
-    alert('Terjadi kesalahan, coba lagi.');
   });
 }
 
@@ -460,7 +504,7 @@ function updateGrandTotal() {
     count++;
   });
   document.getElementById('grand-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
-  document.getElementById('item-count').textContent = count + ' item';
+  document.getElementById('item-count').textContent = count + ' Item';
   document.getElementById('item-count-label').textContent = count;
 }
 
@@ -470,9 +514,78 @@ function clearCart() {
     }
 }
 
+let deliveryMap, deliveryMarker;
+
+function initDeliveryMap() {
+  const mapEl = document.getElementById('delivery-map');
+  if (!mapEl || typeof L === 'undefined') return;
+
+  const defaultLat = -7.1500;
+  const defaultLng = 108.9500;
+
+  deliveryMap = L.map('delivery-map').setView([defaultLat, defaultLng], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19
+  }).addTo(deliveryMap);
+
+  deliveryMarker = null;
+
+  function reverseGeocode(lat, lng) {
+    const addressEl = document.getElementById('delivery_address');
+    function stripOldMarker(text) {
+      return text.replace(/\n\n📍[\s\S]*$/, '').trim();
+    }
+    const mapUrl = `https://maps.google.com/?q=${lat},${lng}`;
+    const base = stripOldMarker(addressEl.value);
+    addressEl.value = base + (base ? '\n\n' : '') + '📍 Titik Lokasi Maps: ' + mapUrl;
+  }
+
+  deliveryMap.on('click', function(e) {
+    if (deliveryMarker) {
+      deliveryMarker.setLatLng(e.latlng);
+    } else {
+      deliveryMarker = L.marker(e.latlng, { draggable: true }).addTo(deliveryMap);
+      deliveryMarker.on('dragend', function(ev) {
+        const pos = ev.target.getLatLng();
+        reverseGeocode(pos.lat, pos.lng);
+      });
+    }
+    reverseGeocode(e.latlng.lat, e.latlng.lng);
+  });
+}
+
+function updateStepperStatus() {
+  const nameEl = document.querySelector('[name="customer_name"]');
+  const phoneEl = document.querySelector('[name="customer_phone"]');
+  const addressEl = document.querySelector('[name="delivery_address"]');
+
+  const name = nameEl ? nameEl.value.trim() : '';
+  const phone = phoneEl ? phoneEl.value.trim() : '';
+  const address = addressEl ? addressEl.value.trim() : '';
+  const step1Done = (name.length > 0) && (phone.length > 0) && (address.length > 0);
+
+  const cartRows = document.querySelectorAll('#order-items .mat-select');
+  let step2Done = false;
+  cartRows.forEach(sel => {
+    if (sel.value) step2Done = true;
+  });
+
+  document.getElementById('step-1')?.classList.toggle('active', step1Done);
+  document.getElementById('line-1')?.classList.toggle('active', step1Done);
+  document.getElementById('step-2')?.classList.toggle('active', step1Done && step2Done);
+  document.getElementById('line-2')?.classList.toggle('active', step1Done && step2Done);
+  document.getElementById('step-3')?.classList.toggle('active', step1Done && step2Done);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    initDeliveryMap();
+    updateStepperStatus();
+    document.getElementById('order-form')?.addEventListener('input', updateStepperStatus);
+    document.getElementById('order-form')?.addEventListener('change', updateStepperStatus);
+
     <?php 
-    // Session cart sekarang dalam format [material_id => quantity]
     if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])): 
         foreach ($_SESSION['cart'] as $id => $qty): 
     ?>
@@ -488,34 +601,14 @@ document.addEventListener('DOMContentLoaded', function() {
     endif; 
     ?>
 });
-// Inisialisasi Leaflet Map
 document.addEventListener('DOMContentLoaded', function() {
-    const defaultLat = -7.24583; // Koordinat default (Jawa Tengah/Bumiayu)
-    const defaultLng = 108.98123;
-    
-    const map = L.map('map-select').setView([defaultLat, defaultLng], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
-
-    let marker;
-
-    map.on('click', function(e) {
-        const lat = e.latlng.lat.toFixed(6);
-        const lng = e.latlng.lng.toFixed(6);
-        
-        if (marker) {
-            marker.setLatLng(e.latlng);
-        } else {
-            marker = L.marker(e.latlng).addTo(map);
-        }
-
-        const addressTextarea = document.getElementById('delivery_address');
-        const mapUrl = `https://maps.google.com/?q=${lat},${lng}`;
-        
-        // Hapus link lokasi lama jika ada, lalu perbarui dengan titik lokasi baru
-        let currentText = addressTextarea.value.replace(/\n\n📍 Titik Lokasi Maps: https:\/\/maps\.google\.com\/\?q=[^\s]+/g, '').trim();
-        addressTextarea.value = currentText + (currentText ? '\n\n' : '') + '📍 Titik Lokasi Maps: ' + mapUrl;
-    });
+    // Otomatis arahkan pandangan ke kotak sukses saat pesanan berhasil dikirim
+    const successCard = document.getElementById('success-card');
+    if (successCard) {
+        successCard.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+        });
+    }
 });
 </script>

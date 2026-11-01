@@ -78,3 +78,13 @@ textarea.form-control {
   color: var(--danger);
   margin-top: 5px;
 }
+/* Khusus Preview Gambar di Halaman Edit Material */
+.edit-preview-img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain; /* Agar gambar utuh, tidak terpotong */
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-muted); /* Background abu-abu jika gambar transparan */
+  margin-bottom: 12px;
+}

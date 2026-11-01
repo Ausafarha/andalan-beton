@@ -1,5 +1,5 @@
 Folder PATH listing for volume DATA
-Volume serial number is 0000003D 0E74:1EB9
+Volume serial number is 0E74-1EB9
 D:.
 ¦   .env
 ¦   .gitignore
@@ -16,7 +16,7 @@ D:.
 ¦   robots.txt
 ¦   service-worker.js
 ¦   sitemap.xml
-¦   struktur_project.txt
+¦   struxtur.txt
 ¦   
 +---admin-ab
 ¦   ¦   dashboard.php
@@ -26,6 +26,12 @@ D:.
 ¦   +---modules
 ¦   ¦   +---dashboard
 ¦   ¦   ¦       install-prompt.php
+¦   ¦   ¦       
+¦   ¦   +---drivers
+¦   ¦   ¦       create.php
+¦   ¦   ¦       delete.php
+¦   ¦   ¦       edit.php
+¦   ¦   ¦       index.php
 ¦   ¦   ¦       
 ¦   ¦   +---gallery
 ¦   ¦   ¦       index.php
@@ -37,6 +43,7 @@ D:.
 ¦   ¦   ¦       index.php
 ¦   ¦   ¦       
 ¦   ¦   +---orders
+¦   ¦   ¦       create.php
 ¦   ¦   ¦       delete.php
 ¦   ¦   ¦       index.php
 ¦   ¦   ¦       view.php
@@ -54,6 +61,13 @@ D:.
 ¦   ¦   ¦       index.php
 ¦   ¦   ¦       
 ¦   ¦   +---stock_out
+¦   ¦   ¦       create.php
+¦   ¦   ¦       delete.php
+¦   ¦   ¦       edit.php
+¦   ¦   ¦       index.php
+¦   ¦   ¦       print_sj.php
+¦   ¦   ¦       
+¦   ¦   +---vehicles
 ¦   ¦           create.php
 ¦   ¦           delete.php
 ¦   ¦           edit.php
@@ -91,17 +105,26 @@ D:.
 ¦   ¦   ¦       responsive.css
 ¦   ¦   ¦       
 ¦   ¦   +---pages
+¦   ¦           beranda.css
 ¦   ¦           feature.css
 ¦   ¦           gallery.css
 ¦   ¦           hero.css
+¦   ¦           pesan.css
 ¦   ¦           product-card.css
+¦   ¦           produk.css
 ¦   ¦           
 ¦   +---img
+¦   ¦       background.png
 ¦   ¦       favicon copy.ico
 ¦   ¦       favicon.ico
 ¦   ¦       icon-192.png
 ¦   ¦       icon-512.png
 ¦   ¦       logo-hero.png
+¦   ¦       menu.png
+¦   ¦       mgng1.jpeg
+¦   ¦       mgng2.jpeg
+¦   ¦       mgng3.jpeg
+¦   ¦       profile.jpeg
 ¦   ¦       
 ¦   +---js
 ¦           main.js
@@ -112,12 +135,14 @@ D:.
 ¦       database.php
 ¦       
 +---includes
+¦       hero.php
 ¦       public_footer.php
 ¦       public_head.php
 ¦       
 +---uploads
 ¦   +---company
 ¦           img_6a40cf5401f554.67124177.jpeg
+¦           img_6ae4337f577fe4.21281142.jpeg
 ¦           
 +---vendor
     ¦   autoload.php

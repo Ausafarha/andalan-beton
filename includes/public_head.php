@@ -72,19 +72,26 @@ $currentSlug  = $currentSlug ?? '';
 <div class="toast-container"></div>
 
 <!-- Public Header -->
-<header class="public-header" id="pub-header" style="display:flex; align-items:center; justify-content:space-between; width:100%; box-sizing:border-box; gap:12px; padding: 10px 16px;">
+<header class="public-header" id="pub-header">
   
   <a href="<?= APP_URL ?>/" style="display:flex; align-items:center; gap:12px; text-decoration:none; flex:1; min-width:0;">
-  <?php if (!empty($cp['logo'])): ?>
-    <img src="<?= uploadUrl($cp['logo']) ?>" alt="Logo" style="height:40px; width:40px; object-fit:contain; border-radius:10px; flex-shrink:0;">
-  <?php else: ?>
-    <div style="width:40px; height:40px; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; font-size:14px; flex-shrink:0;">AB</div>
-  <?php endif; ?>
-  <div style="min-width:0; display:flex; flex-direction:column;">
-    <div style="font-size:14px; font-weight:800; color:var(--text-primary); line-height:1.3; white-space:normal; word-break:break-word;"><?=$cp['company_name'] ?? APP_NAME?></div>
-    <div style="font-size:10px; color:var(--text-muted); margin-top:2px; white-space:normal; word-break:break-word;"><?= htmlspecialchars($cp['tagline'] ?? 'Industri Readymix dan Precast') ?></div>
-  </div>
-</a>
+    <!-- LOGO DENGAN FALLBACK JIKA GAMBAR RUSAK -->
+    <?php if (!empty($cp['logo'])): ?>
+      <img src="<?= uploadUrl($cp['logo']) ?>" alt="" 
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+           style="height:40px; width:40px; object-fit:contain; border-radius:10px; flex-shrink:0;">
+      <!-- Fallback kotak AB (tersembunyi default) -->
+      <div style="display:none; width:40px; height:40px; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); border-radius:10px; align-items:center; justify-content:center; font-weight:800; color:white; font-size:14px; flex-shrink:0;">AB</div>
+    <?php else: ?>
+      <div style="width:40px; height:40px; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; font-size:14px; flex-shrink:0;">AB</div>
+    <?php endif; ?>
+
+    <!-- TEKS BRAND -->
+    <div style="min-width:0; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="font-size:14px; font-weight:800; color:var(--text-primary); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?=$cp['company_name'] ?? APP_NAME?></div>
+      <div style="font-size:10px; color:var(--text-muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?= htmlspecialchars($cp['tagline'] ?? 'Industri Readymix dan Precast') ?></div>
+    </div>
+  </a>
 
   <nav class="public-nav" id="pub-nav">
     <a href="<?= APP_URL ?>/index.php" class="<?= $currentSlug===''?'active':'' ?>">Beranda</a>
@@ -92,7 +99,7 @@ $currentSlug  = $currentSlug ?? '';
     <a href="<?= APP_URL ?>/produk.php" class="<?= $currentSlug==='produk'?'active':'' ?>">Produk</a>
     <a href="<?= APP_URL ?>/galeri.php" class="<?= $currentSlug==='galeri'?'active':'' ?>">Galeri</a>
     <a href="<?= APP_URL ?>/kontak.php" class="<?= $currentSlug==='kontak'?'active':'' ?>">Kontak</a>
-    <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-sm" style="margin-left:8px;"><i class="fas fa-shopping-cart"></i> Pesan Sekarang</a>
+    <a href="<?= APP_URL ?>/pesan.php" class="btn btn-primary btn-sm"><i class="fas fa-shopping-cart"></i> Pesan Sekarang</a>
     <button id="theme-toggle" class="topbar-btn" style="margin-left:4px;" title="Ganti Tema"><i class="fas fa-moon" id="theme-icon"></i></button>
   </nav>
 

@@ -147,7 +147,7 @@ include __DIR__ . '/../../partials/head.php';
         <div class="card-header"><div class="card-title">Foto Material</div></div>
         <div class="card-body">
           <?php if ($mat['image']): ?>
-            <img id="img-preview" src="<?= uploadUrl($mat['image']) ?>" class="upload-preview" style="display:block; margin-bottom:12px;">
+            <img id="img-preview" src="<?= uploadUrl($mat['image']) ?>" class="edit-preview-img" style="display:block;">
           <?php else: ?>
             <img id="img-preview" style="display:none;" class="upload-preview">
           <?php endif; ?>

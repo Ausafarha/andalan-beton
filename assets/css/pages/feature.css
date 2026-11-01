@@ -4,37 +4,37 @@
    ============================================================ */
 
 .feature-card {
-  padding: 28px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  transition: all var(--transition);
-}
-
-.feature-card:hover {
-  box-shadow: var(--shadow-lg);
-  border-color: var(--brand-200);
+  background: #152F14;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .feature-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-md);
+  padding: 32px 24px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  margin-bottom: 18px;
+  font-size: 34px;
+  color: #fff;
 }
 
+.feature-card-body {
+  background: linear-gradient(120deg, #1f4e21 0%, #16a34a 80%);
+  padding: 20px 24px 28px;
+  flex: 1;
+}
 .feature-title {
   font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 8px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #fff;
 }
 
 .feature-desc {
   font-size: 13.5px;
-  color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.9);
 }

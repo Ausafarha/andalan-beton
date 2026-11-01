@@ -88,7 +88,6 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-
 @keyframes float {
   0%, 100% {
     transform: translateY(0px);
@@ -97,4 +96,58 @@
     transform: translateY(-12px);
   }
 }
+/* ============================================================
+   Hero Background Slider Styles (Tambahan untuk hero.php)
+   ============================================================ */
 
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Penampung seluruh slide background */
+.hero-slides {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Setiap item slide */
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1.2s ease-in-out, visibility 1.2s ease-in-out, transform 6s ease-out;
+  transform: scale(1.05);
+}
+
+/* Slide aktif yang sedang tampil */
+.hero-slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+/* Efek gelap transparan (overlay) di atas background agar teks terbaca jelas */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 28, 1, 0.65); /* Sesuaikan tingkat gelap overlay */
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Pastikan konten teks berada di atas overlay background */
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
