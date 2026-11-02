@@ -444,7 +444,8 @@ include __DIR__.'/../../partials/head.php';
                 </select>
             </div>
         </div>  
-                <div class="grid grid-2" style="gap:16px;margin-bottom:16px;" id="armada-filters">
+        <?php if ($type === 'stock_out'): ?>
+        <div class="grid grid-2" style="gap:16px;margin-bottom:16px;" id="armada-filters">
             <div class="form-group" style="margin:0;">
                 <label class="form-label">Driver (opsional)</label>
                 <select name="driver_name" class="form-control">
@@ -464,6 +465,7 @@ include __DIR__.'/../../partials/head.php';
                 </select>
             </div>
         </div>
+        <?php endif; ?>
 
       <div class="grid grid-2" style="gap:16px;" id="date-range">
         <div class="form-group" style="margin:0;"><label class="form-label">Dari Tanggal</label><input type="date" name="date_from" class="form-control" value="<?=$dateFrom?>"></div>
@@ -714,7 +716,7 @@ document.getElementById('report-type').addEventListener('change', function() {
   const dr = document.getElementById('date-range');
   const sourceFilter = document.getElementById('source-filter');
   const tf = document.getElementById('material-type')?.parentElement;
-  const armadaFilters = document.getElementById('armada-filters');
+  
 
   const showStockOut = (this.value === 'stock_out');
 
@@ -722,22 +724,22 @@ document.getElementById('report-type').addEventListener('change', function() {
     df.style.display = ''; dr.style.display = '';
     if (tf) tf.style.display = '';
     if (sourceFilter) sourceFilter.style.display = '';
-    if (armadaFilters) armadaFilters.style.display = '';
+    
   } else if (this.value === 'stock_summary') {
     df.style.display = 'none'; dr.style.display = 'none';
     if (tf) tf.style.display = 'none';
     if (sourceFilter) sourceFilter.style.display = 'none';
-    if (armadaFilters) armadaFilters.style.display = 'none';
+    
   } else if (this.value === 'product_sales' || this.value === 'orders') {
     df.style.display = 'none'; dr.style.display = '';
     if (tf) tf.style.display = 'none';
     if (sourceFilter) sourceFilter.style.display = 'none';
-    if (armadaFilters) armadaFilters.style.display = 'none';
+    
   } else {
     df.style.display = ''; dr.style.display = '';
     if (tf) tf.style.display = '';
     if (sourceFilter) sourceFilter.style.display = 'none';
-    if (armadaFilters) armadaFilters.style.display = 'none';
+    
   }
 });
 document.getElementById('report-type').dispatchEvent(new Event('change'));
